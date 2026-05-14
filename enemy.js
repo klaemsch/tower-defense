@@ -88,7 +88,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     }
 
     destroy(fromScene) {
-        console.log('destroyed', 'index:', this.scene.enemyManager.enemies.indexOf(this));
+        //console.log('destroyed', 'index:', this.scene.enemyManager.enemies.indexOf(this));
         const index = this.scene.enemyManager.enemies.indexOf(this);
         if (index > 1) {
             this.scene.enemyManager.enemies.splice(index, 1);
@@ -193,7 +193,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.attackTimer += delta;
         if (this.attackTimer >= ENEMY_ATTACK_RATE) {
             this.attackTimer -= ENEMY_ATTACK_RATE;
-            const destroyed = damageStructure(this.targetCol, this.targetRow, ENEMY_DAMAGE);
+            const destroyed = this.scene._damageStructure(this.targetCol, this.targetRow, ENEMY_DAMAGE);
             if (destroyed) {
                 this.attacking = false;
                 this._retarget();

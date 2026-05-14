@@ -142,7 +142,7 @@ class WoodShopManager {
     // ── Input handlers ────────────────────────────────────────────────────────
 
     _onPointerMove(pointer) {
-        if (gameOver) return;
+        if (this.scene.gameOver) return;
         const { col, row } = worldToGrid(pointer.x, pointer.y);
         this._hoverGfx.clear();
         if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
@@ -152,7 +152,7 @@ class WoodShopManager {
     }
 
     _onPointerDown(pointer) {
-        if (gameOver) return;
+        if (this.scene.gameOver) return;
         const { col, row } = worldToGrid(pointer.x, pointer.y);
         this.placeWoodShop(col, row);
     }
