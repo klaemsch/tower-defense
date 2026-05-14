@@ -136,9 +136,6 @@ class WoodShopManager {
         if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;
         if (isCellOccupied(col, row)) return;
 
-        // ── Factory call ──────────────────────────────────────────────────
-        //  scene.add.woodShop(col, row)
-
         this.scene.add.woodShop(col, row);
     }
 

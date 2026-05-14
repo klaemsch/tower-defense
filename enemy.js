@@ -58,6 +58,11 @@ class Enemy extends Phaser.GameObjects.GameObject {
         scene.sys.updateList.add(this);
 
         this._draw();
+
+        // TEST TEST TEST
+        this.hitBoxRadius = TILE * ENEMY_SIZE_RATIO - 10;
+        const hq = structureMap.get(gridKey(10,7));
+        scene.add.bullet(hq, this);
     }
 
     // ── Phaser lifecycle ──────────────────────────────────────────────────────
