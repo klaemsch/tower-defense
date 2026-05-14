@@ -12,11 +12,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 class WoodShop extends Phaser.GameObjects.GameObject {
 
-    /**
-     * @param {Phaser.Scene} scene
-     * @param {number} col  Grid column
-     * @param {number} row  Grid row
-     */
     constructor(scene, col, row) {
         super(scene, 'woodShop');
 
@@ -27,10 +22,12 @@ class WoodShop extends Phaser.GameObjects.GameObject {
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
-        this.radius = 3; // CELLS
+        this.radius = 1; // CELLS
 
         this.health = 60;
         this.attackable = true;
+        this.lastHarvest = 0;
+        this.harvestEveryMs = 1000;
 
         // Build all child display objects and keep refs for cleanup
         this._visuals = this._buildVisuals(scene, pos);
@@ -88,10 +85,13 @@ class WoodShop extends Phaser.GameObjects.GameObject {
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
+    preUpdate(time, delta) {
+        if (time > this.lastHarvest + this.harvestEveryMs) {
+            this.lastHarvest = time;
+            const treeCount = this.countTreesInRadius();
+            this.scene.registry.inc('wood', treeCount);
+        }
 
-    preUpdate (time, delta) {
-        const treeCount = this.countTreesInRadius();
-        this.scene.registry.inc('wood', treeCount);
     }
 
     destroy(fromScene) {
@@ -138,7 +138,7 @@ class WoodShopManager {
 
         // ── Factory call ──────────────────────────────────────────────────
         //  scene.add.woodShop(col, row)
-        
+
         this.scene.add.woodShop(col, row);
     }
 
