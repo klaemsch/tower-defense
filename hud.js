@@ -1,4 +1,5 @@
 class HudScene extends Phaser.Scene {
+    #newHUDText
 
     constructor() {
         super('hudScene');
@@ -9,12 +10,12 @@ class HudScene extends Phaser.Scene {
     }
 
     create() {
-        this._newHUDText(8, 8, 'wood', 0, 'Wood');
-        this._newHUDText(8, 30, 'hq-health', 200, 'HQ Health');
-        this._newHUDText(8, 52, 'enemies', 0, 'Enemies');
+        this.newHUDText(8, 8, 'wood', 0, 'Wood');
+        this.newHUDText(8, 30, 'hq-health', 200, 'HQ Health');
+        this.newHUDText(8, 52, 'enemies', 0, 'Enemies');
     }
 
-    _newHUDText(x, y, label, initValue, text) {
+    newHUDText(x, y, label, initValue, text) {
 
         const textElement = this.add.text(x, y, `${text}: ${initValue}`, {
             fontSize: '13px',

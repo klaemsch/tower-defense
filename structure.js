@@ -1,6 +1,6 @@
 class Structure extends Phaser.GameObjects.GameObject {
 
-    constructor(scene, col, row, type, color, label) {
+    constructor(scene, col, row, type, color, label, health = 200) {
         super(scene, type);
 
         this.col = col;
@@ -14,7 +14,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.color = color;
         this.label = label;
 
-        this.health = 200;
+        this.health = health;
         this.attackable = true;
 
         // Internal Graphics object that does the actual drawing

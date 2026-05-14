@@ -36,7 +36,7 @@ class GameScene extends Phaser.Scene {
         this.scene.launch('hudScene');
 
         createWorld(this);       // world.js
-        this.woodShops = new WoodShopManager(this);
+        new Placer(this);
         this.enemyManager = new EnemyManager(this);
 
         // resources

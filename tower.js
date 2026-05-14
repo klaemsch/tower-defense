@@ -1,4 +1,5 @@
 class Tower extends Structure {
+    #findNearestEnemy
 
     constructor(scene, col, row) {
         super(scene, col, row, 'tower', 0xFF0000, 'T');
@@ -13,12 +14,12 @@ class Tower extends Structure {
     preUpdate(time, delta) {
         if (time > this.lastFired + this.fireRateMs) {
             this.lastFired = time;
-            const target = this._findNearestEnemy();
+            const target = this.findNearestEnemy();
             if (target) this.scene.add.bullet(this, target);
         }
     }
 
-    _findNearestEnemy() {
+    findNearestEnemy() {
         var closestEnemy = null;
         var closestDistance = Infinity;
         this.scene.enemyManager.enemies.forEach((entry) => {
