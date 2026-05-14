@@ -1,4 +1,9 @@
 class WoodShop extends Phaser.GameObjects.GameObject {
+    #createVisuals
+    #lastHarvest
+    #harvestEveryMs
+    #visuals
+    #countTreesInRadius
 
     constructor(scene, col, row) {
         super(scene, 'woodShop');

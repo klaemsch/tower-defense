@@ -22,7 +22,6 @@ function placeHQ(scene) {
     const col = Math.floor(COLS / 2);
     const row = Math.floor(ROWS / 2);
     scene.add.structure(col, row, 'HQ', 0x888888, 'HQ');
-    scene.add.tower(col-2, row-2);
 }
 
 function placeTrees(scene) {

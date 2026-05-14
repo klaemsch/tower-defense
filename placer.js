@@ -13,7 +13,7 @@ class Placer {
     constructor(scene) {
         this.scene = scene;
         this.hoverGraphics = scene.add.graphics().setDepth(5);  // hover grid
-        this.activeStructure = 'woodShop';
+        this.activeStructure = null;
 
         // listeners
         scene.input.on('pointermove', this.onPointerMove, this);
@@ -29,7 +29,7 @@ class Placer {
 
     // deselect type of structure
     deselect() {
-        this.activeStructure = 'woodShop';
+        this.activeStructure = null;
     }
 
     // try to place the currently selected structure type

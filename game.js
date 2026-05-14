@@ -36,11 +36,11 @@ class GameScene extends Phaser.Scene {
         this.scene.launch('hudScene');
 
         createWorld(this);       // world.js
-        new Placer(this);
+
         this.enemyManager = new EnemyManager(this);
 
-        // resources
-        //initHUD(this)
+        const placer = new Placer(this);
+        this.registry.set('placer', placer);
     }
 
     update(time, delta) {
