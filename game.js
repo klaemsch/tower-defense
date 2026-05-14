@@ -66,6 +66,10 @@ function triggerGameOver() {
         fontSize: '18px', color: '#ffffff',
     }).setOrigin(0.5).setDepth(51);
     _scene.time.paused = true;
+
+    // set structures and enemies to inactive to stop animations
+    _scene.enemyManager.enemies.forEach((enemy) => enemy.active = false);
+    structureMap.forEach((structure) => structure.active = false);
 }
 
 // ─── Phaser Config ────────────────────────────────────────────────────────────
@@ -94,6 +98,7 @@ function create() {
 function update(time, delta) {
     if (gameOver) return;
     this.enemyManager.update(delta);
+    _scene.registry.set('enemies', this.enemyManager.enemies.length); // doing this every loop is a bit unnecessary
 }
 
 // ─── Boot (last file loaded fires this) ──────────────────────────────────────

@@ -30,7 +30,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
      * @param {{ col:number, row:number }} target – initial attack target cell
      */
     constructor(scene, col, row, path, target) {
-        super(scene, 'Enemy');
+        super(scene, 'enemy');
 
         // ── Grid position (fractional during movement) ────────────────────
         this.gridX = col;
@@ -51,6 +51,8 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.attacking = false;
         this.attackTimer = 0;
 
+        this.health = 30;
+
         // ── Graphics (placeholder — swap for Sprite later) ────────────────
         this._gfx = scene.add.graphics();
 
@@ -61,8 +63,6 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
         // TEST TEST TEST
         this.hitBoxRadius = TILE * ENEMY_SIZE_RATIO - 10;
-        const hq = structureMap.get(gridKey(10,7));
-        scene.add.bullet(hq, this);
     }
 
     // ── Phaser lifecycle ──────────────────────────────────────────────────────
@@ -70,6 +70,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     /** Called by Phaser every frame before the main scene update. */
     preUpdate(_time, delta) {
         if (!this.active) return;
+        if (this.health <= 0) this.destroy();
 
         const step = ENEMY_SPEED * (delta / 1000);
 
@@ -87,6 +88,11 @@ class Enemy extends Phaser.GameObjects.GameObject {
     }
 
     destroy(fromScene) {
+        console.log('destroyed', 'index:', this.scene.enemyManager.enemies.indexOf(this));
+        const index = this.scene.enemyManager.enemies.indexOf(this);
+        if (index > 1) {
+            this.scene.enemyManager.enemies.splice(index, 1);
+        }
         this._gfx.destroy();
         super.destroy(fromScene);
     }

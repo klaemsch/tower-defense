@@ -35,13 +35,14 @@ class Structure extends Phaser.GameObjects.GameObject {
         gfx.fillStyle(this.color, 1);
         gfx.fillRectShape(rect);
 
-        scene.add.text(this.pixelX, this.pixelY, this.label, {
+        this.labelElement = scene.add.text(this.pixelX, this.pixelY, this.label, {
             fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
         }).setOrigin(0.5);
     }
 
     destroy(fromScene) {
         this._gfx.destroy();
+        this.labelElement.destroy();
         super.destroy(fromScene);
     }
 }

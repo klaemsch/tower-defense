@@ -11,6 +11,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
         this._speed = 400;
         this._color = 0xf1faee;
         this._radius = 4;
+        this._damage = 10;
         this._trail = true;
         this._destroyDistance = 2;
 
@@ -96,6 +97,9 @@ class Bullet extends Phaser.GameObjects.GameObject {
     // ── Arrival ───────────────────────────────────────────────────────────────
 
     _arrive() {
+        console.log('bullet arrived, health:', this._target.health)
+        this._target.health -= this._damage;
+        console.log('bullet arrived, health:', this._target.health)
         this.setActive(false);
         this.destroy();
     }
