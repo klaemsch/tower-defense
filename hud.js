@@ -1,47 +1,32 @@
-function initHUD(scene) {
+class HudScene extends Phaser.Scene {
 
-    scene.registry.set('wood', 0);
+    constructor() {
+        super('hudScene');
+    }
 
-    // HUD wood counter
-    _woodText = scene.add.text(8, 8, 'Wood: 0', {
-        fontSize: '13px',
-        color: '#a8dadc',
-        fontStyle: 'bold',
-        backgroundColor: '#00000066',
-        padding: { x: 6, y: 3 },
-    }).setDepth(10);
+    preload() {
 
-    scene.registry.events.on('changedata-wood', (parent, value) => {
-        _woodText.setText(`Wood: ${value}`);
-    });
+    }
 
-    scene.registry.set('hq-health', 200);
+    create() {
+        this._newHUDText(8, 8, 'wood', 0, 'Wood');
+        this._newHUDText(8, 30, 'hq-health', 200, 'HQ Health');
+        this._newHUDText(8, 52, 'enemies', 0, 'Enemies');
+    }
 
-    // HUD HQ Health counter
-    _hqHealthText = scene.add.text(8, 30, 'HQ Health: 200', {
-        fontSize: '13px',
-        color: '#a8dadc',
-        fontStyle: 'bold',
-        backgroundColor: '#00000066',
-        padding: { x: 6, y: 3 },
-    }).setDepth(10);
+    _newHUDText(x, y, label, initValue, text) {
 
-    scene.registry.events.on('changedata-hq-health', (parent, value) => {
-        _hqHealthText.setText(`HQ Health: ${value}`);
-    });
+        const textElement = this.add.text(x, y, `${text}: ${initValue}`, {
+            fontSize: '13px',
+            color: '#a8dadc',
+            fontStyle: 'bold',
+            backgroundColor: '#00000066',
+            padding: { x: 6, y: 3 },
+        }).setDepth(10);
 
-    scene.registry.set('enemies', 0);
+        this.registry.events.on(`changedata-${label}`, (parent, value) => {
+            textElement.setText(`${text}: ${value}`);
+        });
+    }
 
-    // HUD HQ Health counter
-    _enemiesText = scene.add.text(8, 52, 'Enemies: 0', {
-        fontSize: '13px',
-        color: '#a8dadc',
-        fontStyle: 'bold',
-        backgroundColor: '#00000066',
-        padding: { x: 6, y: 3 },
-    }).setDepth(10);
-
-    scene.registry.events.on('changedata-enemies', (parent, value) => {
-        _enemiesText.setText(`Enemies: ${value}`);
-    });
 }

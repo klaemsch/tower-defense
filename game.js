@@ -78,7 +78,7 @@ const config = {
     width: COLS * TILE,
     height: ROWS * TILE,
     backgroundColor: '#1a1a2e',
-    scene: { preload, create, update }
+    scene: [{ preload, create, update }, HudScene]
 };
 
 // ─── Scene Lifecycle ──────────────────────────────────────────────────────────
@@ -87,12 +87,15 @@ function preload() { }
 function create() {
     _scene = this;
 
+    // launch the HUD
+    this.scene.launch('hudScene');
+
     createWorld(this);       // world.js
     this.woodShops = new WoodShopManager(this);
     this.enemyManager = new EnemyManager(this);
 
     // resources
-    initHUD(this)
+    //initHUD(this)
 }
 
 function update(time, delta) {
