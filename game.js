@@ -45,7 +45,6 @@ class GameScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.gameOver) return;
-        this.enemyManager.update(delta);
         this.registry.set('enemies', this.enemyManager.enemies.length); // doing this every loop is a bit unnecessary
     }
 

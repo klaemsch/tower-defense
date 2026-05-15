@@ -1,4 +1,6 @@
 class Structure extends Phaser.GameObjects.GameObject {
+    #gfx
+    #draw
 
     constructor(scene, col, row, type, color, label, health = 200) {
         super(scene, type);
@@ -18,22 +20,21 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.attackable = true;
 
         // Internal Graphics object that does the actual drawing
-        this._gfx = scene.add.graphics();
+        this.gfx = scene.add.graphics();
 
         // Draw once at spawn position
-        this._draw(scene);
+        this.draw(scene);
 
         // Register in the shared structure map (pass `this` as the owner ref)
         placeInMap(col, row, this);
     }
 
-    _draw(scene) {
-        const gfx = this._gfx;
-        gfx.clear();
+    draw(scene) {
+        this.gfx.clear();
 
         const rect = new Phaser.Geom.Rectangle(this.pixelX - this.size / 2, this.pixelY - this.size / 2, this.size, this.size);
-        gfx.fillStyle(this.color, 1);
-        gfx.fillRectShape(rect);
+        this.gfx.fillStyle(this.color, 1);
+        this.gfx.fillRectShape(rect);
 
         this.labelElement = scene.add.text(this.pixelX, this.pixelY, this.label, {
             fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
@@ -41,7 +42,7 @@ class Structure extends Phaser.GameObjects.GameObject {
     }
 
     destroy(fromScene) {
-        this._gfx.destroy();
+        this.gfx.destroy();
         this.labelElement.destroy();
         super.destroy(fromScene);
     }

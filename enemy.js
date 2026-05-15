@@ -56,6 +56,10 @@ class Enemy extends Phaser.GameObjects.GameObject {
         // ── Graphics (placeholder — swap for Sprite later) ────────────────
         this._gfx = scene.add.graphics();
 
+        // TEST TEST TEST
+        this._pathGfx = scene.add.graphics().setDepth(1);
+        this._drawPath();
+
         // Register with the scene so preUpdate() fires every frame
         scene.sys.updateList.add(this);
 
@@ -88,11 +92,14 @@ class Enemy extends Phaser.GameObjects.GameObject {
     }
 
     destroy(fromScene) {
+        // remove enemy from enemy manager list
         //console.log('destroyed', 'index:', this.scene.enemyManager.enemies.indexOf(this));
         const index = this.scene.enemyManager.enemies.indexOf(this);
-        if (index > 1) {
+        if (index > -1) {
             this.scene.enemyManager.enemies.splice(index, 1);
         }
+        // destroy
+        this._pathGfx.destroy();
         this._gfx.destroy();
         super.destroy(fromScene);
     }
@@ -120,6 +127,24 @@ class Enemy extends Phaser.GameObjects.GameObject {
             px + s, py,
             px, py + s,
         );
+    }
+
+    // TEST TEST TEST
+    _drawPath() {
+        this._pathGfx.clear();
+        if (!this.path || this.path.length < 2) return;
+
+        this._pathGfx.lineStyle(1, 0xe63946, 0.3);
+        this._pathGfx.beginPath();
+
+        const start = gridToWorld(Math.round(this.gridX), Math.round(this.gridY));
+        this._pathGfx.moveTo(start.x, start.y);
+
+        this.path.slice(this.pathIdx).forEach(({ col, row }) => {
+            const { x, y } = gridToWorld(col, row);
+            this._pathGfx.lineTo(x, y);
+        });
+        this._pathGfx.strokePath();
     }
 
     // ── Movement ──────────────────────────────────────────────────────────────
@@ -165,7 +190,10 @@ class Enemy extends Phaser.GameObjects.GameObject {
                 Math.round(this.gridX), Math.round(this.gridY),
                 this.targetCol, this.targetRow,
             );
-            if (newPath) { this.path = newPath; this.pathIdx = 0; }
+            if (newPath) {
+                this.path = newPath; this.pathIdx = 0;
+                this._drawPath(); // TEST TEST TEST
+            }
         } else {
             this.gridX += (dx / dist) * step;
             this.gridY += (dy / dist) * step;
@@ -225,6 +253,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.pathIdx = 0;
         this.attacking = false;
         this.attackTimer = 0;
+        this._drawPath();
     }
 
     // ── Target selection ──────────────────────────────────────────────────────
@@ -336,18 +365,6 @@ class EnemyManager {
             this.enemies.push(e);
             return;
         }
-    }
-
-    // ── Update ────────────────────────────────────────────────────────────────
-
-    /**
-     * Call from the scene's update().  Prunes dead instances.
-     * (Individual Enemy.preUpdate() is wired automatically by updateList.)
-     * @param {number} _delta – unused; kept for symmetry with old API
-     */
-    update(_delta) {
-        // Prune destroyed instances from our reference list
-        this.enemies = this.enemies.filter(e => e.active);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

@@ -2,10 +2,12 @@ class Tower extends Structure {
     #findNearestEnemy
 
     constructor(scene, col, row) {
-        super(scene, col, row, 'tower', 0xFF0000, 'T');
+        super(scene, col, row, 'tower', 0xFF0000, 'T', 5);
 
         this.fireRateMs = 1000;
         this.lastFired = 0;
+
+        this.radius = 5 * TILE;
 
         // Register with the scene so preUpdate() fires every frame
         scene.sys.updateList.add(this);
@@ -27,7 +29,7 @@ class Tower extends Structure {
             const dx = entry.pixelX - this.pixelX;
             const dy = entry.pixelY - this.pixelY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < closestDistance) {
+            if (dist <= this.radius && dist < closestDistance) {
                 closestDistance = dist;
                 closestEnemy = entry;
             }
