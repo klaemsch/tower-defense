@@ -1,9 +1,10 @@
 // ─── Shared Constants ─────────────────────────────────────────────────────────
-const TILE = 40;
-const COLS = 20;  // 800 / 40
-const ROWS = 15;  // 600 / 40
+const TILE = config.world.tileSize;
+const COLS = config.world.numCols;
+const ROWS = config.world.numRows;
 
 // ─── Shared State ─────────────────────────────────────────────────────────────
+
 // Central lookup: "col,row" -> gameObject
 const structureMap = new Map();
 
@@ -70,13 +71,13 @@ class GameScene extends Phaser.Scene {
             structure.destroy(true);
             structureMap.delete(key);
             // check if destroyed structure is HQ
-            if (structure.type === 'HQ') this._triggerGameOver();
+            if (structure.type === 'HQ') this.#triggerGameOver();
             return true;
         }
         return false;
     }
 
-    _triggerGameOver() {
+    #triggerGameOver() {
         console.log('game over triggered');
         this.gameOver = true;
         const cx = (COLS * TILE) / 2;
@@ -91,25 +92,18 @@ class GameScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(51);
         this.time.paused = true;
 
-        // set structures and enemies to inactive to stop animations
+        // set structures and enemies to inactive to stop animations -> TODO: maybe game.pause() can do this more elegantly
         this.enemyManager.enemies.forEach((enemy) => enemy.active = false);
         structureMap.forEach((structure) => structure.active = false);
     }
 
 }
 
-
-// ─── Phaser Config ────────────────────────────────────────────────────────────
-const config = {
-    type: Phaser.AUTO,
-    width: COLS * TILE,
-    height: ROWS * TILE,
-    backgroundColor: '#1a1a2e',
-    scene: [GameScene, HudScene]
-};
+// add scenes to config -> TODO: maybe there is a better way to do this
+phaserConfig.scene = [GameScene, HudScene]
 
 // ─── Boot (last file loaded fires this) ──────────────────────────────────────
 // Called from the bottom of the last script in load order.
 function startGame() {
-    new Phaser.Game(config);
+    new Phaser.Game(phaserConfig);
 }

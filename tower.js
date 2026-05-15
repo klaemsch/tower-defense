@@ -1,27 +1,27 @@
 class Tower extends Structure {
-    #findNearestEnemy
+    #lastFired;
 
     constructor(scene, col, row) {
-        super(scene, col, row, 'tower', 0xFF0000, 'T', 5);
+        super(scene, col, row, 'tower', config.tower.color, config.tower.label, config.tower.health);  // call parent "Structure"
 
-        this.fireRateMs = 1000;
-        this.lastFired = 0;
+        this.fireRateMs = config.tower.fireRateMs;
+        this.#lastFired = 0;
 
-        this.radius = 5 * TILE;
+        this.radius = config.tower.radiusInTiles * config.world.tileSize;
 
         // Register with the scene so preUpdate() fires every frame
         scene.sys.updateList.add(this);
     }
 
     preUpdate(time, delta) {
-        if (time > this.lastFired + this.fireRateMs) {
-            this.lastFired = time;
-            const target = this.findNearestEnemy();
-            if (target) this.scene.add.bullet(this, target);
+        if (time > this.#lastFired + this.fireRateMs) {
+            this.#lastFired = time;
+            const target = this.#findClosestEnemy();
+            if (target) this.scene.add.bullet(this, target, config.tower.bulletSpeed, config.tower.bulletDamage);
         }
     }
 
-    findNearestEnemy() {
+    #findClosestEnemy() {
         var closestEnemy = null;
         var closestDistance = Infinity;
         this.scene.enemyManager.enemies.forEach((entry) => {

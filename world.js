@@ -1,5 +1,5 @@
 // ─── World Config ─────────────────────────────────────────────────────────────
-const TREE_COUNT = 15;
+const TREE_COUNT = config.world.generation.numTrees;
 
 // ─── createWorld ─────────────────────────────────────────────────────────────
 // Called from game.js create(). Draws the grid, places HQ and trees.
@@ -21,7 +21,7 @@ function drawGrid(scene) {
 function placeHQ(scene) {
     const col = Math.floor(COLS / 2);
     const row = Math.floor(ROWS / 2);
-    scene.add.structure(col, row, 'HQ', 0x888888, 'HQ');
+    scene.add.structure(col, row, 'HQ', config.hq.color, config.hq.label, config.hq.health);
 }
 
 function placeTrees(scene) {

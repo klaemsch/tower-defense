@@ -1,6 +1,5 @@
 class Tree extends Phaser.GameObjects.GameObject {
-    #draw
-    #graphics
+    #gfx;
 
     constructor(scene, col, row) {
         super(scene, 'tree');   // type string used by Phaser internally
@@ -18,26 +17,26 @@ class Tree extends Phaser.GameObjects.GameObject {
         this.attackable = false;
 
         // Internal Graphics object that does the actual drawing
-        this.graphics = scene.add.graphics();
+        this.#gfx = scene.add.graphics();
 
         // Draw once at spawn position
-        this.draw();
+        this.#draw();
 
         // Register in the shared structure map (pass `this` as the owner ref)
         placeInMap(col, row, this);
     }
 
-    draw() {
-        this.graphics.clear();
+    #draw() {
+        this.#gfx.clear();
 
         // Main filled triangle
         var triangle = Phaser.Geom.Triangle.BuildEquilateral(this.pixelX, this.pixelY - this.size / 2 + 3, this.size);
-        this.graphics.fillStyle(this.color, 1);
-        this.graphics.fillTriangleShape(triangle);
+        this.#gfx.fillStyle(this.color, 1);
+        this.#gfx.fillTriangleShape(triangle);
     }
 
     destroy(fromScene) {
-        this.graphics.destroy();
+        this.#gfx.destroy();
         super.destroy(fromScene);
     }
 }

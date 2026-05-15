@@ -1,9 +1,7 @@
 class WoodShop extends Phaser.GameObjects.GameObject {
-    #createVisuals
     #lastHarvest
-    #harvestEveryMs
+    #harvestRateMs
     #visuals
-    #countTreesInRadius
 
     constructor(scene, col, row) {
         super(scene, 'woodShop');
@@ -15,16 +13,16 @@ class WoodShop extends Phaser.GameObjects.GameObject {
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
-        this.radius = 1; // CELLS
+        this.radius = config.woodShop.radiusInTiles;
 
-        this.health = 60;
+        this.health = config.woodShop.health;
         this.attackable = true;
 
-        this.lastHarvest = 0;
-        this.harvestEveryMs = 1000;
+        this.#lastHarvest = 0;
+        this.#harvestRateMs = config.woodShop.harvestRateMs;
 
         // Build all child display objects and keep refs for cleanup
-        this.visuals = this.createVisuals(scene, pos);
+        this.#visuals = this.#createVisuals(scene, pos);
 
         // Register in the shared structure map (pass `this` as the owner ref)
         placeInMap(col, row, this);
@@ -33,7 +31,7 @@ class WoodShop extends Phaser.GameObjects.GameObject {
         scene.sys.updateList.add(this);
     }
 
-    createVisuals(scene, pos) {
+    #createVisuals(scene, pos) {
 
         const icon = scene.add.text(pos.x, pos.y, '🏪', {
             fontSize: '16px',
@@ -55,7 +53,7 @@ class WoodShop extends Phaser.GameObjects.GameObject {
     // ── Public API ────────────────────────────────────────────────────────────
 
     // returns the number of trees in radius
-    countTreesInRadius() {
+    #countTreesInRadius() {
         let treeCount = 0;
         structureMap.forEach((entry) => {
             if (entry.type !== 'tree') return;
@@ -73,17 +71,17 @@ class WoodShop extends Phaser.GameObjects.GameObject {
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     preUpdate(time, delta) {
-        if (time > this.lastHarvest + this.harvestEveryMs) {
-            this.lastHarvest = time;
-            const treeCount = this.countTreesInRadius();
+        if (time > this.#lastHarvest + this.#harvestRateMs) {
+            this.#lastHarvest = time;
+            const treeCount = this.#countTreesInRadius();
             this.scene.registry.inc('wood', treeCount);
         }
 
     }
 
     destroy(fromScene) {
-        this.visuals.icon.destroy();
-        this.visuals.radius.destroy();
+        this.#visuals.icon.destroy();
+        this.#visuals.radius.destroy();
         super.destroy(fromScene);
     }
 }
