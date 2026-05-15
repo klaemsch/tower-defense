@@ -1,5 +1,6 @@
 class HudScene extends Phaser.Scene {
     #activeButton;
+    #placer;
 
     constructor() {
         super('hudScene');
@@ -9,6 +10,7 @@ class HudScene extends Phaser.Scene {
     preload() { }
 
     create() {
+        this.#placer = this.registry.get('placer');
 
         // ── Resources ──────────────────────────────────────────────────────
         this.#newHUDText(8, 8, 'wood', 0, 'Wood');
@@ -21,7 +23,7 @@ class HudScene extends Phaser.Scene {
 
         // Listen for deselect from placer (e.g. after placing or pressing Escape)
         // so the button highlight clears automatically
-        this.registry.events.on('changedata-activePlacerType', (parent, value) => {
+        this.registry.events.on('changedata-placer-activeStructure', (parent, value) => {
             if (value === null) this.#clearButtonStates();
         });
     }
@@ -54,7 +56,7 @@ class HudScene extends Phaser.Scene {
         const BORDER_ACTIVE = 0xa8dadc;
 
         // Background rectangle (acts as the hit area)
-        const bg = this.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
+        const button = this.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
             .setOrigin(0, 0)
             .setDepth(10)
             .setInteractive({ useHandCursor: true });
@@ -76,53 +78,49 @@ class HudScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(12);
 
         // ── Interaction ───────────────────────────────────────────────────
-        bg.on('pointerover', () => {
-            if (this.activeButton !== bg) {
-                bg.setFillStyle(0x1a3a5c);
+        button.on('pointerover', () => {
+            if (this.activeButton !== button) {
+                button.setFillStyle(0x1a3a5c);
             }
         });
 
-        bg.on('pointerout', () => {
-            if (this.activeButton !== bg) {
-                bg.setFillStyle(COLOR_IDLE);
+        button.on('pointerout', () => {
+            if (this.activeButton !== button) {
+                button.setFillStyle(COLOR_IDLE);
                 drawBorder(false);
             }
         });
 
-        bg.on('pointerdown', () => {
-            const placer = this.registry.get('placer');
+        button.on('pointerdown', () => {
 
-            if (this.activeButton === bg) {
+            if (this.activeButton === button) {
                 // Clicking the active button deselects
-                placer.deselect();
-                this.#setButtonState(bg, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
+                this.#placer.deselect();
+                this.#setButtonState(button, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
                 this.activeButton = null;
             } else {
                 // Deactivate previously active button
                 if (this.activeButton) {
                     this.activeButton.emit('_deactivate');
                 }
-                placer.select(structureType);
-                this.#setButtonState(bg, border, text, true, COLOR_ACTIVE, BORDER_ACTIVE, drawBorder);
-                this.activeButton = bg;
+                this.#placer.select(structureType);
+                this.#setButtonState(button, border, text, true, COLOR_ACTIVE, BORDER_ACTIVE, drawBorder);
+                this.activeButton = button;
             }
-
-            // Sync to registry so other systems can react
-            this.registry.set('activePlacerType', placer._activeType);
         });
 
         // Internal deactivate event so sibling buttons can reset each other
-        bg.on('_deactivate', () => {
-            this.#setButtonState(bg, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
+        button.on('_deactivate', () => {
+            this.#setButtonState(button, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
         });
 
-        return { bg, border, text };
+        return { button, border, text };
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    #setButtonState(bg, border, text, active, fillColor, borderColor, drawBorder) {
-        bg.setFillStyle(fillColor);
+    #setButtonState(button, border, text, active, fillColor, borderColor, drawBorder) {
+        button.setFillStyle(fillColor);
         drawBorder(active);
         text.setColor(active ? '#ffffff' : '#a8dadc');
     }

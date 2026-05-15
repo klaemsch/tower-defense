@@ -13,9 +13,15 @@ class Placer {
         this.#hoverGraphics = scene.add.graphics().setDepth(5);  // hover grid
         this.#activeStructure = null;
 
-        // listeners
+        // mouse listeners
         scene.input.on('pointermove', this.#onPointerMove, this);
         scene.input.on('pointerdown', this.#onPointerDown, this);
+
+        // keyboard listeners
+        const escKey = scene.input.keyboard.addKey("ESC");
+        escKey.on("down", (event)  => {
+           this.deselect();
+        });
     }
 
     // ── Public ────────────────────────────────────────────────────────────────
@@ -23,11 +29,13 @@ class Placer {
     // selects a type of structure to be placed as string, e.g. 'tower'
     select(structureType) {
         this.#activeStructure = structureType;
+        this.#scene.registry.set('placer-activeStructure', structureType);
     }
 
     // deselect type of structure
     deselect() {
         this.#activeStructure = null;
+        this.#scene.registry.set('placer-activeStructure', null);
     }
 
     // try to place the currently selected structure type
