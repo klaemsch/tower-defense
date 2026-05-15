@@ -1,33 +1,33 @@
-// ─── World Config ─────────────────────────────────────────────────────────────
-const TREE_COUNT = config.world.generation.numTrees;
-
 // ─── createWorld ─────────────────────────────────────────────────────────────
 // Called from game.js create(). Draws the grid, places HQ and trees.
 function createWorld(scene) {
     drawGrid(scene);
-    placeHQ(scene);
+    scene.add.hq();
     placeTrees(scene);
 }
 
 function drawGrid(scene) {
-    const g = scene.add.graphics();
-    g.lineStyle(1, 0xffffff, 0.07);
-    for (let c = 0; c <= COLS; c++)
-        g.lineBetween(c * TILE, 0, c * TILE, ROWS * TILE);
-    for (let r = 0; r <= ROWS; r++)
-        g.lineBetween(0, r * TILE, COLS * TILE, r * TILE);
-}
+    const tileSize = config.world.tileSize;
+    const numRows = config.world.numRows;
+    const numCols = config.world.numCols;
 
-function placeHQ(scene) {
-    scene.add.hq();
+    const gfx = scene.add.graphics();
+    gfx.lineStyle(1, 0xffffff, 0.07);
+    for (let c = 0; c <= numCols; c++)
+        gfx.lineBetween(c * tileSize, 0, c * tileSize, numRows * tileSize);
+    for (let r = 0; r <= numRows; r++)
+        gfx.lineBetween(0, r * tileSize, numCols * tileSize, r * tileSize);
 }
 
 function placeTrees(scene) {
+    const numRows = config.world.numRows;
+    const numCols = config.world.numCols;
+
     let placed = 0, attempts = 0;
-    while (placed < TREE_COUNT && attempts < 500) {
+    while (placed < config.world.generation.numTrees && attempts < 500) {
         attempts++;
-        const col = Phaser.Math.Between(0, COLS - 1);
-        const row = Phaser.Math.Between(0, ROWS - 1);
+        const col = Phaser.Math.Between(0, numCols - 1);
+        const row = Phaser.Math.Between(0, numRows - 1);
         if (isCellOccupied(col, row)) continue;
 
         scene.add.tree(col, row);
