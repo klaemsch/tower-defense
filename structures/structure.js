@@ -67,12 +67,17 @@ class Structure extends Phaser.GameObjects.GameObject {
         super.destroy(fromScene);
     }
 
+    // applies the damage (amount) to this structure
+    // returns true if destroyed (and destroys itself)
+    // returns false if not destroyed but damaged
     doDamage(amount) {
         this.#health -= amount;
         if (this.#health <= 0) {
             this.destroy();
+            return true;
         } else {
             this.#healthElement.text = this.#health;
+            return false;
         }
     }
 }

@@ -1,8 +1,8 @@
 class HQ extends Structure {
 
     constructor(scene) {
-        const col = Math.floor(COLS / 2);
-        const row = Math.floor(ROWS / 2);
+        const col = Math.floor(config.world.numCols / 2);
+        const row = Math.floor(config.world.numRows / 2);
         super(scene, col, row, 'HQ', config.hq.color, config.hq.label, config.hq.health);  // call parent "Structure"
 
     }

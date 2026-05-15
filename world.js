@@ -7,9 +7,7 @@ function createWorld(scene) {
 }
 
 function drawGrid(scene) {
-    const tileSize = config.world.tileSize;
-    const numRows = config.world.numRows;
-    const numCols = config.world.numCols;
+    const { tileSize, numCols, numRows } = config.world;
 
     const gfx = scene.add.graphics();
     gfx.lineStyle(1, 0xffffff, 0.07);
@@ -20,8 +18,7 @@ function drawGrid(scene) {
 }
 
 function placeTrees(scene) {
-    const numRows = config.world.numRows;
-    const numCols = config.world.numCols;
+    const { numCols, numRows } = config.world;
 
     let placed = 0, attempts = 0;
     while (placed < config.world.generation.numTrees && attempts < 500) {

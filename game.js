@@ -1,7 +1,6 @@
 // ─── Shared Constants ─────────────────────────────────────────────────────────
-const TILE = config.world.tileSize;
-const COLS = config.world.numCols;
-const ROWS = config.world.numRows;
+// TODO: remove this
+const { tileSize, numCols, numRows} = config.world;
 
 // ─── Shared State ─────────────────────────────────────────────────────────────
 
@@ -10,10 +9,10 @@ const structureMap = new Map();
 
 // ─── Grid Helpers ─────────────────────────────────────────────────────────────
 function worldToGrid(x, y) {
-    return { col: Math.floor(x / TILE), row: Math.floor(y / TILE) };
+    return { col: Math.floor(x / tileSize), row: Math.floor(y / tileSize) };
 }
 function gridToWorld(col, row) {
-    return { x: col * TILE + TILE / 2, y: row * TILE + TILE / 2 };
+    return { x: col * tileSize + tileSize / 2, y: row * tileSize + tileSize / 2 };
 }
 function gridKey(col, row) { return `${col},${row}`; }
 function isCellOccupied(col, row) { return structureMap.has(gridKey(col, row)); }
@@ -57,15 +56,15 @@ class GameScene extends Phaser.Scene {
         if (!structure) return true;
 
         // damage structure
-        structure.doDamage(amount);
+        const destroyed = structure.doDamage(amount);
     }
 
     triggerGameOver() {
         console.log('game over triggered');
         this.gameOver = true;
-        const cx = (COLS * TILE) / 2;
-        const cy = (ROWS * TILE) / 2;
-        this.add.rectangle(cx, cy, COLS * TILE, ROWS * TILE, 0x000000, 0.65).setDepth(50);
+        const cx = (numCols * tileSize) / 2;
+        const cy = (numRows * tileSize) / 2;
+        this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(50);
         this.add.text(cx, cy - 30, 'GAME OVER', {
             fontSize: '48px', color: '#e63946', fontStyle: 'bold',
             stroke: '#000000', strokeThickness: 6,
