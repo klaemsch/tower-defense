@@ -1,75 +1,57 @@
+// ─── Config shortcuts ─────────────────────────────────────────────────────────
 const ENEMY_SPAWN_RATE = config.enemy.spawnRate;
-const ENEMY_DAMAGE = config.enemy.damage;
 const ENEMY_ATTACK_RATE = config.enemy.attackRate;
 
 class Enemy extends Phaser.GameObjects.GameObject {
-    #health;
-    #target;
     #speed;
+    #health;
+    #color;
 
     #path;
     #pathIdx;
+    #target;
+
     #attacking;
     #attackTimer;
 
     #gfx;
     #pathGfx;
-    #color;
-    
-    /**
-     * @param {Phaser.Scene} scene
-     * @param {number} col   – starting grid column
-     * @param {number} row   – starting grid row
-     * @param {number[]} path – BFS waypoint array [{col,row},…]
-     * @param {{ col:number, row:number }} target – initial attack target cell
-     */
+
     constructor(scene, col, row, path, target) {
         super(scene, 'enemy');
 
-        // ── Grid position (fractional during movement) ────────────────────
         this.gridX = col;
         this.gridY = row;
 
-        // ── Pixel position (derived each frame) ───────────────────────────
         const pos = gridToWorld(col, row);
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
-        // ── Properties ────────────────────────────────────────────────────
+        this.hitBoxRadius = config.world.tileSize * config.enemy.sizeRatio * 0.5;
+
         this.#speed = config.enemy.speed;
         this.#health = config.enemy.health;
+        this.#color = config.enemy.color;
 
-        // ── Pathfinding state ─────────────────────────────────────────────
         this.#path = path;
         this.#pathIdx = 0;
         this.#target = target;
 
-        // ── Attack state ──────────────────────────────────────────────────
         this.#attacking = false;
         this.#attackTimer = 0;
 
-        // ── Graphics  ─────────────────────────────────────────────────────
         this.#gfx = scene.add.graphics();
-        this.#color = config.enemy.color;
-
-        // TEST TEST TEST
         this.#pathGfx = scene.add.graphics().setDepth(1);
-        this.#drawPath();
 
-        // Register with the scene so preUpdate() fires every frame
         scene.sys.updateList.add(this);
 
+        this.#drawPath();
         this.#draw();
     }
 
     // ── Phaser lifecycle ──────────────────────────────────────────────────────
 
-    /** Called by Phaser every frame before the main scene update. */
-    preUpdate(time, delta) {
-        //if (!this.active) return;
-        //if (this.#health <= 0) this.destroy();
-
-        const tileSize = config.world.tileSize;
+    preUpdate(_time, delta) {
         const step = this.#speed * (delta / 1000);
 
         if (this.#attacking) {
@@ -78,133 +60,66 @@ class Enemy extends Phaser.GameObjects.GameObject {
             this.#tickMove(step);
         }
 
-        // Sync pixel position from grid position
+        const tileSize = config.world.tileSize;
         this.pixelX = this.gridX * tileSize + tileSize / 2;
         this.pixelY = this.gridY * tileSize + tileSize / 2;
 
         this.#draw();
     }
 
-    // applies the damage (amount) to this enemy
-    // returns true if destroyed (and destroys itself)
-    // returns false if not destroyed but damaged
+    // ── Public API ────────────────────────────────────────────────────────────
+
+    // Apply damage. Destroys self if health reaches zero. Returns true if killed
     doDamage(amount) {
         this.#health -= amount;
         if (this.#health <= 0) {
             this.destroy();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     destroy(fromScene) {
-        console.log('enemy at', this.gridX, this.gridY, 'was destroyed')
-        this.active = false;
-
-        // remove enemy from enemy manager list
-        //console.log('destroyed', 'index:', this.scene.enemyManager.enemies.indexOf(this));
         const index = this.scene.enemyManager.enemies.indexOf(this);
-        if (index > -1) {
-            this.scene.enemyManager.enemies.splice(index, 1);
-        }
+        if (index > -1) this.scene.enemyManager.enemies.splice(index, 1);
 
-        // destroy
         this.#pathGfx.destroy();
         this.#gfx.destroy();
         super.destroy(fromScene);
     }
 
-    // ── Drawing ───────────────────────────────────────────────────────────────
-
-    /** Diamond shape (two triangles). Swap this body for a Sprite later. */
-    #draw() {
-        const gfx = this.#gfx;
-        gfx.clear();
-
-        const s = (config.world.tileSize * config.enemy.sizeRatio) / 2;
-        const { pixelX: px, pixelY: py } = this;
-
-        gfx.fillStyle(this.#attacking ? 0xff8800 : this.#color, 1);
-        // Top half
-        gfx.fillTriangle(
-            px, py - s,
-            px - s, py,
-            px + s, py,
-        );
-        // Bottom half
-        gfx.fillTriangle(
-            px - s, py,
-            px + s, py,
-            px, py + s,
-        );
-    }
-
-    // TEST TEST TEST
-    #drawPath() {
-        this.#pathGfx.clear();
-        if (!this.#path || this.#path.length < 2) return;
-
-        this.#pathGfx.lineStyle(1, 0xe63946, 0.3);
-        this.#pathGfx.beginPath();
-
-        const start = gridToWorld(Math.round(this.gridX), Math.round(this.gridY));
-        this.#pathGfx.moveTo(start.x, start.y);
-
-        this.#path.slice(this.#pathIdx).forEach(({ col, row }) => {
-            const { x, y } = gridToWorld(col, row);
-            this.#pathGfx.lineTo(x, y);
-        });
-        this.#pathGfx.strokePath();
-    }
-
     // ── Movement ──────────────────────────────────────────────────────────────
 
     #tickMove(step) {
-        // Validate current target still exists
-        if (!structureMap.has(gridKey(this.#target.col, this.#target.row))) {
+        if (!this.#targetIsAlive()) {
             this.#retarget();
             return;
         }
 
-        // Path exhausted → switch to attack mode
+        // Path exhausted → reached attack position
         if (this.#pathIdx >= this.#path.length) {
-            const best = this.#pickTarget(Math.round(this.gridX), Math.round(this.gridY));
-            if (best && (best.col !== this.#target.col || best.row !== this.#target.row)) {
-                this.#retarget();
-                return;
-            }
             this.#attacking = true;
             this.#attackTimer = 0;
             return;
         }
 
+        // get next waypoint in path
         const waypoint = this.#path[this.#pathIdx];
         const dx = waypoint.col - this.gridX;
         const dy = waypoint.row - this.gridY;
+        // distance to next waypoint
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist <= step) {
-            // Snap to waypoint
+            // step would overshoot next waypoint
+            // -> snap to next waypoint, advance, then re-evaluate
             this.gridX = waypoint.col;
             this.gridY = waypoint.row;
             this.#pathIdx++;
-
-            // Re-evaluate target on every waypoint snap
-            const best = this.#pickTarget(Math.round(this.gridX), Math.round(this.gridY));
-            if (best && (best.col !== this.#target.col || best.row !== this.#target.row)) {
-                this.#target = best;
-            }
-
-            const newPath = Enemy.findPathToAdjacent(
-                Math.round(this.gridX), Math.round(this.gridY),
-                this.#target.col, this.#target.row,
-            );
-            if (newPath) {
-                this.#path = newPath; this.#pathIdx = 0;
-                this.#drawPath(); // TEST TEST TEST
-            }
+            this.#recalcPath();
+            // TODO: this is a bit weird, Claude increases the pathIdx and then recalculates the path which resets the pathIdx
         } else {
+            // step is ok -> do it
             this.gridX += (dx / dist) * step;
             this.gridY += (dy / dist) * step;
         }
@@ -213,16 +128,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     // ── Attack ────────────────────────────────────────────────────────────────
 
     #tickAttack(delta) {
-        // Target destroyed mid-attack
-        if (!structureMap.has(gridKey(this.#target.col, this.#target.row))) {
-            this.#attacking = false;
-            this.#retarget();
-            return;
-        }
-
-        // Better target appeared nearby
-        const best = this.#pickTarget(Math.round(this.gridX), Math.round(this.gridY));
-        if (best && (best.col !== this.#target.col || best.row !== this.#target.row)) {
+        if (!this.#targetIsAlive()) {
             this.#attacking = false;
             this.#retarget();
             return;
@@ -231,7 +137,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#attackTimer += delta;
         if (this.#attackTimer >= ENEMY_ATTACK_RATE) {
             this.#attackTimer -= ENEMY_ATTACK_RATE;
-            const destroyed = this.scene._damageStructure(this.#target.col, this.#target.row, ENEMY_DAMAGE);
+            const destroyed = this.#target.doDamage(config.enemy.damage);
             if (destroyed) {
                 this.#attacking = false;
                 this.#retarget();
@@ -239,25 +145,39 @@ class Enemy extends Phaser.GameObjects.GameObject {
         }
     }
 
-    // ── Retarget ──────────────────────────────────────────────────────────────
+    // ── Pathfinding ───────────────────────────────────────────────────────────
 
-    #retarget() {
-        const newTarget = this.#pickTarget(Math.round(this.gridX), Math.round(this.gridY));
-        if (!newTarget) {
-            this.active = false;
-            return;
-        }
+    /**
+     * Re-evaluate best target and repath from current position.
+     * Called on every waypoint snap so enemies react to newly placed buildings.
+     */
+    #recalcPath() {
+        const best = this.#nearestTarget(Math.round(this.gridX), Math.round(this.gridY));
+        if (best && best !== this.#target) this.#target = best;
 
-        const newPath = Enemy.findPathToAdjacent(
+        const newPath = Enemy.#findPath(
             Math.round(this.gridX), Math.round(this.gridY),
-            newTarget.col, newTarget.row,
+            this.#target.col, this.#target.row,
         );
-        if (!newPath) {
-            this.active = false;
-            return;
+        if (newPath) {
+            this.#path = newPath;
+            this.#pathIdx = 0;
+            this.#drawPath();
         }
+    }
 
-        this.#target = newTarget;
+    /** Pick a new target and path from scratch. Destroys self if none found. */
+    #retarget() {
+        const best = this.#nearestTarget(Math.round(this.gridX), Math.round(this.gridY));
+        if (!best) { this.destroy(); return; }
+
+        const newPath = Enemy.#findPath(
+            Math.round(this.gridX), Math.round(this.gridY),
+            best.col, best.row,
+        );
+        if (!newPath) { this.destroy(); return; }
+
+        this.#target = best;
         this.#path = newPath;
         this.#pathIdx = 0;
         this.#attacking = false;
@@ -267,28 +187,71 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     // ── Target selection ──────────────────────────────────────────────────────
 
-    #pickTarget(fromCol, fromRow) {
-        let best = null, bestDist = Infinity;
+    /**
+     * Returns the nearest attackable structure GameObject to (fromCol, fromRow).
+     * Single unified function — used by both #recalcPath and #retarget.
+     */
+    #nearestTarget(fromCol, fromRow) {
+        let best = null;
+        let bestDist = Infinity;
+
         structureMap.forEach((entry) => {
-            if (entry.type === 'tree') return;
+            if (!entry.attackable) return;
             const d = Math.sqrt((entry.col - fromCol) ** 2 + (entry.row - fromRow) ** 2);
             if (d < bestDist) { bestDist = d; best = entry; }
         });
+
         return best;
     }
 
-    // ── Static helpers ────────────────────────────────────────────────────────
+    #targetIsAlive() {
+        return this.#target && structureMap.has(gridKey(this.#target.col, this.#target.row));
+    }
 
-    /** BFS that finds a walkable cell adjacent to the goal. */
-    static findPathToAdjacent(startCol, startRow, goalCol, goalRow) {
-        const adjacentGoals = Enemy._adjacentCells(goalCol, goalRow).filter(({ col, row }) => {
+    // ── Drawing ───────────────────────────────────────────────────────────────
+
+    #draw() {
+        const gfx = this.#gfx;
+        gfx.clear();
+
+        const s = (config.world.tileSize * config.enemy.sizeRatio) / 2;
+        const px = this.pixelX;
+        const py = this.pixelY;
+
+        gfx.fillStyle(this.#attacking ? 0xff8800 : this.#color, 1);
+        gfx.fillTriangle(px, py - s, px - s, py, px + s, py); // top half
+        gfx.fillTriangle(px - s, py, px + s, py, px, py + s); // bottom half
+    }
+
+    #drawPath() {
+        this.#pathGfx.clear();
+        if (!this.#path || this.#path.length < 2) return;
+
+        this.#pathGfx.lineStyle(1, this.#color, 0.3);
+        this.#pathGfx.beginPath();
+
+        const start = gridToWorld(Math.round(this.gridX), Math.round(this.gridY));
+        this.#pathGfx.moveTo(start.x, start.y);
+
+        this.#path.slice(this.#pathIdx).forEach(({ col, row }) => {
+            const { x, y } = gridToWorld(col, row);
+            this.#pathGfx.lineTo(x, y);
+        });
+
+        this.#pathGfx.strokePath();
+    }
+
+    // ── Static pathfinding ────────────────────────────────────────────────────
+
+    static #findPath(startCol, startRow, goalCol, goalRow) {
+        const walkableAdjacent = Enemy.#adjacentCells(goalCol, goalRow).filter(({ col, row }) => {
             if (col < 0 || col >= numCols || row < 0 || row >= numRows) return false;
             const entry = structureMap.get(gridKey(col, row));
             return !entry || (col === startCol && row === startRow);
         });
-        if (adjacentGoals.length === 0) return null;
+        if (walkableAdjacent.length === 0) return null;
 
-        const goalSet = new Set(adjacentGoals.map(({ col, row }) => gridKey(col, row)));
+        const goalSet = new Set(walkableAdjacent.map(({ col, row }) => gridKey(col, row)));
         const queue = [{ col: startCol, row: startRow, path: [] }];
         const visited = new Set([gridKey(startCol, startRow)]);
         const dirs = [
@@ -316,7 +279,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         return null;
     }
 
-    static _adjacentCells(col, row) {
+    static #adjacentCells(col, row) {
         return [
             { col: col - 1, row }, { col: col + 1, row },
             { col, row: row - 1 }, { col, row: row + 1 },
@@ -324,68 +287,88 @@ class Enemy extends Phaser.GameObjects.GameObject {
             { col: col - 1, row: row + 1 }, { col: col + 1, row: row + 1 },
         ];
     }
+
+    // Public wrapper — used by EnemyManager at spawn time
+    static findPathToAdjacent(startCol, startRow, goalCol, goalRow) {
+        return Enemy.#findPath(startCol, startRow, goalCol, goalRow);
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  EnemyManager — thin scene-level controller
-//
-//  Replaces the old module-level `enemies` array, `initEnemies()`,
-//  `updateEnemies()`, `spawnEnemy()`, and `drawEnemies()`.
-//
-//  Usage in your scene:
-//
-//    create()  { this.enemyManager = new EnemyManager(this); }
-//    update(t,d){ this.enemyManager.update(d); }   // delta in ms
+//  EnemyManager
 // ─────────────────────────────────────────────────────────────────────────────
 class EnemyManager {
 
-    constructor(scene) {
-        this.scene = scene;
-        this.enemies = [];   // live Enemy instances
+    #scene;
 
-        // Periodic spawn timer
+    constructor(scene) {
+        this.#scene = scene;
+        this.enemies = [];   // public — read by Enemy.destroy() and towers
+
         scene.time.addEvent({
             delay: ENEMY_SPAWN_RATE,
-            callback: this.spawn,
+            callback: this.#spawn,
             callbackScope: this,
             loop: true,
         });
     }
 
+    // ── Public API ────────────────────────────────────────────────────────────
+
+    /** Returns the closest active enemy within maxRange pixels, or null. */
+    getClosestEnemy(fromPixelX, fromPixelY, maxRange) {
+        let closestEnemy = null, colestDistance = Infinity;
+
+        for (const enemy of this.enemies) {
+            //if (!enemy.active) continue;
+            const dx = enemy.pixelX - fromPixelX;
+            const dy = enemy.pixelY - fromPixelY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist <= maxRange && dist <= colestDistance) { colestDistance = dist; closestEnemy = enemy; }
+        }
+
+        /*this.scene.enemyManager.enemies.forEach((enemy) => {
+            if (enemy.type !== 'enemy') return;
+            const dx = enemy.pixelX - this.pixelX;
+            const dy = enemy.pixelY - this.pixelY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist <= this.radius && dist < closestDistance) {
+                closestDistance = dist;
+                closestEnemy = enemy;
+            }
+        });*/
+        return closestEnemy;
+    }
+
     // ── Spawn ─────────────────────────────────────────────────────────────────
 
-    spawn() {
-        //console.log('spawning enemy')
+    #spawn() {
         const candidates = this.#getBorderCells();
         Phaser.Utils.Array.Shuffle(candidates);
 
         for (const { col, row } of candidates) {
             if (isCellOccupied(col, row)) continue;
 
-            const target = this.#pickAnyTarget(col, row);
+            const target = this.#nearestTarget(col, row);
             if (!target) continue;
 
             const path = Enemy.findPathToAdjacent(col, row, target.col, target.row);
             if (!path) continue;
 
-            // ── Factory call ──────────────────────────────────────────────
-            //  scene.add.enemy(col, row, path, target)
-            const e = this.scene.add.enemy(col, row, path, target);
-            this.enemies.push(e);
+            this.enemies.push(this.#scene.add.enemy(col, row, path, target));
             return;
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    #nearestTarget(fromCol, fromRow) {
+        let best = null;
+        let bestDist = Infinity;
 
-    #pickAnyTarget(fromCol, fromRow) {
-        let best = null, bestDist = Infinity;
         structureMap.forEach((entry) => {
             if (entry.attackable === false) return;
             const d = Math.sqrt((entry.col - fromCol) ** 2 + (entry.row - fromRow) ** 2);
             if (d < bestDist) { bestDist = d; best = entry; }
         });
-        //console.log(best)
         return best;
     }
 
@@ -404,34 +387,18 @@ class EnemyManager {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Factory Registration
-//
-//  Call this ONCE before your game boots (or at least before any scene
-//  that uses `scene.add.enemy()`).
-//
-//    registerEnemyFactory();
-//    new Phaser.Game(config);
+//  Factory
 // ─────────────────────────────────────────────────────────────────────────────
 function registerEnemyFactory() {
     Phaser.GameObjects.GameObjectFactory.register(
         'enemy',
-        /**
-         * @param {number}   col    Starting grid column
-         * @param {number}   row    Starting grid row
-         * @param {object[]} path   BFS path [{col,row},…]
-         * @param {object}   target { col, row } of initial attack target
-         */
         function (col, row, path, target) {
             const enemy = new Enemy(this.scene, col, row, path, target);
-            // updateList ensures preUpdate() fires; displayList is not needed
-            // because Enemy manages its own internal Graphics object.
             this.scene.sys.updateList.add(enemy);
             return enemy;
         },
     );
 }
 
-// ─── Boot ─────────────────────────────────────────────────────────────────────
-// Register the factory before Phaser boots, then start the game.
 registerEnemyFactory();
 startGame();

@@ -1,5 +1,8 @@
 class Tower extends Structure {
     #lastFired;
+    #radiusVisual;
+    #radius;
+    #radiusInPixel;
 
     constructor(scene, col, row) {
         super(scene, col, row, 'tower', config.tower.color, config.tower.label, config.tower.health);  // call parent "Structure"
@@ -7,13 +10,34 @@ class Tower extends Structure {
         this.fireRateMs = config.tower.fireRateMs;
         this.#lastFired = 0;
 
-        this.radius = config.tower.radiusInTiles * config.world.tileSize;
+        this.#radius = config.tower.radiusInTiles;
+        this.#radiusInPixel = this.#radius * config.world.tileSize;
+
+        this.#createRadiusVisual();
+    }
+
+    #createRadiusVisual() {
+        const tileSize = config.world.tileSize;
+
+        // Radius overlay
+        this.#radiusVisual = this.scene.add.graphics().setDepth(0);
+        this.#radiusVisual.lineStyle(1, 0xa8dadc, 0.25);
+        this.#radiusVisual.strokeCircle(this.pixelX, this.pixelY, this.#radiusInPixel);
     }
 
     preUpdate(time, delta) {
+        // TODO: instead of saving the time (might overflow at some point) use delta (time since last preUpdate call i guess)
+        /**
+         * 
+         *  this.#attackTimer += delta;
+        if (this.#attackTimer >= ENEMY_ATTACK_RATE) {
+            this.#attackTimer -= ENEMY_ATTACK_RATE;
+         */
         if (time > this.#lastFired + this.fireRateMs) {
             this.#lastFired = time;
             const target = this.#findClosestEnemy();
+            // TODO: maybe use the function here:
+            // const target = this.scene.enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
             if (target) this.scene.add.bullet(this, target, config.tower.bulletSpeed, config.tower.bulletDamage);
         }
     }
@@ -25,12 +49,17 @@ class Tower extends Structure {
             const dx = entry.pixelX - this.pixelX;
             const dy = entry.pixelY - this.pixelY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= this.radius && dist < closestDistance) {
+            if (dist <= this.#radiusInPixel && dist < closestDistance) {
                 closestDistance = dist;
                 closestEnemy = entry;
             }
         });
         return closestEnemy;
+    }
+
+    destroy(fromScene) {
+        this.#radiusVisual.destroy();
+        super.destroy(fromScene);
     }
 }
 

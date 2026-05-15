@@ -19,7 +19,7 @@ const config = {
         fireRateMs: 1000,
         color: 0xFF0000,
         label: 'T',
-        radiusInTiles: 5,
+        radiusInTiles: 3,
         bulletSpeed: 400,
         bulletDamage: 10,
     },
