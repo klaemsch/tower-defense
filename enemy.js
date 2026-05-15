@@ -356,13 +356,13 @@ class EnemyManager {
 
     spawn() {
         //console.log('spawning enemy')
-        const candidates = this._getBorderCells();
+        const candidates = this.#getBorderCells();
         Phaser.Utils.Array.Shuffle(candidates);
 
         for (const { col, row } of candidates) {
             if (isCellOccupied(col, row)) continue;
 
-            const target = this._pickAnyTarget(col, row);
+            const target = this.#pickAnyTarget(col, row);
             if (!target) continue;
 
             const path = Enemy.findPathToAdjacent(col, row, target.col, target.row);
@@ -378,7 +378,7 @@ class EnemyManager {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    _pickAnyTarget(fromCol, fromRow) {
+    #pickAnyTarget(fromCol, fromRow) {
         let best = null, bestDist = Infinity;
         structureMap.forEach((entry) => {
             if (entry.attackable === false) return;
@@ -389,7 +389,7 @@ class EnemyManager {
         return best;
     }
 
-    _getBorderCells() {
+    #getBorderCells() {
         const cells = [];
         for (let c = 0; c < numCols; c++) {
             cells.push({ col: c, row: 0 });

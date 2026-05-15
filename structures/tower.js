@@ -19,8 +19,7 @@ class Tower extends Structure {
     }
 
     #findClosestEnemy() {
-        var closestEnemy = null;
-        var closestDistance = Infinity;
+        let closestEnemy = null, closestDistance = Infinity;
         this.scene.enemyManager.enemies.forEach((entry) => {
             if (entry.type !== 'enemy') return;
             const dx = entry.pixelX - this.pixelX;
