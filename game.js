@@ -50,34 +50,17 @@ class GameScene extends Phaser.Scene {
     }
 
     // Called by enemies.js — returns true if the structure was destroyed
+    // TODO: move somewhere else
     _damageStructure(col, row, amount) {
         const key = gridKey(col, row);
         const structure = structureMap.get(key);
         if (!structure) return true;
 
         // damage structure
-        structure.health -= amount;
-
-        // TEST TEST TEST
-        if (structure.type === 'HQ') {
-            this.registry.set('hq-health', structure.health);
-        }
-
-
-        // check if structure was destroyed (health below zero)
-        if (structure.health <= 0) {
-            console.log('structure of type', structure.type, 'was destroyed');
-            // destroy structure and remove it from structure map
-            structure.destroy(true);
-            structureMap.delete(key);
-            // check if destroyed structure is HQ
-            if (structure.type === 'HQ') this.#triggerGameOver();
-            return true;
-        }
-        return false;
+        structure.doDamage(amount);
     }
 
-    #triggerGameOver() {
+    triggerGameOver() {
         console.log('game over triggered');
         this.gameOver = true;
         const cx = (COLS * TILE) / 2;

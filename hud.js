@@ -13,9 +13,8 @@ class HudScene extends Phaser.Scene {
         this.#placer = this.registry.get('placer');
 
         // ── Resources ──────────────────────────────────────────────────────
-        this.#newHUDText(8, 8, 'wood', 0, 'Wood');
-        this.#newHUDText(8, 30, 'hq-health', 200, 'HQ Health');
-        this.#newHUDText(8, 52, 'enemies', 0, 'Enemies');
+        this.#newHUDText(8, 8, config.resources.wood.registryKey, 0, config.resources.wood.label);
+        this.#newHUDText(8, 30, 'enemies', 0, 'Enemies');
 
         // ── Placement buttons ──────────────────────────────────────────────
         this.#newPlacerButton(this.scale.width - 110, 8, 'woodShop', '🏪 Wood Shop');

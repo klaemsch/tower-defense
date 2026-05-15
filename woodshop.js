@@ -1,53 +1,32 @@
-class WoodShop extends Phaser.GameObjects.GameObject {
-    #lastHarvest
-    #harvestRateMs
-    #visuals
+class WoodShop extends Structure {
+    #lastHarvest;
+    #harvestRateMs;
+    #radiusVisual;
+    #radius;
 
     constructor(scene, col, row) {
-        super(scene, 'woodShop');
+        super(scene, col, row, 'woodShop', config.woodShop.color, config.woodShop.label, config.woodShop.health);  // call parent "Structure"
 
-        this.col = col;
-        this.row = row;
-
-        const pos = gridToWorld(col, row);
-        this.pixelX = pos.x;
-        this.pixelY = pos.y;
-
-        this.radius = config.woodShop.radiusInTiles;
-
-        this.health = config.woodShop.health;
-        this.attackable = true;
+        this.#radius = config.woodShop.radiusInTiles;
 
         this.#lastHarvest = 0;
         this.#harvestRateMs = config.woodShop.harvestRateMs;
 
-        // Build all child display objects and keep refs for cleanup
-        this.#visuals = this.#createVisuals(scene, pos);
-
-        // Register in the shared structure map (pass `this` as the owner ref)
-        placeInMap(col, row, this);
-
-        // add this object to the update list so the pre update method is called periodically
-        scene.sys.updateList.add(this);
+        this.#createRadiusVisual();
     }
 
-    #createVisuals(scene, pos) {
-
-        const icon = scene.add.text(pos.x, pos.y, '🏪', {
-            fontSize: '16px',
-        }).setOrigin(0.5).setDepth(2);
+    #createRadiusVisual() {
+        const tileSize = config.world.tileSize;
 
         // Radius overlay
-        const radius = scene.add.graphics().setDepth(0);
-        radius.lineStyle(1, 0xa8dadc, 0.25);
-        radius.strokeRect(
-            (this.col - this.radius) * TILE,
-            (this.row - this.radius) * TILE,
-            (this.radius * 2 + 1) * TILE,
-            (this.radius * 2 + 1) * TILE,
+        this.#radiusVisual = this.scene.add.graphics().setDepth(0);
+        this.#radiusVisual.lineStyle(1, 0xa8dadc, 0.25);
+        this.#radiusVisual.strokeRect(
+            (this.col - this.#radius) * tileSize,
+            (this.row - this.#radius) * tileSize,
+            (this.#radius * 2 + 1) * tileSize,
+            (this.#radius * 2 + 1) * tileSize,
         );
-
-        return {icon, radius};
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -62,7 +41,7 @@ class WoodShop extends Phaser.GameObjects.GameObject {
                 Math.abs(entry.col - this.col),
                 Math.abs(entry.row - this.row),
             );
-            if (dist <= this.radius) treeCount++;
+            if (dist <= this.#radius) treeCount++;
         });
         //console.log('found', count, 'trees in radius')
         return treeCount;
@@ -74,14 +53,13 @@ class WoodShop extends Phaser.GameObjects.GameObject {
         if (time > this.#lastHarvest + this.#harvestRateMs) {
             this.#lastHarvest = time;
             const treeCount = this.#countTreesInRadius();
-            this.scene.registry.inc('wood', treeCount);
+            this.scene.registry.inc(config.resources.wood.registryKey, treeCount);
         }
 
     }
 
     destroy(fromScene) {
-        this.#visuals.icon.destroy();
-        this.#visuals.radius.destroy();
+        this.#radiusVisual.destroy();
         super.destroy(fromScene);
     }
 }

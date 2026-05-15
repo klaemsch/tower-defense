@@ -19,9 +19,7 @@ function drawGrid(scene) {
 }
 
 function placeHQ(scene) {
-    const col = Math.floor(COLS / 2);
-    const row = Math.floor(ROWS / 2);
-    scene.add.structure(col, row, 'HQ', config.hq.color, config.hq.label, config.hq.health);
+    scene.add.hq();
 }
 
 function placeTrees(scene) {

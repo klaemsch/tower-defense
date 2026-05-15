@@ -21,6 +21,7 @@ const ENEMY_SIZE_RATIO = 0.5;   // size relative to TILE, evaluated at draw time
 //    damageStructure(c,r,dmg) — returns true when the structure is destroyed
 // ─────────────────────────────────────────────────────────────────────────────
 class Enemy extends Phaser.GameObjects.GameObject {
+    #health;
 
     /**
      * @param {Phaser.Scene} scene
@@ -51,7 +52,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.attacking = false;
         this.attackTimer = 0;
 
-        this.health = 30;
+        this.#health = 30;
 
         // ── Graphics (placeholder — swap for Sprite later) ────────────────
         this._gfx = scene.add.graphics();
@@ -71,7 +72,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     /** Called by Phaser every frame before the main scene update. */
     preUpdate(_time, delta) {
         if (!this.active) return;
-        if (this.health <= 0) this.destroy();
+        if (this.#health <= 0) this.destroy();
 
         const step = ENEMY_SPEED * (delta / 1000);
 
@@ -88,7 +89,15 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this._draw();
     }
 
+    doDamage(amount) {
+        this.#health -= amount;
+        if (this.#health <= 0) {
+            this.destroy();
+        }
+    }
+
     destroy(fromScene) {
+        this.active = false;
         // remove enemy from enemy manager list
         //console.log('destroyed', 'index:', this.scene.enemyManager.enemies.indexOf(this));
         const index = this.scene.enemyManager.enemies.indexOf(this);

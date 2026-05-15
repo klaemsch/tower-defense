@@ -36,6 +36,7 @@ class Placer {
     deselect() {
         this.#activeStructure = null;
         this.#scene.registry.set('placer-activeStructure', null);
+        this.#hoverGraphics.clear();
     }
 
     // try to place the currently selected structure type
@@ -57,6 +58,10 @@ class Placer {
     #onPointerMove(pointer) {
         //console.log('move')
         if (this.#scene.gameOver) return;
+        if (this.#activeStructure === null) {
+            this.#hoverGraphics.clear();
+            return;
+        }
         const { col, row } = worldToGrid(pointer.x, pointer.y);
         this.#hoverGraphics.clear();
         if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return;

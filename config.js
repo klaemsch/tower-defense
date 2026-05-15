@@ -5,7 +5,8 @@ const config = {
         numRows: 15,  // 600 / 40
         generation: {
             numTrees: 15,
-        }
+        },
+        backgroundColor: '#1a1a2e'
     },
     hq: {
         health: 200,
@@ -14,6 +15,7 @@ const config = {
     },
     tower: {
         health: 100,
+        cost: 10,
         fireRateMs: 1000,
         color: 0xFF0000,
         label: 'T',
@@ -23,6 +25,9 @@ const config = {
     },
     woodShop: {
         health: 60,
+        cost: 5,
+        label: '🏪',
+        color: '#1a1a2e',
         radiusInTiles: 1,
         harvestRateMs: 1000,
     },
@@ -32,20 +37,17 @@ const config = {
         size: 4,
         damage: 10,
     },
+    resources: {
+        wood: {
+            registryKey: 'wood',
+            label: 'Wood'
+        }
+    }
 }
 
 const phaserConfig = {
     type: Phaser.AUTO,
     width: config.world.numCols * config.world.tileSize,
     height: config.world.numRows * config.world.tileSize,
-    backgroundColor: '#1a1a2e',
-    physics: {
-        default: 'arcade',
-        arcade: { debug: false }
-    },
-    fps: {
-        showFPS: true,        // renders the counter top-left
-        target: 60,
-        forceSetTimeOut: false
-    }
+    backgroundColor: config.world.backgroundColor,
 }

@@ -8,9 +8,6 @@ class Tower extends Structure {
         this.#lastFired = 0;
 
         this.radius = config.tower.radiusInTiles * config.world.tileSize;
-
-        // Register with the scene so preUpdate() fires every frame
-        scene.sys.updateList.add(this);
     }
 
     preUpdate(time, delta) {
@@ -41,7 +38,13 @@ class Tower extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'tower',
     function (col, row) {
-        const tower = new Tower(this.scene, col, row);
-        return tower;
+        // TODO: move cost check to children -> structure.js
+        const woodCount = this.scene.registry.get(config.resources.wood.registryKey);
+        if (woodCount >= config.tower.cost) {
+            this.scene.registry.inc(config.resources.wood.registryKey, -config.tower.cost);
+            const tower = new Tower(this.scene, col, row);
+            return tower;
+        }
+        return null;
     }
 );

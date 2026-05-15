@@ -105,7 +105,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
 
     #arrive() {
         //console.log('bullet arrived, health:', this.#target.health)
-        this.#target.health -= this.#damage;
+        this.#target.doDamage(this.#damage);
         //console.log('bullet arrived, health:', this.#target.health)
         this.setActive(false);
         this.destroy();
