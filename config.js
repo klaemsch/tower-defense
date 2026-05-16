@@ -45,13 +45,18 @@ const config = {
         color: 0xe63946,
         sizeRatio: 0.5,   // size relative to tileSize, evaluated at draw time
         health: 30,
+        onDestroyEventKey: 'enemyDestroyed'
     },
     resources: {
         wood: {
             registryKey: 'wood',
-            label: 'Wood'
+            label: 'Wood',
+            initialValue: 5,
         }
-    }
+    },
+    waves: [
+        { lengthInSeconds: 15, spawnRate: 2000, enemyHealth: 30 },
+    ],
 }
 
 const phaserConfig = {

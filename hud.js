@@ -2,6 +2,8 @@ class HudScene extends Phaser.Scene {
     #activeButton;
     #placer;
 
+    #gameFlowManager;
+
     constructor() {
         super('hudScene');
         this.#activeButton = null;
@@ -10,11 +12,12 @@ class HudScene extends Phaser.Scene {
     preload() { }
 
     create() {
+        this.#gameFlowManager = this.registry.get('gameFlowManager');
         this.#placer = this.registry.get('placer');
 
         // ── Resources ──────────────────────────────────────────────────────
-        this.#newHUDText(8, 8, config.resources.wood.registryKey, 0, config.resources.wood.label);
-        this.#newHUDText(8, 30, 'enemies', 0, 'Enemies');
+        this.#newHUDText(8, 8, config.resources.wood.registryKey, config.resources.wood.label);
+        this.#newHUDText(8, 30, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
         // ── Placement buttons ──────────────────────────────────────────────
         this.#newPlacerButton(this.scale.width - 110, 8, 'woodShop', '🏪 Wood Shop');
@@ -25,11 +28,20 @@ class HudScene extends Phaser.Scene {
         this.registry.events.on('changedata-placer-activeStructure', (parent, value) => {
             if (value === null) this.#clearButtonStates();
         });
+
+        // ── Control Buttons ──────────────────────────────────────────────────────
+        this.#newControlButton(8, 80, 'play', '▶️ Next Wave');
+        this.#newControlButton(8, 120, 'toggle', '⏸️ Pause');
+
+        // ── Wave Info ────────────────────────────────────────────────────────────
+        this.#newHUDText(8, 200, 'wave', 'Wave');
+        this.#newHUDText(8, 220, 'waveTimer', 'Next Wave');
     }
 
     // ── HUD text ──────────────────────────────────────────────────────────────
 
-    #newHUDText(x, y, label, initValue, text) {
+    #newHUDText(x, y, label, text) {
+        const initValue = this.registry.get(label);
         const textElement = this.add.text(x, y, `${text}: ${initValue}`, {
             fontSize: '13px',
             color: '#a8dadc',
@@ -41,6 +53,13 @@ class HudScene extends Phaser.Scene {
         this.registry.events.on(`changedata-${label}`, (parent, value) => {
             textElement.setText(`${text}: ${value}`);
         });
+
+        // Special case: wave timer
+        if (label === 'waveTimer') {
+            this.events.on('wave-start', (waveNum, enemyCount) => {
+                textElement.setText(`Next Wave: ${this.scene.gameFlowManager.waveDelay / 1000}s`);
+            });
+        }
     }
 
     // ── Placer buttons ────────────────────────────────────────────────────────
@@ -114,6 +133,47 @@ class HudScene extends Phaser.Scene {
         });
 
         return { button, border, text };
+    }
+
+    #newControlButton(x, y, action, label) {
+        const WIDTH = 100;
+        const HEIGHT = 36;
+        const COLOR_IDLE = 0x16213e;
+        const COLOR_ACTIVE = 0x1d3557;
+
+        const button = this.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
+            .setOrigin(0, 0)
+            .setDepth(10)
+            .setInteractive({ useHandCursor: true });
+
+        const text = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, label, {
+            fontSize: '11px',
+            color: '#a8dadc',
+            fontStyle: 'bold',
+        }).setOrigin(0.5).setDepth(12);
+
+        const event = button.on('pointerdown', () => {
+            switch (action) {
+                case 'play':
+                    this.#gameFlowManager.startWave();
+                    break;
+                case 'toggle':
+                    if (this.#gameFlowManager.isPaused()) {
+                        text.text = '▶️ Resume';
+                    } else {
+                        text.text = '⏸️ Pause';
+                    }
+                    this.#gameFlowManager.togglePauseWave();
+                    break;
+            }
+        });
+
+        // Optional: update button state based on game flow
+        this.events.on('wave-start', () => {
+            //this.#updateButtonState(button, text, 'play', '▶️ Start');
+        });
+
+        return { button, text, event };
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

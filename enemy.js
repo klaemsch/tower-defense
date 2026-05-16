@@ -1,5 +1,4 @@
 // ─── Config shortcuts ─────────────────────────────────────────────────────────
-const ENEMY_SPAWN_RATE = config.enemy.spawnRate;
 const ENEMY_ATTACK_RATE = config.enemy.attackRate;
 
 class Enemy extends Phaser.GameObjects.GameObject {
@@ -79,10 +78,17 @@ class Enemy extends Phaser.GameObjects.GameObject {
         return false;
     }
 
-    destroy(fromScene) {
-        const index = this.scene.enemyManager.enemies.indexOf(this);
-        if (index > -1) this.scene.enemyManager.enemies.splice(index, 1);
+    preDestroy() {
+        // apperently in preDestroy (other than in destroy) the scene is available
 
+        // fire event that an enemy has died
+        this.scene.events.emit(
+            config.enemy.onDestroyEventKey,         // key of event
+            this.scene.enemyManager.enemies.getLength()-1  // number of remaining enemies after this one gets deleted
+        )
+    }
+
+    destroy(fromScene) {
         this.#pathGfx.destroy();
         this.#gfx.destroy();
         super.destroy(fromScene);
@@ -298,22 +304,55 @@ class Enemy extends Phaser.GameObjects.GameObject {
 //  EnemyManager
 // ─────────────────────────────────────────────────────────────────────────────
 class EnemyManager {
-
     #scene;
+    #spawnTimer;
 
     constructor(scene) {
         this.#scene = scene;
-        this.enemies = [];   // public — read by Enemy.destroy() and towers
-
-        scene.time.addEvent({
-            delay: ENEMY_SPAWN_RATE,
-            callback: this.#spawn,
-            callbackScope: this,
-            loop: true,
-        });
+        // create group for enemy game objects
+        // -> phaser keeps track and automatically removes them from the group if they are destroyed
+        this.enemies = scene.add.group();
+        /*this.enemies = [];   // public — read by Enemy.destroy() and towers
+        scene.events.on(config.enemy.onDestroyEventKey, () => {
+            console.log(this.enemies.length)
+            //this.enemies = this.enemies.filter((enemy) => !enemy.active)
+            console.log(this.enemies)
+            console.log(this.enemies.length)
+        }, this);*/
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
+
+    startSpawning(rate = config.enemy.spawnRate, repeat = 100) {
+
+        // repeat is the number of times the event is repeated after the first one fired
+        // so if we want the event to happen X times we need to set repeat to X-1
+        repeat = Math.floor(repeat) - 1
+
+        console.log('start spawning with rate', rate);
+        console.log('start spawning', repeat, 'enemies');
+        this.enemies = this.#scene.add.group();
+        this.#spawnTimer = this.#scene.time.addEvent({
+            delay: rate,
+            callback: this.#spawn,
+            callbackScope: this,
+            repeat: repeat,
+        });
+    }
+
+    pauseSpawning() {
+        if (this.#spawnTimer) this.#spawnTimer.paused = true;
+    }
+
+    resumeSpawning() {
+        if (this.#spawnTimer) this.#spawnTimer.paused = false;
+    }
+
+    stopSpawning() {
+        this.#spawnTimer.remove();
+        this.#spawnTimer = null;
+        this.enemies = scene.add.group(); // TODO: i dont know if thats good, the old group will become inaccessable
+    }
 
     /** Returns the closest active enemy within maxRange pixels, or null. */
     getClosestEnemy(fromPixelX, fromPixelY, maxRange) {
@@ -340,9 +379,15 @@ class EnemyManager {
         return closestEnemy;
     }
 
+    isAllEnemiesDestroyed() {
+        console.log('ABC is this used TODO')
+        return this.enemies.length === 0;
+    }
+
     // ── Spawn ─────────────────────────────────────────────────────────────────
 
     #spawn() {
+        console.log('SPAWN')
         const candidates = this.#getBorderCells();
         Phaser.Utils.Array.Shuffle(candidates);
 
@@ -355,9 +400,16 @@ class EnemyManager {
             const path = Enemy.findPathToAdjacent(col, row, target.col, target.row);
             if (!path) continue;
 
-            this.enemies.push(this.#scene.add.enemy(col, row, path, target));
-            return;
+            // create enemy and add it to group
+            const enemy = this.#scene.add.enemy(col, row, path, target);
+            this.enemies.add(enemy);
+
+            return enemy;
         }
+
+        console.log('No position for enemy spawn found');
+
+        return null;
     }
 
     #nearestTarget(fromCol, fromRow) {

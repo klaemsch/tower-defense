@@ -68,8 +68,14 @@ function registerWoodShopFactory() {
     Phaser.GameObjects.GameObjectFactory.register(
         'woodShop',
         function (col, row) {
-            const shop = new WoodShop(this.scene, col, row);
-            return shop;
+            // TODO: move cost check to children -> structure.js
+            const woodCount = this.scene.registry.get(config.resources.wood.registryKey);
+            if (woodCount >= config.woodShop.cost) {
+                this.scene.registry.inc(config.resources.wood.registryKey, -config.woodShop.cost);
+                const shop = new WoodShop(this.scene, col, row);
+                return shop;
+            }
+            return null;
         },
     );
 }

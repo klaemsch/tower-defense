@@ -1,6 +1,6 @@
 // ─── Shared Constants ─────────────────────────────────────────────────────────
 // TODO: remove this
-const { tileSize, numCols, numRows} = config.world;
+const { tileSize, numCols, numRows } = config.world;
 
 // ─── Shared State ─────────────────────────────────────────────────────────────
 
@@ -25,8 +25,8 @@ class GameScene extends Phaser.Scene {
 
     constructor() {
         super('gameScene');
-
         this.gameOver = false;
+        this.gameFlowManager = null;
     }
 
     preload() { }
@@ -41,24 +41,21 @@ class GameScene extends Phaser.Scene {
 
         const placer = new Placer(this);
         this.registry.set('placer', placer);
+
+        // Initialize game flow manager
+        this.gameFlowManager = new GameFlowManager(this);
+        this.registry.set('gameFlowManager', this.gameFlowManager);
+
+        // initialise resources, TODO: maybe do this somewhere else
+        this.registry.set(config.resources.wood.registryKey, config.resources.wood.initialValue);
     }
 
     update(time, delta) {
         if (this.gameOver) return;
-        this.registry.set('enemies', this.enemyManager.enemies.length); // doing this every loop is a bit unnecessary
+        this.registry.set('enemies', this.enemyManager.enemies.getLength()); // doing this every loop is a bit unnecessary
     }
 
-    // Called by enemies.js — returns true if the structure was destroyed
-    // TODO: move somewhere else
-    _damageStructure(col, row, amount) {
-        const key = gridKey(col, row);
-        const structure = structureMap.get(key);
-        if (!structure) return true;
-
-        // damage structure
-        const destroyed = structure.doDamage(amount);
-    }
-
+    // TODO: rework and move overlay to HUD
     triggerGameOver() {
         console.log('game over triggered');
         this.gameOver = true;
