@@ -12,6 +12,7 @@ class GameFlowManager {
         this.#waveData = config.waves;
         this.#isPaused = true;
 
+        // subscribe to event that fires when an enemy is destroyed -> check if wave is completed
         scene.events.on(config.enemy.onDestroyEventKey, this.#checkWaveCompleted, this);
     }
 
@@ -70,10 +71,13 @@ class GameFlowManager {
     }
 
     #checkWaveCompleted(enemiesLeft) {
+        // get progress of wave spawn timer -> 1 means all enemies have been spawned
         const timerProgress = this.#enemyManager.spawnTimer.getOverallProgress();
-        console.log('progress:', timerProgress);
+        //console.log('progress:', timerProgress);
+        
+        // if all enemies have been spawned AND destroyed
         if (timerProgress == 1 && enemiesLeft <= 0) {
-            console.log('wave completed')
+            //console.log('wave completed')
             this.#scene.scene.wake(config.sceneKeys.shop);
         }
     }
