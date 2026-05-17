@@ -7,7 +7,7 @@ class GameFlowManager {
     #isPaused;
 
     constructor(scene) {
-        this.#scene = scene;
+        this.#scene = scene; // TODO: undestand the difference between this.#scene and this.#scene.scene
         this.#enemyManager = scene.enemyManager;
         this.#waveData = config.waves;
         this.#isPaused = true;
@@ -24,21 +24,21 @@ class GameFlowManager {
 
     pauseWave() {
         console.log('pauseWave called');
-        this.#scene.sys.pause();
+        this.#scene.scene.pause();
         this.#enemyManager.pauseSpawning();
         this.#isPaused = true;
     }
 
     resumeWave() {
         console.log('resumeWave called');
-        this.#scene.sys.resume();
+        this.#scene.scene.resume();
         this.#enemyManager.resumeSpawning();
         this.#isPaused = false;
     }
 
     togglePauseWave() {
         console.log('togglePauseWave called');
-        if (this.#scene.sys.isPaused()) {
+        if (this.#scene.scene.isPaused()) {
             this.resumeWave();
             this.#isPaused = false;
         } else {
@@ -74,7 +74,6 @@ class GameFlowManager {
         console.log('progress:', timerProgress);
         if (timerProgress == 1 && enemiesLeft <= 0) {
             console.log('wave completed')
-            console.log(this.#scene);
             this.#scene.scene.wake(config.sceneKeys.shop);
         }
     }
