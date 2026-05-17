@@ -305,7 +305,6 @@ class Enemy extends Phaser.GameObjects.GameObject {
 // ─────────────────────────────────────────────────────────────────────────────
 class EnemyManager {
     #scene;
-    #spawnTimer;
 
     constructor(scene) {
         this.#scene = scene;
@@ -332,7 +331,7 @@ class EnemyManager {
         console.log('start spawning with rate', rate);
         console.log('start spawning', repeat, 'enemies');
         this.enemies = this.#scene.add.group();
-        this.#spawnTimer = this.#scene.time.addEvent({
+        this.spawnTimer = this.#scene.time.addEvent({
             delay: rate,
             callback: this.#spawn,
             callbackScope: this,
@@ -341,16 +340,17 @@ class EnemyManager {
     }
 
     pauseSpawning() {
-        if (this.#spawnTimer) this.#spawnTimer.paused = true;
+        if (this.spawnTimer) this.spawnTimer.paused = true;
     }
 
     resumeSpawning() {
-        if (this.#spawnTimer) this.#spawnTimer.paused = false;
+        if (this.spawnTimer) this.spawnTimer.paused = false;
     }
 
     stopSpawning() {
-        this.#spawnTimer.remove();
-        this.#spawnTimer = null;
+        // TODO: maybe reuse via reset() or something?
+        this.spawnTimer.remove();
+        this.spawnTimer = null;
         this.enemies = scene.add.group(); // TODO: i dont know if thats good, the old group will become inaccessable
     }
 

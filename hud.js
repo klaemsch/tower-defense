@@ -5,7 +5,7 @@ class HudScene extends Phaser.Scene {
     #gameFlowManager;
 
     constructor() {
-        super('hudScene');
+        super(config.sceneKeys.hud);
         this.#activeButton = null;
     }
 

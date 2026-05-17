@@ -70,9 +70,12 @@ class GameFlowManager {
     }
 
     #checkWaveCompleted(enemiesLeft) {
-        if (enemiesLeft <= 0) {
+        const timerProgress = this.#enemyManager.spawnTimer.getOverallProgress();
+        console.log('progress:', timerProgress);
+        if (timerProgress == 1 && enemiesLeft <= 0) {
             console.log('wave completed')
-            this.#showShopOverlay();
+            console.log(this.#scene);
+            this.#scene.scene.wake(config.sceneKeys.shop);
         }
     }
 
@@ -113,60 +116,6 @@ class GameFlowManager {
         this.#scene.events.emit('game-won');
         this.#scene.triggerGameOver();
     }*/
-
-    // ── Shop Overlay ─────────────────────────────────────────────────────────
-
-    #showShopOverlay() {
-        const scene = this.#scene;
-
-        // Create overlay
-        const overlay = scene.add.rectangle(
-            scene.scale.width / 2,
-            scene.scale.height / 2,
-            scene.scale.width,
-            scene.scale.height,
-            0x000000,
-            0.7
-        ).setDepth(100);
-
-        const title = scene.add.text(scene.scale.width / 2, 100, 'Wave Complete!', {
-            fontSize: '36px',
-            color: '#ffffff',
-            fontStyle: 'bold',
-            stroke: '#000000',
-            strokeThickness: 4,
-        }).setOrigin(0.5).setDepth(101);
-
-        const text = scene.add.text(scene.scale.width / 2, 150, 'You earned resources! Upgrade your towers.', {
-            fontSize: '18px',
-            color: '#a8dadc',
-            fontStyle: 'bold',
-        }).setOrigin(0.5).setDepth(101);
-
-        // Add continue button
-        const continueBtn = scene.add.text(scene.scale.width / 2, 250, 'Continue', {
-            fontSize: '20px',
-            color: '#ffffff',
-            fontStyle: 'bold',
-            backgroundColor: '#1d3557',
-            padding: { x: 20, y: 10 },
-        }).setOrigin(0.5).setDepth(101).setInteractive({ useHandCursor: true });
-
-        continueBtn.on('pointerdown', () => {
-            overlay.destroy();
-            title.destroy();
-            text.destroy();
-            continueBtn.destroy();
-            this.#startNextWave();
-        });
-
-        // Add resource counter
-        const wood = scene.registry.get(config.resources.wood.registryKey);
-        const woodText = scene.add.text(scene.scale.width / 2, 200, `Wood: ${wood}`, {
-            fontSize: '16px',
-            color: '#a8dadc',
-        }).setOrigin(0.5).setDepth(101);
-    }
 
     isPaused() {
         return this.#isPaused;

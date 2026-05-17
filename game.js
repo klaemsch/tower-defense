@@ -24,7 +24,7 @@ function placeInMap(col, row, gameObject) {
 class GameScene extends Phaser.Scene {
 
     constructor() {
-        super('gameScene');
+        super(config.sceneKeys.game);
         this.gameOver = false;
         this.gameFlowManager = null;
     }
@@ -32,8 +32,12 @@ class GameScene extends Phaser.Scene {
     preload() { }
 
     create() {
-        // launch the HUD
-        this.scene.launch('hudScene');
+        // launch the HUD scene
+        this.scene.launch(config.sceneKeys.hud);
+
+        // launch the shop scene (and sleep immediately)
+        this.scene.launch(config.sceneKeys.shop);
+        this.scene.sleep(config.sceneKeys.shop);
 
         createWorld(this);       // world.js
 
@@ -79,7 +83,7 @@ class GameScene extends Phaser.Scene {
 }
 
 // add scenes to config -> TODO: maybe there is a better way to do this
-phaserConfig.scene = [GameScene, HudScene]
+phaserConfig.scene = [GameScene, HudScene, ShopScene]
 
 // ─── Boot (last file loaded fires this) ──────────────────────────────────────
 // Called from the bottom of the last script in load order.
