@@ -31,6 +31,12 @@ const config = {
         radiusInTiles: 1,
         harvestRateMs: 1000,
     },
+    powerPlant: {
+        health: 60,
+        cost: 5,
+        label: '☢️',  // TODO: temporary
+        color: '#1a1a2e',
+    },
     bullet: {
         speed: 400,
         color: 0xf1faee,

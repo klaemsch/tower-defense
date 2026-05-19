@@ -68,7 +68,7 @@ function registerWoodShopFactory() {
     Phaser.GameObjects.GameObjectFactory.register(
         'woodShop',
         function (col, row) {
-            // TODO: move cost check to children -> structure.js
+            // TODO: move cost check from children to structure.js
             const woodCount = this.scene.registry.get(config.resources.wood.registryKey);
             if (woodCount >= config.woodShop.cost) {
                 this.scene.registry.inc(config.resources.wood.registryKey, -config.woodShop.cost);

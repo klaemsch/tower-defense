@@ -1,6 +1,7 @@
 const placerFactoryMap = {
     woodShop: (scene, col, row) => scene.add.woodShop(col, row),
     tower: (scene, col, row) => scene.add.tower(col, row),
+    powerPlant: (scene, col, row) => scene.add.powerPlant(col, row),
 };
 
 class Placer {

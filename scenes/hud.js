@@ -24,6 +24,7 @@ class HudScene extends Phaser.Scene {
         // ── Placement buttons ──────────────────────────────────────────────
         this.#newPlacerButton(this.scale.width - 110, 8, 'woodShop', '🏪 Wood Shop');
         this.#newPlacerButton(this.scale.width - 110, 50, 'tower', '🗼 Tower');
+        this.#newPlacerButton(this.scale.width - 110, 92, 'powerPlant', '☢️ Power Plant');
 
         // Listen for deselect from placer (e.g. after placing or pressing Escape)
         // so the button highlight clears automatically
