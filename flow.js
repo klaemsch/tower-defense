@@ -55,19 +55,8 @@ class GameFlowManager {
         if (!wave) return;
         this.#currentWave = wave;
 
-        // Emit wave start event
-        //this.#scene.events.emit('wave-start', this.#waveIndex + 1, wave.enemyCount);
-
         // Start spawning enemies via EnemyManager
         this.#enemyManager.startSpawning(wave.spawnRate, wave.lengthInSeconds / (wave.spawnRate / 1000));
-
-        // Wait for all enemies to be destroyed
-        /*this.#scene.events.once('wave-completed', () => {
-            this.#onWaveCompleted();
-        });*/
-
-        // Start wave timer (for next wave)
-        //this.#startWaveTimer();
     }
 
     #checkWaveCompleted(enemiesLeft) {
@@ -78,47 +67,10 @@ class GameFlowManager {
         // if all enemies have been spawned AND destroyed
         if (timerProgress == 1 && enemiesLeft <= 0) {
             //console.log('wave completed')
+            this.#scene.scene.sleep(config.sceneKeys.game);
             this.#scene.scene.wake(config.sceneKeys.shop);
         }
     }
-
-    /*#startWaveTimer() {
-        this.#stopWaveTimer();
-
-        const timer = this.#scene.time.addEvent({
-            delay: this.#waveDelay,
-            callback: () => {
-                this.#startNextWave();
-            },
-            loop: false,
-        });
-
-        this.#waveTimer = timer;
-    }
-
-    #stopWaveTimer() {
-        if (this.#waveTimer) {
-            this.#waveTimer.remove();
-            this.#waveTimer = null;
-        }
-    }
-
-    #onWaveCompleted() {
-        this.#waveIndex++;
-        this.#scene.events.emit('wave-completed', this.#waveIndex);
-
-        // Show shop overlay
-        //this.#showShopOverlay();
-
-        // Stop spawning
-        this.#enemyManager.stopSpawning();
-    }
-
-    #onAllWavesComplete() {
-        this.#isGameOver = true;
-        this.#scene.events.emit('game-won');
-        this.#scene.triggerGameOver();
-    }*/
 
     isPaused() {
         return this.#isPaused;

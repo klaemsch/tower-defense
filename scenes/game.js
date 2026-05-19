@@ -37,7 +37,7 @@ class GameScene extends Phaser.Scene {
 
         // launch the shop scene (and sleep immediately)
         this.scene.launch(config.sceneKeys.shop);
-        //this.scene.sleep(config.sceneKeys.shop);
+        this.scene.sleep(config.sceneKeys.shop);
 
         createWorld(this);       // world.js
 
@@ -78,6 +78,49 @@ class GameScene extends Phaser.Scene {
         // set structures and enemies to inactive to stop animations -> TODO: maybe game.pause() can do this more elegantly
         this.enemyManager.enemies.forEach((enemy) => enemy.active = false);
         structureMap.forEach((structure) => structure.active = false);
+    }
+
+    createTimeline() {
+        var timeline = this.add.timeline([
+            {
+                // Time condition
+                at: 0,
+                //in:
+                //from:
+
+                // Enable condition
+                if(event) {
+                    // this: target parameter
+                    return true;  // false
+                },
+
+                set: {
+                    key: 'value',
+                },
+
+                run() {
+                    // this: target parameter
+                    console.log('timeline event fired run')
+                },
+
+                loop() {
+                    console.log('timeline event fired loop')
+                },
+
+                sound: '',
+
+                event: 'test-event',
+
+                // target: this,
+
+                // once: false,
+                // stop: false,
+            },
+
+            // ...
+        ])
+        timeline.on('test-event', ()=>console.log('test-event recieved'));
+        timeline.play();
     }
 
 }

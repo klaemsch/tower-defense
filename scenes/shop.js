@@ -49,6 +49,9 @@ class ShopScene extends Phaser.Scene {
             fontSize: '18px',
         })
             .setDepth(101)
-            .on('pointerdown', () => this.scene.sleep());
+            .on('pointerdown', () => {
+                this.scene.sleep();
+                this.scene.wake(config.sceneKeys.game);
+            });
     }
 }
