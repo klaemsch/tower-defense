@@ -37,7 +37,7 @@ class GameScene extends Phaser.Scene {
 
         // launch the shop scene (and sleep immediately)
         this.scene.launch(config.sceneKeys.shop);
-        //this.scene.sleep(config.sceneKeys.shop);
+        this.scene.sleep(config.sceneKeys.shop);
 
         createWorld(this);       // world.js
 
