@@ -61,6 +61,16 @@ const config = {
         game: 'gameScene',
         shop: 'shopScene',
         hud: 'hudScene',
+    },
+    shop: {
+        title: 'Wave Complete!',
+        subtitle: 'You earned resources! Upgrade your towers.',
+        layout: {
+            cardWidth: 200,
+            cardHeight: 280,
+            cardGap: 24,
+            imgSize: 72,
+        }
     }
 }
 

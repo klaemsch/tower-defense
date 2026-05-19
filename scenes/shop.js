@@ -1,12 +1,9 @@
+// TODO: maybe use a NineSlice here: https://docs.phaser.io/phaser/concepts/gameobjects/nine-slice
 class ShopScene extends Phaser.Scene {
-    #title = 'Wave Complete!';
-    #subtitle = 'You earned resources! Upgrade your towers.';
-
-    // Layout constants
-    #CARD_WIDTH  = 200;
-    #CARD_HEIGHT = 280;
-    #CARD_GAP    = 24;
-    #IMG_SIZE    = 72;
+    #cardWidth = config.shop.layout.cardWidth;
+    #cardHeight = config.shop.layout.cardHeight;
+    #cardGap = config.shop.layout.cardGap;
+    #imgSize = config.shop.layout.imgSize;
 
     constructor() {
         super(config.sceneKeys.shop);
@@ -18,11 +15,11 @@ class ShopScene extends Phaser.Scene {
         const W = this.scale.width;
         const H = this.scale.height;
 
-        // ── Overlay ──────────────────────────────────────────────────────────
+        // ── Overlay with opacity to "blur" the game in the background ────────
         this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(100);
 
         // ── Title ────────────────────────────────────────────────────────────
-        this.add.text(W / 2, 72, this.#title, {
+        this.add.text(W / 2, 72, config.shop.title, {
             fontSize: '32px',
             color: '#ffffff',
             fontStyle: 'bold',
@@ -31,54 +28,41 @@ class ShopScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(101);
 
         // ── Subtitle ─────────────────────────────────────────────────────────
-        this.add.text(W / 2, 116, this.#subtitle, {
+        this.add.text(W / 2, 116, config.shop.subtitle, {
             fontSize: '16px',
             color: '#7ecfc2',
         }).setOrigin(0.5).setDepth(101);
 
         // ── Cards ─────────────────────────────────────────────────────────────
         const totalWidth =
-            cards.length * this.#CARD_WIDTH +
-            (cards.length - 1) * this.#CARD_GAP;
+            cards.length * this.#cardWidth +
+            (cards.length - 1) * this.#cardGap;
         const startX = (W - totalWidth) / 2;
-        const cardY  = H / 2 - 20; // vertical center of card area
+        const cardY = H / 2 - 20; // vertical center of card area
 
         cards.forEach((card, i) => {
-            const cx = startX + i * (this.#CARD_WIDTH + this.#CARD_GAP) + this.#CARD_WIDTH / 2;
+            const cx = startX + i * (this.#cardWidth + this.#cardGap) + this.#cardWidth / 2;
             this.#createCard(cx, cardY, card);
         });
 
         // ── Continue button ───────────────────────────────────────────────────
-        const btnY   = cardY + this.#CARD_HEIGHT / 2 + 40;
-        const CBW    = 160;
-        const CBH    = 44;
-        const contBg = this.#roundedRect(
-            W / 2 - CBW / 2, btnY - CBH / 2, CBW, CBH, 10,
-            0x1d3557, 1, 0x2a4a6a, 1, 101
-        );
-        this.add.text(W / 2, btnY, 'Continue  →', {
+        const btnY = cardY + config.shop.layout.cardHeight / 2 + 40;
+        new RoundedButton(this, W / 2, btnY, 160, 44, 'Continue  →', {
+            radius: 10,
             fontSize: '18px',
-            color: '#ffffff',
-            fontStyle: 'bold',
-        }).setOrigin(0.5).setDepth(102);
-
-        contBg.setInteractive(
-            new Phaser.Geom.Rectangle(0, 0, CBW, CBH),
-            Phaser.Geom.Rectangle.Contains
-        )
-            .on('pointerover', () => { contBg.clear(); this.#drawRoundedRect(contBg, 0, 0, CBW, CBH, 10, 0x2a4a7a, 1, 0x2a4a6a, 1); })
-            .on('pointerout',  () => { contBg.clear(); this.#drawRoundedRect(contBg, 0, 0, CBW, CBH, 10, 0x1d3557, 1, 0x2a4a6a, 1); })
+        })
+            .setDepth(101)
             .on('pointerdown', () => this.scene.sleep());
     }
 
     // ── Card builder ──────────────────────────────────────────────────────────
     #createCard(cx, cy, card) {
-        const DEPTH  = 101;
-        const CW     = this.#CARD_WIDTH;
-        const CH     = this.#CARD_HEIGHT;
-        const IS     = this.#IMG_SIZE;
-        const left   = cx - CW / 2;
-        const top    = cy - CH / 2;
+        const DEPTH = 101;
+        const CW = this.#cardWidth;
+        const CH = this.#cardHeight;
+        const IS = this.#imgSize;
+        const left = cx - CW / 2;
+        const top = cy - CH / 2;
         const RADIUS = 12;
 
         // Card background (rounded)
@@ -95,8 +79,8 @@ class ShopScene extends Phaser.Scene {
             new Phaser.Geom.Rectangle(0, 0, CW, CH),
             Phaser.Geom.Rectangle.Contains
         )
-            .on('pointerover', () => { bg.clear(); this.#drawRoundedRect(bg, 0, 0, CW, CH, RADIUS, 0x1a2f4a, 1, card.popular ? 0x3b8bba : 0x2a4a6a, card.popular ? 2 : 1); })
-            .on('pointerout',  () => { bg.clear(); this.#drawRoundedRect(bg, 0, 0, CW, CH, RADIUS, 0x12233a, 1, card.popular ? 0x3b8bba : 0x2a4a6a, card.popular ? 2 : 1); });
+            //.on('pointerover', () => { bg.clear(); this.#drawRoundedRect(bg, 0, 0, CW, CH, RADIUS, 0x1a2f4a, 1, card.popular ? 0x3b8bba : 0x2a4a6a, card.popular ? 2 : 1); })
+            //.on('pointerout', () => { bg.clear(); this.#drawRoundedRect(bg, 0, 0, CW, CH, RADIUS, 0x12233a, 1, card.popular ? 0x3b8bba : 0x2a4a6a, card.popular ? 2 : 1); });
 
         // "Popular" badge (rounded)
         if (card.popular) {
@@ -143,28 +127,10 @@ class ShopScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(DEPTH + 1);
 
         // Buy button (rounded)
-        const BW = CW - 24;
-        const BH = 28;
-        const btnLeft = cx - BW / 2;
-        const btnTop  = top + CH - 22 - BH / 2;
-
-        const btnGfx = this.#roundedRect(
-            btnLeft, btnTop, BW, BH, 6,
-            0x1d3557, 1, 0x2a4a6a, 1,
-            DEPTH + 1
-        );
-
-        btnGfx.setInteractive(
-            new Phaser.Geom.Rectangle(0, 0, BW, BH),
-            Phaser.Geom.Rectangle.Contains
-        )
-            .on('pointerover', () => { btnGfx.clear(); this.#drawRoundedRect(btnGfx, 0, 0, BW, BH, 6, 0x2a4a7a, 1, 0x2a4a6a, 1); })
-            .on('pointerout',  () => { btnGfx.clear(); this.#drawRoundedRect(btnGfx, 0, 0, BW, BH, 6, 0x1d3557, 1, 0x2a4a6a, 1); });
-
-        this.add.text(cx, top + CH - 22, `${card.cost} coins`, {
+        new RoundedButton(this, cx, top + CH - 22, CW - 24, 28, `${card.cost} coins`, {
             fontSize: '13px',
-            color: '#a8dadc',
-        }).setOrigin(0.5).setDepth(DEPTH + 2);
+            textColor: '#a8dadc',
+        }).setDepth(DEPTH + 2);
     }
 
     // ── Rounded rect helpers ──────────────────────────────────────────────────
