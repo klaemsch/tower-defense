@@ -50,8 +50,18 @@ const config = {
     resources: {
         wood: {
             registryKey: 'wood',
-            label: 'Wood',
+            label: '🪵',
             initialValue: 5,
+        },
+        villager: {
+            registryKey: 'villager',
+            label: '🧑‍🤝‍🧑',
+            initialValue: 5,
+        },
+        energy: {
+            registryKey: 'energy',
+            label: '⚡',
+            initialValue: 0,
         }
     },
     waves: [

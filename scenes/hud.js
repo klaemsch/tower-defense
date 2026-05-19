@@ -17,7 +17,9 @@ class HudScene extends Phaser.Scene {
 
         // ── Resources ──────────────────────────────────────────────────────
         this.#newHUDText(8, 8, config.resources.wood.registryKey, config.resources.wood.label);
-        this.#newHUDText(8, 30, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
+        this.#newHUDText(8, 8+1*22, config.resources.villager.registryKey, config.resources.villager.label);
+        this.#newHUDText(8, 8+2*22, config.resources.energy.registryKey, config.resources.energy.label);
+        this.#newHUDText(8, 8+3*22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
         // ── Placement buttons ──────────────────────────────────────────────
         this.#newPlacerButton(this.scale.width - 110, 8, 'woodShop', '🏪 Wood Shop');
@@ -30,19 +32,19 @@ class HudScene extends Phaser.Scene {
         });
 
         // ── Control Buttons ──────────────────────────────────────────────────────
-        this.#newControlButton(8, 80, 'play', '▶️ Next Wave');
-        this.#newControlButton(8, 120, 'toggle', '⏸️ Pause');
+        this.#newControlButton(8, 100, 'play', '▶️ Next Wave');
+        this.#newControlButton(8, 140, 'toggle', '⏸️ Pause');
 
         // ── Wave Info ────────────────────────────────────────────────────────────
-        this.#newHUDText(8, 200, 'wave', 'Wave');
-        this.#newHUDText(8, 220, 'waveTimer', 'Next Wave');
+        //this.#newHUDText(8, 200, 'wave', 'Wave');
+        //this.#newHUDText(8, 220, 'waveTimer', 'Next Wave');
     }
 
     // ── HUD text ──────────────────────────────────────────────────────────────
 
     #newHUDText(x, y, label, text) {
         const initValue = this.registry.get(label);
-        const textElement = this.add.text(x, y, `${text}: ${initValue}`, {
+        const textElement = this.add.text(x, y, `${text} ${initValue}`, {
             fontSize: '13px',
             color: '#a8dadc',
             fontStyle: 'bold',
@@ -51,15 +53,15 @@ class HudScene extends Phaser.Scene {
         }).setDepth(10);
 
         this.registry.events.on(`changedata-${label}`, (parent, value) => {
-            textElement.setText(`${text}: ${value}`);
+            textElement.setText(`${text} ${value}`);
         });
 
         // Special case: wave timer
-        if (label === 'waveTimer') {
+        /*if (label === 'waveTimer') {
             this.events.on('wave-start', (waveNum, enemyCount) => {
                 textElement.setText(`Next Wave: ${this.scene.gameFlowManager.waveDelay / 1000}s`);
             });
-        }
+        }*/
     }
 
     // ── Placer buttons ────────────────────────────────────────────────────────

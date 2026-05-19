@@ -52,6 +52,9 @@ class GameScene extends Phaser.Scene {
 
         // initialise resources, TODO: maybe do this somewhere else
         this.registry.set(config.resources.wood.registryKey, config.resources.wood.initialValue);
+        this.registry.set(config.resources.villager.registryKey, config.resources.villager.initialValue);
+        this.registry.set(config.resources.energy.registryKey, config.resources.energy.initialValue);
+
     }
 
     update(time, delta) {
@@ -79,50 +82,6 @@ class GameScene extends Phaser.Scene {
         this.enemyManager.enemies.forEach((enemy) => enemy.active = false);
         structureMap.forEach((structure) => structure.active = false);
     }
-
-    createTimeline() {
-        var timeline = this.add.timeline([
-            {
-                // Time condition
-                at: 0,
-                //in:
-                //from:
-
-                // Enable condition
-                if(event) {
-                    // this: target parameter
-                    return true;  // false
-                },
-
-                set: {
-                    key: 'value',
-                },
-
-                run() {
-                    // this: target parameter
-                    console.log('timeline event fired run')
-                },
-
-                loop() {
-                    console.log('timeline event fired loop')
-                },
-
-                sound: '',
-
-                event: 'test-event',
-
-                // target: this,
-
-                // once: false,
-                // stop: false,
-            },
-
-            // ...
-        ])
-        timeline.on('test-event', ()=>console.log('test-event recieved'));
-        timeline.play();
-    }
-
 }
 
 // add scenes to config -> TODO: maybe there is a better way to do this
