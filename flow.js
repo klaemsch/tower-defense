@@ -4,13 +4,12 @@ class GameFlowManager {
     #waveData;
     #currentWave = null;
     #enemyManager;
-    #isPaused;
 
     constructor(scene) {
         this.#scene = scene; // TODO: undestand the difference between this.#scene and this.#scene.scene
         this.#enemyManager = scene.enemyManager;
         this.#waveData = config.waves;
-        this.#isPaused = true;
+        this.#scene.registry.set('isPaused', false);
 
         // subscribe to event that fires when an enemy is destroyed -> check if wave is completed
         scene.events.on(config.enemy.onDestroyEventKey, this.#checkWaveCompleted, this);
@@ -27,24 +26,23 @@ class GameFlowManager {
         console.log('pauseWave called');
         this.#scene.scene.pause();
         this.#enemyManager.pauseSpawning();
-        this.#isPaused = true;
+        this.#scene.registry.set('isPaused', true);
     }
 
     resumeWave() {
         console.log('resumeWave called');
         this.#scene.scene.resume();
         this.#enemyManager.resumeSpawning();
-        this.#isPaused = false;
+        this.#scene.registry.set('isPaused', false);
     }
 
     togglePauseWave() {
         console.log('togglePauseWave called');
+        if (this.#scene.scene.isPaused() != this.#scene.registry.get('isPaused')) console.error('scene state and registry state mismatch!');
         if (this.#scene.scene.isPaused()) {
             this.resumeWave();
-            this.#isPaused = false;
         } else {
             this.pauseWave();
-            this.#isPaused = true;
         }
     }
 
@@ -73,6 +71,6 @@ class GameFlowManager {
     }
 
     isPaused() {
-        return this.#isPaused;
+        return this.#scene.registry.get('isPaused');
     }
 }

@@ -1,7 +1,8 @@
 class HudScene extends Phaser.Scene {
     #activeButton;
-    #placer;
+    #progressBar;
 
+    #placer;
     #gameFlowManager;
 
     constructor() {
@@ -16,32 +17,27 @@ class HudScene extends Phaser.Scene {
         this.#placer = this.registry.get('placer');
 
         // ── Resources ──────────────────────────────────────────────────────
-        this.#initResourceTexts();
+        this.#createResourceTexts();
         this.#newHUDText(8, 8 + 4 * 22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
         // ── Placement buttons ──────────────────────────────────────────────
-        this.#initPlacerButtons();
-        //this.#newPlacerButton(this.scale.width - 110, 8, 'woodShop', '🏪 Wood Shop');
-        //this.#newPlacerButton(this.scale.width - 110, 50, 'tower', '🗼 Tower');
-        //this.#newPlacerButton(this.scale.width - 110, 92, 'powerPlant', '🏭 Power Plant');  // TODO move texts into config
-
-        // Listen for deselect from placer (e.g. after placing or pressing Escape)
-        // so the button highlight clears automatically
-        this.registry.events.on('changedata-placer-activeStructure', (parent, value) => {
-            if (value === null) this.#clearButtonStates();
-        });
+        this.#createPlacerButtons();
 
         // ── Control Buttons ──────────────────────────────────────────────────────
-        this.#newControlButton(8, 100, 'play', '▶️ Next Wave');
-        this.#newControlButton(8, 140, 'toggle', '⏸️ Pause');
+        this.#createPauseToggle();
 
-        // ── Wave Info ────────────────────────────────────────────────────────────
-        //this.#newHUDText(8, 200, 'wave', 'Wave');
-        //this.#newHUDText(8, 220, 'waveTimer', 'Next Wave');
+        this.#progressBar = new ProgressBar(this, {
+            leftIcon: '▶',
+            rightIcon: '⚑',
+        }).setDepth(150);
     }
 
-    #initResourceTexts() {
-        //console.debug('initResourceTexts');
+    update() {
+        // update
+        this.#progressBar.setProgress(0.65);
+    }
+
+    #createResourceTexts() {
         const resources = Object.values(config.resources);
 
         resources.forEach((resource, i) => {
@@ -51,7 +47,7 @@ class HudScene extends Phaser.Scene {
         });
     }
 
-    #initPlacerButtons() {
+    #createPlacerButtons() {
         const placeableStructures = Object.values(config.structures)
             .filter(s => s.placerLabel !== undefined);
 
@@ -60,6 +56,47 @@ class HudScene extends Phaser.Scene {
             const x = this.scale.width - 110;
             const y = 8 + i * 42;
             this.#newPlacerButton(x, y, internalType, placerLabel);
+        });
+
+        // Listen for deselect from placer (e.g. after placing or pressing Escape)
+        // so the button highlight clears automatically
+        this.registry.events.on('changedata-placer-activeStructure', (parent, value) => {
+            if (value === null) this.#clearButtonStates();
+        });
+    }
+
+    #createPauseToggle() {
+        const pauseLabel = '⏸️ Pause';
+        const resumeLabel = '▶️ Resume';
+
+        const x = 8;
+        const y = 140;
+        const WIDTH = 100;
+        const HEIGHT = 36;
+        const COLOR_IDLE = 0x16213e;
+
+        this.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
+            .setOrigin(0, 0)
+            .setDepth(10)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => {
+                this.#gameFlowManager.togglePauseWave();
+            });
+
+        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, this.registry.get('isPaused') ? resumeLabel : pauseLabel, {
+            fontSize: '11px',
+            color: '#a8dadc',
+            fontStyle: 'bold',
+        }).setOrigin(0.5).setDepth(12);
+
+        // listen for game state change
+        this.registry.events.on('changedata-isPaused', (parent, isPaused) => {
+            //console.log('paused:', isPaused);
+            if (isPaused) {
+                textElement.text = resumeLabel;
+            } else {
+                textElement.text = pauseLabel;
+            }
         });
     }
 
