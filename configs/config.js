@@ -34,7 +34,7 @@ const config = {
     powerPlant: {
         health: 60,
         cost: 5,
-        label: '☢️',  // TODO: temporary
+        label: '🏭',
         color: '#1a1a2e',
     },
     bullet: {
