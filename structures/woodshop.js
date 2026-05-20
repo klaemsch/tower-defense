@@ -29,32 +29,6 @@ class WoodShop extends Structure {
         );
     }
 
-    // ── Harvest FX ────────────────────────────────────────────────────────────
-
-    #spawnHarvestFx(amount) {
-        const tileSize = config.world.tileSize;
-        const x = this.col * tileSize + tileSize / 2;
-        const y = this.row * tileSize;
-        const labelText = `${config.resources.wood.label} +${amount}`;
-
-        const label = this.scene.add.text(x, y, labelText, {
-            fontSize: '14px',
-            fontStyle: 'bold',
-            color: '#a8dadc',
-            //stroke: '#000000',
-            //strokeThickness: 3,
-        }).setOrigin(0.5, 1).setDepth(200).setAlpha(1);
-
-        this.scene.tweens.add({
-            targets: label,
-            y: y - 40,
-            alpha: 0,
-            duration: 1200,
-            ease: 'Cubic.Out',
-            onComplete: () => label.destroy(),
-        });
-    }
-
     // ── Public API ────────────────────────────────────────────────────────────
 
     // returns the number of trees in radius
@@ -79,10 +53,7 @@ class WoodShop extends Structure {
         if (time > this.#lastHarvest + this.#harvestRateMs) {
             this.#lastHarvest = time;
             const treeCount = this.#countTreesInRadius();
-            if (treeCount > 0) {
-                this.scene.registry.inc(config.resources.wood.registryKey, treeCount);
-                this.#spawnHarvestFx(treeCount);
-            }
+            this.produce(config.resources.wood.registryKey, config.resources.wood.label, treeCount);
         }
     }
 

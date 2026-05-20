@@ -1,5 +1,5 @@
 class Tower extends Structure {
-    #lastFired;
+    #attackTimer = 0;
     #radiusVisual;
     #radius;
     #radiusInPixel;
@@ -8,7 +8,6 @@ class Tower extends Structure {
         super(scene, col, row, 'tower', config.tower.color, config.tower.label, config.tower.health);  // call parent "Structure"
 
         this.fireRateMs = config.tower.fireRateMs;
-        this.#lastFired = 0;
 
         this.#radius = config.tower.radiusInTiles;
         this.#radiusInPixel = this.#radius * config.world.tileSize;
@@ -26,18 +25,13 @@ class Tower extends Structure {
     }
 
     preUpdate(time, delta) {
-        // TODO: instead of saving the time (might overflow at some point) use delta (time since last preUpdate call i guess)
-        /**
-         * 
-         *  this.#attackTimer += delta;
-        if (this.#attackTimer >= ENEMY_ATTACK_RATE) {
-            this.#attackTimer -= ENEMY_ATTACK_RATE;
-         */
-        if (time > this.#lastFired + this.fireRateMs) {
-            this.#lastFired = time;
-            const target = this.#findClosestEnemy();
+        // TODO: check if im right: delta is the time in milliseconds since the last preUpdate call, right?
+        this.#attackTimer += delta;
+        if (this.#attackTimer >= this.fireRateMs) {
+            this.#attackTimer -= this.fireRateMs;
             // TODO: maybe use the function here:
             // const target = this.scene.enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
+            const target = this.#findClosestEnemy();
             if (target) this.scene.add.bullet(this, target, config.tower.bulletSpeed, config.tower.bulletDamage);
         }
     }
