@@ -43,6 +43,8 @@ class Placer {
     // try to place the currently selected structure type
     place(col, row) {
         if (!this.#activeStructure) return;
+
+        const { numCols, numRows } = config.world;
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
         if (isCellOccupied(col, row)) return;
 
@@ -63,12 +65,12 @@ class Placer {
             this.#hoverGraphics.clear();
             return;
         }
+        const { tileSize, numCols, numRows } = config.world;
         const { col, row } = worldToGrid(pointer.x, pointer.y);
         this.#hoverGraphics.clear();
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
         const occupied = isCellOccupied(col, row);
         this.#hoverGraphics.lineStyle(2, occupied ? 0xff4444 : 0xffffff, 0.6);
-        const tileSize = config.world.tileSize;
         this.#hoverGraphics.strokeRect(col * tileSize + 1, row * tileSize + 1, tileSize - 2, tileSize - 2);
     }
 

@@ -250,6 +250,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     // ── Static pathfinding ────────────────────────────────────────────────────
 
     static #findPath(startCol, startRow, goalCol, goalRow) {
+        const { numCols, numRows } = config.world;
         const walkableAdjacent = Enemy.#adjacentCells(goalCol, goalRow).filter(({ col, row }) => {
             if (col < 0 || col >= numCols || row < 0 || row >= numRows) return false;
             const entry = structureMap.get(gridKey(col, row));
@@ -425,6 +426,7 @@ class EnemyManager {
     }
 
     #getBorderCells() {
+        const { numCols, numRows } = config.world;
         const cells = [];
         for (let c = 0; c < numCols; c++) {
             cells.push({ col: c, row: 0 });

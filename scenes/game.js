@@ -1,7 +1,3 @@
-// ─── Shared Constants ─────────────────────────────────────────────────────────
-// TODO: remove this
-const { tileSize, numCols, numRows } = config.world;
-
 // ─── Shared State ─────────────────────────────────────────────────────────────
 
 // Central lookup: "col,row" -> gameObject
@@ -9,9 +5,11 @@ const structureMap = new Map();
 
 // ─── Grid Helpers ─────────────────────────────────────────────────────────────
 function worldToGrid(x, y) {
+    const { tileSize } = config.world;
     return { col: Math.floor(x / tileSize), row: Math.floor(y / tileSize) };
 }
 function gridToWorld(col, row) {
+    const { tileSize } = config.world;
     return { x: col * tileSize + tileSize / 2, y: row * tileSize + tileSize / 2 };
 }
 function gridKey(col, row) { return `${col},${row}`; }
@@ -64,6 +62,8 @@ class GameScene extends Phaser.Scene {
 
     // TODO: rework and move overlay to HUD
     triggerGameOver() {
+        const { tileSize, numCols, numRows } = config.world;
+
         console.log('game over triggered');
         this.gameOver = true;
         const cx = (numCols * tileSize) / 2;
