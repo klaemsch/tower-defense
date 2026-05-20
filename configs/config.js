@@ -14,28 +14,20 @@ const config = {
          * - internalType: Phaser uses this internally to name the GameObjects
          * - health
          * - color: visual color of the underlying rectangle
-         * - label: visual label that gets printed
+         * - label: visual label that gets printed on the rectangle
+         * 
+         * If the structure costs resources, set these:
          * - costResourceRegistryKey: key of the resource that is needed to build this structure
          * - cost: amount of the resource that is needed to build this structure
+         * 
+         * If the structure can be placed, set this:
+         * - placerLabel: visual label for the placer
          */
         hq: {
             internalType: 'hq',
             health: 200,
             color: 0x888888,
             label: 'HQ',
-        },
-        tower: {
-            internalType: 'tower',
-            health: 100,
-            color: 0xFF0000,
-            label: 'T',
-            costResourceRegistryKey: 'wood',
-            cost: 10,
-
-            fireRateMs: 1000,
-            radiusInTiles: 3,
-            bulletSpeed: 400,
-            bulletDamage: 10,
         },
         woodShop: {
             internalType: 'woodShop',
@@ -44,9 +36,24 @@ const config = {
             label: '🏪',
             costResourceRegistryKey: 'wood',
             cost: 5,
+            placerLabel: '🏪 Wood Shop',
 
             radiusInTiles: 1,
             harvestRateMs: 1000,
+        },
+        tower: {
+            internalType: 'tower',
+            health: 100,
+            color: 0xFF0000,
+            label: 'T',
+            costResourceRegistryKey: 'wood',
+            cost: 10,
+            placerLabel: '🗼 Tower',
+
+            fireRateMs: 1000,
+            radiusInTiles: 3,
+            bulletSpeed: 400,
+            bulletDamage: 10,
         },
         powerPlant: {
             internalType: 'powerPlant',
@@ -55,6 +62,7 @@ const config = {
             label: '🏭',
             costResourceRegistryKey: 'wood',
             cost: 5,
+            placerLabel: '🏭 Power Plant',
         },
     },
     bullet: {
@@ -74,6 +82,11 @@ const config = {
         onDestroyEventKey: 'enemyDestroyed'
     },
     resources: {
+        token: {
+            registryKey: 'token',
+            label: '🪙',
+            initialValue: 5,
+        },
         wood: {
             registryKey: 'wood',
             label: '🪵',

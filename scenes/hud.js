@@ -16,15 +16,14 @@ class HudScene extends Phaser.Scene {
         this.#placer = this.registry.get('placer');
 
         // ── Resources ──────────────────────────────────────────────────────
-        this.#newHUDText(8, 8, config.resources.wood.registryKey, config.resources.wood.label);
-        this.#newHUDText(8, 8+1*22, config.resources.villager.registryKey, config.resources.villager.label);
-        this.#newHUDText(8, 8+2*22, config.resources.energy.registryKey, config.resources.energy.label);
-        this.#newHUDText(8, 8+3*22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
+        this.#initResourceTexts();
+        this.#newHUDText(8, 8 + 4 * 22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
         // ── Placement buttons ──────────────────────────────────────────────
-        this.#newPlacerButton(this.scale.width - 110, 8, 'woodShop', '🏪 Wood Shop');
-        this.#newPlacerButton(this.scale.width - 110, 50, 'tower', '🗼 Tower');
-        this.#newPlacerButton(this.scale.width - 110, 92, 'powerPlant', '🏭 Power Plant');  // TODO move texts into config
+        this.#initPlacerButtons();
+        //this.#newPlacerButton(this.scale.width - 110, 8, 'woodShop', '🏪 Wood Shop');
+        //this.#newPlacerButton(this.scale.width - 110, 50, 'tower', '🗼 Tower');
+        //this.#newPlacerButton(this.scale.width - 110, 92, 'powerPlant', '🏭 Power Plant');  // TODO move texts into config
 
         // Listen for deselect from placer (e.g. after placing or pressing Escape)
         // so the button highlight clears automatically
@@ -41,11 +40,34 @@ class HudScene extends Phaser.Scene {
         //this.#newHUDText(8, 220, 'waveTimer', 'Next Wave');
     }
 
+    #initResourceTexts() {
+        //console.debug('initResourceTexts');
+        const resources = Object.values(config.resources);
+
+        resources.forEach((resource, i) => {
+            const { registryKey, label } = resource;
+            //console.debug(`Creating HUD Text for resource ${label}`);
+            this.#newHUDText(8, 8 + i * 22, registryKey, label);
+        });
+    }
+
+    #initPlacerButtons() {
+        const placeableStructures = Object.values(config.structures)
+            .filter(s => s.placerLabel !== undefined);
+
+        placeableStructures.forEach((structure, i) => {
+            const { internalType, placerLabel } = structure;
+            const x = this.scale.width - 110;
+            const y = 8 + i * 42;
+            this.#newPlacerButton(x, y, internalType, placerLabel);
+        });
+    }
+
     // ── HUD text ──────────────────────────────────────────────────────────────
 
-    #newHUDText(x, y, label, text) {
-        const initValue = this.registry.get(label);
-        const textElement = this.add.text(x, y, `${text} ${initValue}`, {
+    #newHUDText(x, y, registryKey, label) {
+        const initValue = this.registry.get(registryKey);
+        const textElement = this.add.text(x, y, `${label} ${initValue}`, {
             fontSize: '13px',
             color: '#a8dadc',
             fontStyle: 'bold',
@@ -53,16 +75,9 @@ class HudScene extends Phaser.Scene {
             padding: { x: 6, y: 3 },
         }).setDepth(10);
 
-        this.registry.events.on(`changedata-${label}`, (parent, value) => {
-            textElement.setText(`${text} ${value}`);
+        this.registry.events.on(`changedata-${registryKey}`, (parent, value) => {
+            textElement.setText(`${label} ${value}`);
         });
-
-        // Special case: wave timer
-        /*if (label === 'waveTimer') {
-            this.events.on('wave-start', (waveNum, enemyCount) => {
-                textElement.setText(`Next Wave: ${this.scene.gameFlowManager.waveDelay / 1000}s`);
-            });
-        }*/
     }
 
     // ── Placer buttons ────────────────────────────────────────────────────────
