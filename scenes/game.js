@@ -76,11 +76,8 @@ class GameScene extends Phaser.Scene {
         this.add.text(cx, cy + 24, 'Your HQ was destroyed', {
             fontSize: '18px', color: '#ffffff',
         }).setOrigin(0.5).setDepth(51);
-        this.time.paused = true;
 
-        // set structures and enemies to inactive to stop animations -> TODO: maybe game.pause() can do this more elegantly
-        this.enemyManager.enemies.forEach((enemy) => enemy.active = false);
-        structureMap.forEach((structure) => structure.active = false);
+        this.scene.pause();
     }
 }
 

@@ -4,8 +4,10 @@ class Structure extends Phaser.GameObjects.GameObject {
     #labelElement;
     #healthElement;
 
-    constructor(scene, col, row, type, color, label, health) {
-        super(scene, type);
+    constructor(scene, col, row, structureConfig) {
+        super(scene, structureConfig.internalType);
+
+        console.log('creating structure with', structureConfig)
 
         this.col = col;
         this.row = row;
@@ -15,10 +17,10 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.pixelY = pos.y;
 
         this.size = config.world.tileSize;
-        this.color = color;
-        this.label = label;
+        this.color = structureConfig.color;
+        this.label = structureConfig.label;
 
-        this.#health = health;
+        this.#health = structureConfig.health;
         this.attackable = true;
 
         // Internal Graphics object that does the actual drawing
@@ -113,13 +115,16 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.scene.registry.inc(registryKey, amount);
         this.#spawnProduceFx(label, amount);
     }
-}
 
-Phaser.GameObjects.GameObjectFactory.register(
-    'structure',
-    function (col, row, type, color, label, health) {
-        // TODO: check for costs here
-        const structure = new Structure(this.scene, col, row, type, color, label, health);
-        return structure;
+    // use this static creator instead of 'new Structure(...)'
+    // it does cost checking and creation of the class/object
+    static create(scene, col, row, structureConfig, SubClass) {
+        if (structureConfig.costResourceRegistryKey && structureConfig.cost) {
+            const currentResourceCount = scene.registry.get(structureConfig.costResourceRegistryKey);
+            if (currentResourceCount < structureConfig.cost) return null;
+
+            scene.registry.inc(structureConfig.costResourceRegistryKey, -structureConfig.cost);
+        }
+        return new SubClass(scene, col, row, structureConfig);
     }
-);
+}

@@ -4,12 +4,12 @@ class Tower extends Structure {
     #radius;
     #radiusInPixel;
 
-    constructor(scene, col, row) {
-        super(scene, col, row, 'tower', config.tower.color, config.tower.label, config.tower.health);  // call parent "Structure"
+    constructor(scene, col, row, structureConfig) {
+        super(scene, col, row, structureConfig);
 
-        this.fireRateMs = config.tower.fireRateMs;
+        this.fireRateMs = config.structures.tower.fireRateMs;
 
-        this.#radius = config.tower.radiusInTiles;
+        this.#radius = config.structures.tower.radiusInTiles;
         this.#radiusInPixel = this.#radius * config.world.tileSize;
 
         this.#createRadiusVisual();
@@ -32,7 +32,7 @@ class Tower extends Structure {
             // TODO: maybe use the function here:
             // const target = this.scene.enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
             const target = this.#findClosestEnemy();
-            if (target) this.scene.add.bullet(this, target, config.tower.bulletSpeed, config.tower.bulletDamage);
+            if (target) this.scene.add.bullet(this, target, config.structures.tower.bulletSpeed, config.structures.tower.bulletDamage);
         }
     }
 
@@ -61,13 +61,6 @@ class Tower extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'tower',
     function (col, row) {
-        // TODO: move cost check from children to structure.js
-        const woodCount = this.scene.registry.get(config.resources.wood.registryKey);
-        if (woodCount >= config.tower.cost) {
-            this.scene.registry.inc(config.resources.wood.registryKey, -config.tower.cost);
-            const tower = new Tower(this.scene, col, row);
-            return tower;
-        }
-        return null;
+        return Structure.create(this.scene, col, row, config.structures.tower, Tower);
     }
 );

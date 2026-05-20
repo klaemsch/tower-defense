@@ -8,34 +8,54 @@ const config = {
         },
         backgroundColor: '#1a1a2e'
     },
-    hq: {
-        health: 200,
-        color: 0x888888,
-        label: 'HQ',
-    },
-    tower: {
-        health: 100,
-        cost: 10,
-        fireRateMs: 1000,
-        color: 0xFF0000,
-        label: 'T',
-        radiusInTiles: 3,
-        bulletSpeed: 400,
-        bulletDamage: 10,
-    },
-    woodShop: {
-        health: 60,
-        cost: 5,
-        label: '🏪',
-        color: '#1a1a2e',
-        radiusInTiles: 1,
-        harvestRateMs: 1000,
-    },
-    powerPlant: {
-        health: 60,
-        cost: 5,
-        label: '🏭',
-        color: '#1a1a2e',
+    structures: {
+        /**
+         * A valid structure config needs:
+         * - internalType: Phaser uses this internally to name the GameObjects
+         * - health
+         * - color: visual color of the underlying rectangle
+         * - label: visual label that gets printed
+         * - costResourceRegistryKey: key of the resource that is needed to build this structure
+         * - cost: amount of the resource that is needed to build this structure
+         */
+        hq: {
+            internalType: 'hq',
+            health: 200,
+            color: 0x888888,
+            label: 'HQ',
+        },
+        tower: {
+            internalType: 'tower',
+            health: 100,
+            color: 0xFF0000,
+            label: 'T',
+            costResourceRegistryKey: 'wood',
+            cost: 10,
+
+            fireRateMs: 1000,
+            radiusInTiles: 3,
+            bulletSpeed: 400,
+            bulletDamage: 10,
+        },
+        woodShop: {
+            internalType: 'woodShop',
+            health: 60,
+            color: '#1a1a2e',
+            label: '🏪',
+            costResourceRegistryKey: 'wood',
+            cost: 5,
+
+            radiusInTiles: 1,
+            harvestRateMs: 1000,
+        },
+        powerPlant: {
+            internalType: 'powerPlant',
+            health: 60,
+            color: '#1a1a2e',
+            label: '🏭',
+            costResourceRegistryKey: 'wood',
+            cost: 5,
+        },
     },
     bullet: {
         speed: 400,

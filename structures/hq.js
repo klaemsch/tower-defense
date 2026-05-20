@@ -1,9 +1,10 @@
 class HQ extends Structure {
 
-    constructor(scene) {
+    constructor(scene, _row, _col, structureConfig) {
+        // override given row and col to place HQ in the middle of the map
         const col = Math.floor(config.world.numCols / 2);
         const row = Math.floor(config.world.numRows / 2);
-        super(scene, col, row, 'HQ', config.hq.color, config.hq.label, config.hq.health);  // call parent "Structure"
+        super(scene, col, row, structureConfig);  // call parent "Structure"
 
     }
 
@@ -13,14 +14,9 @@ class HQ extends Structure {
     }
 }
 
-function registerHQFactory() {
-    Phaser.GameObjects.GameObjectFactory.register(
-        'hq',
-        function () {
-            const hq = new HQ(this.scene);
-            return hq;
-        },
-    );
-}
-
-registerHQFactory();
+Phaser.GameObjects.GameObjectFactory.register(
+    'hq',
+    function () {
+        return Structure.create(this.scene, 0, 0, config.structures.hq, HQ);
+    }
+);

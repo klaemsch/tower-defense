@@ -2,7 +2,7 @@
 // Called from game.js create(). Draws the grid, places HQ and trees.
 function createWorld(scene) {
     drawGrid(scene);
-    scene.add.hq();
+    if(!scene.add.hq()) console.error('Placing HQ failed');
     placeTrees(scene);
 }
 

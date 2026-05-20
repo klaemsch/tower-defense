@@ -4,13 +4,13 @@ class WoodShop extends Structure {
     #radiusVisual;
     #radius;
 
-    constructor(scene, col, row) {
-        super(scene, col, row, 'woodShop', config.woodShop.color, config.woodShop.label, config.woodShop.health);  // call parent "Structure"
+    constructor(scene, col, row, structureConfig) {
+        super(scene, col, row, structureConfig);
 
-        this.#radius = config.woodShop.radiusInTiles;
+        this.#radius = structureConfig.radiusInTiles;
 
         this.#lastHarvest = 0;
-        this.#harvestRateMs = config.woodShop.harvestRateMs;
+        this.#harvestRateMs = structureConfig.harvestRateMs;
 
         this.#createRadiusVisual();
     }
@@ -66,13 +66,6 @@ class WoodShop extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'woodShop',
     function (col, row) {
-        // TODO: move cost check from children to structure.js
-        const woodCount = this.scene.registry.get(config.resources.wood.registryKey);
-        if (woodCount >= config.woodShop.cost) {
-            this.scene.registry.inc(config.resources.wood.registryKey, -config.woodShop.cost);
-            const shop = new WoodShop(this.scene, col, row);
-            return shop;
-        }
-        return null;
-    },
+        return Structure.create(this.scene, col, row, config.structures.woodShop, WoodShop);
+    }
 );
