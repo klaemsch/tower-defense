@@ -9,7 +9,7 @@ class GameFlowManager {
         this.#scene = scene; // TODO: undestand the difference between this.#scene and this.#scene.scene
         this.#enemyManager = scene.enemyManager;
         this.#waveData = config.waves;
-        this.#scene.registry.set('isPaused', false);
+        this.#scene.registry.set(config.registryKeys.pauseResumeState, false);
 
         // subscribe to event that fires when an enemy is destroyed -> check if wave is completed
         scene.events.on(config.enemy.onDestroyEventKey, this.#checkWaveCompleted, this);
@@ -26,19 +26,19 @@ class GameFlowManager {
         console.log('pauseWave called');
         this.#scene.scene.pause();
         this.#enemyManager.pauseSpawning();
-        this.#scene.registry.set('isPaused', true);
+        this.#scene.registry.set(config.registryKeys.pauseResumeState, true);
     }
 
     resumeWave() {
         console.log('resumeWave called');
         this.#scene.scene.resume();
         this.#enemyManager.resumeSpawning();
-        this.#scene.registry.set('isPaused', false);
+        this.#scene.registry.set(config.registryKeys.pauseResumeState, false);
     }
 
     togglePauseWave() {
         console.log('togglePauseWave called');
-        if (this.#scene.scene.isPaused() != this.#scene.registry.get('isPaused')) console.error('scene state and registry state mismatch!');
+        if (this.#scene.scene.isPaused() != this.#scene.registry.get(config.registryKeys.pauseResumeState)) console.error('scene state and registry state mismatch!');
         if (this.#scene.scene.isPaused()) {
             this.resumeWave();
         } else {
@@ -61,7 +61,7 @@ class GameFlowManager {
         // get progress of wave spawn timer -> 1 means all enemies have been spawned
         const timerProgress = this.#enemyManager.spawnTimer.getOverallProgress();
         //console.log('progress:', timerProgress);
-        
+
         // if all enemies have been spawned AND destroyed
         if (timerProgress == 1 && enemiesLeft <= 0) {
             //console.log('wave completed')
@@ -71,6 +71,6 @@ class GameFlowManager {
     }
 
     isPaused() {
-        return this.#scene.registry.get('isPaused');
+        return this.#scene.registry.get(config.registryKeys.pauseResumeState);
     }
 }

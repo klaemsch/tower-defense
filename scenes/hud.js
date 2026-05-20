@@ -60,7 +60,7 @@ class HudScene extends Phaser.Scene {
 
         // Listen for deselect from placer (e.g. after placing or pressing Escape)
         // so the button highlight clears automatically
-        this.registry.events.on('changedata-placer-activeStructure', (parent, value) => {
+        this.registry.events.on(`changedata-${config.registryKeys.placerActiveStructure}`, (parent, value) => {
             if (value === null) this.#clearButtonStates();
         });
     }
@@ -83,14 +83,14 @@ class HudScene extends Phaser.Scene {
                 this.#gameFlowManager.togglePauseWave();
             });
 
-        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, this.registry.get('isPaused') ? resumeLabel : pauseLabel, {
+        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, this.registry.get(config.registryKeys.pauseResumeState) ? resumeLabel : pauseLabel, {
             fontSize: '11px',
             color: '#a8dadc',
             fontStyle: 'bold',
         }).setOrigin(0.5).setDepth(12);
 
         // listen for game state change
-        this.registry.events.on('changedata-isPaused', (parent, isPaused) => {
+        this.registry.events.on(`changedata-${config.registryKeys.pauseResumeState}`, (parent, isPaused) => {
             //console.log('paused:', isPaused);
             if (isPaused) {
                 textElement.text = resumeLabel;

@@ -111,6 +111,10 @@ const config = {
         shop: 'shopScene',
         hud: 'hudScene',
     },
+    registryKeys: {
+        pauseResumeState: 'isPaused',
+        placerActiveStructure: 'placer-activeStructure',
+    },
     shop: {
         title: 'Wave Complete!',
         subtitle: 'You earned resources! Upgrade your towers.',

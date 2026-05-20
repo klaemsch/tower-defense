@@ -30,13 +30,13 @@ class Placer {
     // selects a type of structure to be placed as string, e.g. 'tower'
     select(structureType) {
         this.#activeStructure = structureType;
-        this.#scene.registry.set('placer-activeStructure', structureType);
+        this.#scene.registry.set(config.registryKeys.placerActiveStructure, structureType);
     }
 
     // deselect type of structure
     deselect() {
         this.#activeStructure = null;
-        this.#scene.registry.set('placer-activeStructure', null);
+        this.#scene.registry.set(config.registryKeys.placerActiveStructure, null);
         this.#hoverGraphics.clear();
     }
 
