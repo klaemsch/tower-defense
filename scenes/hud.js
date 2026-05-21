@@ -19,8 +19,9 @@ class HudScene extends Phaser.Scene {
         this.#gameFlowManager = this.registry.get(config.registryKeys.gameFlowManager);
 
         // ── Resources ──────────────────────────────────────────────────────
-        this.#createResourceTexts();
-        this.#newHUDText(8, 8 + 4 * 22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
+        //this.#createResourceTexts();
+        new ResourceContainer(this, 0, 0);
+        //this.#newHUDText(8, 8 + 4 * 22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
         // ── Placement buttons ──────────────────────────────────────────────
         this.#createPlacerButtons();
@@ -41,16 +42,6 @@ class HudScene extends Phaser.Scene {
         }
 
         this.registry.set('enemies', this.#enemyManager.enemies.getLength()); // TODO: doing this every loop is a bit unnecessary
-    }
-
-    #createResourceTexts() {
-        const resources = Object.values(config.resources);
-
-        resources.forEach((resource, i) => {
-            const { registryKey, label } = resource;
-            //console.debug(`Creating HUD Text for resource ${label}`);
-            this.#newHUDText(8, 8 + i * 22, registryKey, label);
-        });
     }
 
     #createPlacerButtons() {
@@ -108,7 +99,7 @@ class HudScene extends Phaser.Scene {
 
     // ── HUD text ──────────────────────────────────────────────────────────────
 
-    #newHUDText(x, y, registryKey, label) {
+    /*#newHUDText(x, y, registryKey, label) {
         const initValue = this.registry.get(registryKey);
         const textElement = this.add.text(x, y, `${label} ${initValue}`, {
             fontSize: '13px',
@@ -121,7 +112,7 @@ class HudScene extends Phaser.Scene {
         this.registry.events.on(`changedata-${registryKey}`, (parent, value) => {
             textElement.setText(`${label} ${value}`);
         });
-    }
+    }*/
 
     // ── Placer buttons ────────────────────────────────────────────────────────
 
