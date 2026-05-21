@@ -4,6 +4,8 @@ class Tower extends Structure {
     #radius;
     #radiusInPixel;
 
+    #enemyManager;
+
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
 
@@ -11,6 +13,8 @@ class Tower extends Structure {
 
         this.#radius = config.structures.tower.radiusInTiles;
         this.#radiusInPixel = this.#radius * config.world.tileSize;
+
+        this.#enemyManager = this.scene.registry.get(config.registryKeys.enemyManager);
 
         this.#createRadiusVisual();
     }
@@ -30,7 +34,7 @@ class Tower extends Structure {
         if (this.#attackTimer >= this.fireRateMs) {
             this.#attackTimer -= this.fireRateMs;
             // TODO: maybe use the function here:
-            // const target = this.scene.enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
+            // const target = this.#enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
             const target = this.#findClosestEnemy();
             if (target) this.scene.add.bullet(this, target, config.structures.tower.bulletSpeed, config.structures.tower.bulletDamage);
         }
@@ -39,7 +43,7 @@ class Tower extends Structure {
     // TODO: move this to the enemy manager or use enemy manager
     #findClosestEnemy() {
         let closestEnemy = null, closestDistance = Infinity;
-        this.scene.enemyManager.enemies.getChildren().forEach((entry) => {
+        this.#enemyManager.enemies.getChildren().forEach((entry) => {
             if (entry.type !== 'enemy') return;
             const dx = entry.pixelX - this.pixelX;
             const dy = entry.pixelY - this.pixelY;

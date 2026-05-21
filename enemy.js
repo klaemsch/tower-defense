@@ -46,6 +46,12 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
         this.#drawPath();
         this.#draw();
+
+        // trigger destroy event for other scenes to check status
+        this.once('destroy', () => {
+            //console.log('enemy destroy event');
+            this.scene.game.events.emit(config.eventKeys.enemyDestroyed);
+        });
     }
 
     // ── Phaser lifecycle ──────────────────────────────────────────────────────
@@ -78,17 +84,8 @@ class Enemy extends Phaser.GameObjects.GameObject {
         return false;
     }
 
-    preDestroy() {
-        // apperently in preDestroy (other than in destroy) the scene is available
-
-        // fire event that an enemy has died
-        this.scene.events.emit(
-            config.enemy.onDestroyEventKey,         // key of event
-            this.scene.enemyManager.enemies.getLength()-1  // number of remaining enemies after this one gets deleted
-        )
-    }
-
     destroy(fromScene) {
+        //console.log(this.scene)
         this.#pathGfx.destroy();
         this.#gfx.destroy();
         super.destroy(fromScene);

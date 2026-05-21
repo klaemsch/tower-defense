@@ -79,7 +79,6 @@ const config = {
         color: 0xe63946,
         sizeRatio: 0.5,   // size relative to tileSize, evaluated at draw time
         health: 30,
-        onDestroyEventKey: 'enemyDestroyed'
     },
     resources: {
         token: {
@@ -114,6 +113,16 @@ const config = {
     registryKeys: {
         pauseResumeState: 'isPaused',
         placerActiveStructure: 'placer-activeStructure',
+        enemyManager: 'enemyManager',
+        placer: 'placer',
+        gameFlowManager: 'gameFlowManager',
+    },
+    eventKeys: {
+        gamePause: 'game:pause',            // emitted when the game is paused
+        gameResume: 'game:resume',          // emitted when the game is paused
+        shopOpen: 'shop:open',              // emitted when the shop is opened
+        shopClose: 'shop:close',            // emitted when the shop is closed
+        enemyDestroyed: 'enemy:destroyed',  // emitted after an enemy was destroyed
     },
     shop: {
         title: 'Wave Complete!',

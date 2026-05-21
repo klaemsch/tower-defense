@@ -24,12 +24,14 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super(config.sceneKeys.game);
         this.gameOver = false;
-        this.gameFlowManager = null;
     }
 
     preload() { }
 
     create() {
+        // register event listeners
+        this.#registerEventListeners();
+
         // launch the HUD scene
         this.scene.launch(config.sceneKeys.hud);
 
@@ -39,23 +41,25 @@ class GameScene extends Phaser.Scene {
 
         createWorld(this);       // world.js
 
-        this.enemyManager = new EnemyManager(this);
+        // Initialize enemy manager and move it to registry
+        const enemyManager = new EnemyManager(this);
+        this.registry.set(config.registryKeys.enemyManager, enemyManager);
 
+        // Initialize placer and move it to registry
         const placer = new Placer(this);
-        this.registry.set('placer', placer);
+        this.registry.set(config.registryKeys.placer, placer);
 
-        // Initialize game flow manager
-        this.gameFlowManager = new GameFlowManager(this);
-        this.registry.set('gameFlowManager', this.gameFlowManager);
+        // Initialize game flow manager and move it to registry
+        const gameFlowManager = new GameFlowManager(this);
+        this.registry.set(config.registryKeys.gameFlowManager, gameFlowManager);
 
         // initialise resources
         this.#initResources();
 
     }
 
-    update(time, delta) {
-        if (this.gameOver) return;
-        this.registry.set('enemies', this.enemyManager.enemies.getLength()); // doing this every loop is a bit unnecessary
+    destroy() {
+        this.#destroyEventListeners();
     }
 
     // TODO: rework and move overlay to HUD
@@ -85,6 +89,16 @@ class GameScene extends Phaser.Scene {
             //console.debug(`Setting ${registryKey} to ${initialValue}`);
             this.registry.set(registryKey, initialValue);
         }
+    }
+
+    #registerEventListeners() {
+        this.game.events.on(config.eventKeys.gameResume, () => this.scene.wake());
+        this.game.events.on(config.eventKeys.gamePause, () => this.scene.sleep());
+    }
+
+    #destroyEventListeners() {
+        this.game.events.off(config.eventKeys.gamePause);
+        this.game.events.off(config.eventKeys.gamePause);
     }
 }
 

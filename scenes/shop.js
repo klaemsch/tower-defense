@@ -11,6 +11,8 @@ class ShopScene extends Phaser.Scene {
     preload() { }
 
     create() {
+        this.#registerEventListeners();
+
         const W = this.scale.width;
         const H = this.scale.height;
 
@@ -50,8 +52,27 @@ class ShopScene extends Phaser.Scene {
         })
             .setDepth(101)
             .on('pointerdown', () => {
-                this.scene.sleep();
-                this.scene.wake(config.sceneKeys.game);
+                this.#closeShop();
             });
+    }
+
+    destroy() {
+        this.#destroyEventListeners();
+    }
+
+    #closeShop() {
+        // send shop to sleep and wake game
+        this.game.events.emit(config.eventKeys.shopClose);
+        this.game.events.emit(config.eventKeys.gameResume);
+    }
+
+    #registerEventListeners() {
+        this.game.events.on(config.eventKeys.shopOpen, () => this.scene.wake());
+        this.game.events.on(config.eventKeys.shopClose, () => this.scene.sleep());
+    }
+
+    #destroyEventListeners() {
+        this.game.events.off(config.eventKeys.shopOpen);
+        this.game.events.off(config.eventKeys.shopClose);
     }
 }

@@ -2,6 +2,7 @@ class HudScene extends Phaser.Scene {
     #activeButton;
     #progressBar;
 
+    #enemyManager;
     #placer;
     #gameFlowManager;
 
@@ -13,8 +14,9 @@ class HudScene extends Phaser.Scene {
     preload() { }
 
     create() {
-        this.#gameFlowManager = this.registry.get('gameFlowManager');
-        this.#placer = this.registry.get('placer');
+        this.#enemyManager = this.registry.get(config.registryKeys.enemyManager);
+        this.#placer = this.registry.get(config.registryKeys.placer);
+        this.#gameFlowManager = this.registry.get(config.registryKeys.gameFlowManager);
 
         // ── Resources ──────────────────────────────────────────────────────
         this.#createResourceTexts();
@@ -32,9 +34,13 @@ class HudScene extends Phaser.Scene {
         }).setDepth(150);
     }
 
-    update() {
-        // update
-        this.#progressBar.setProgress(0.65);
+    update(time, delta) {
+        if (this.#enemyManager.spawnTimer) {
+            const progress = this.#enemyManager.spawnTimer.getOverallProgress();
+            this.#progressBar.setProgress(progress);
+        }
+
+        this.registry.set('enemies', this.#enemyManager.enemies.getLength()); // TODO: doing this every loop is a bit unnecessary
     }
 
     #createResourceTexts() {
