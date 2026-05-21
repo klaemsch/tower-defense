@@ -55,6 +55,20 @@ const config = {
             bulletSpeed: 400,
             bulletDamage: 10,
         },
+        sniper: {
+            internalType: 'sniper',
+            health: 100,
+            color: 0xFF0000,
+            label: 'S',
+            costResourceRegistryKey: 'wood',
+            cost: 10,
+            placerLabel: '🗼 Sniper',
+
+            fireRateMs: 3000,
+            radiusInTiles: 6,
+            bulletSpeed: 400,
+            bulletDamage: 20,
+        },
         powerPlant: {
             internalType: 'powerPlant',
             health: 60,

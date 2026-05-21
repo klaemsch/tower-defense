@@ -3,16 +3,20 @@ class Tower extends Structure {
     #radiusVisual;
     #radius;
     #radiusInPixel;
+    #bulletDamage;
+    #bulletSpeed;
 
     #enemyManager;
 
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
 
-        this.fireRateMs = config.structures.tower.fireRateMs;
+        this.fireRateMs = structureConfig.fireRateMs;
 
-        this.#radius = config.structures.tower.radiusInTiles;
+        this.#radius = structureConfig.radiusInTiles;
         this.#radiusInPixel = this.#radius * config.world.tileSize;
+        this.#bulletDamage = structureConfig.bulletDamage;
+        this.#bulletSpeed = structureConfig.bulletSpeed;
 
         this.#enemyManager = this.scene.registry.get(config.registryKeys.enemyManager);
 
@@ -36,7 +40,7 @@ class Tower extends Structure {
             // TODO: maybe use the function here:
             // const target = this.#enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
             const target = this.#findClosestEnemy();
-            if (target) this.scene.add.bullet(this, target, config.structures.tower.bulletSpeed, config.structures.tower.bulletDamage);
+            if (target) this.scene.add.bullet(this, target, this.#bulletSpeed, this.#bulletDamage);
         }
     }
 
@@ -64,7 +68,7 @@ class Tower extends Structure {
 
 Phaser.GameObjects.GameObjectFactory.register(
     'tower',
-    function (col, row) {
-        return Structure.create(this.scene, col, row, config.structures.tower, Tower);
+    function (col, row, structureConfig) {
+        return Structure.create(this.scene, col, row, structureConfig, Tower);
     }
 );
