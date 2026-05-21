@@ -66,7 +66,7 @@ const config = {
 
             fireRateMs: 3000,
             radiusInTiles: 6,
-            bulletSpeed: 400,
+            bulletSpeed: 800,
             bulletDamage: 20,
         },
         powerPlant: {

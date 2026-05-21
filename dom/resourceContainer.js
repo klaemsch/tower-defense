@@ -21,13 +21,13 @@ class ResourceContainer extends Phaser.GameObjects.Container {
             const y = this.#paddingTop + i * this.#betweenGap;
             //console.debug(`Creating HUD Text for resource ${label}`);
 
-            this.#newHUDText(x, y, registryKey, label);
+            this.#newResourceDisplay(x, y, registryKey, label);
         });
 
         scene.add.existing(this);
     }
 
-    #newHUDText(x, y, registryKey, label) {
+    #newResourceDisplay(x, y, registryKey, label) {
         const initValue = this.#hudScene.registry.get(registryKey);
 
         const textElement = this.#hudScene.add.text(x, y, `${label} ${initValue}`, {

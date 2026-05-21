@@ -19,12 +19,11 @@ class HudScene extends Phaser.Scene {
         this.#gameFlowManager = this.registry.get(config.registryKeys.gameFlowManager);
 
         // ── Resources ──────────────────────────────────────────────────────
-        //this.#createResourceTexts();
         new ResourceContainer(this, 0, 0);
         //this.#newHUDText(8, 8 + 4 * 22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
         // ── Placement buttons ──────────────────────────────────────────────
-        this.#createPlacerButtons();
+        new PlacerContainer(this, this.scale.width - 120, 0);
 
         // ── Control Buttons ──────────────────────────────────────────────────────
         this.#createPauseToggle();
@@ -44,7 +43,7 @@ class HudScene extends Phaser.Scene {
         this.registry.set('enemies', this.#enemyManager.enemies.getLength()); // TODO: doing this every loop is a bit unnecessary
     }
 
-    #createPlacerButtons() {
+    /*#createPlacerButtons() {
         const placeableStructures = Object.values(config.structures)
             .filter(s => s.placerLabel !== undefined);
 
@@ -60,7 +59,7 @@ class HudScene extends Phaser.Scene {
         this.registry.events.on(`changedata-${config.registryKeys.placerActiveStructure}`, (parent, value) => {
             if (value === null) this.#clearButtonStates();
         });
-    }
+    }*/
 
     #createPauseToggle() {
         const pauseLabel = '⏸️ Pause';
@@ -114,79 +113,6 @@ class HudScene extends Phaser.Scene {
         });
     }*/
 
-    // ── Placer buttons ────────────────────────────────────────────────────────
-
-    #newPlacerButton(x, y, structureType, label) {
-        const WIDTH = 100;
-        const HEIGHT = 36;
-
-        const COLOR_IDLE = 0x16213e;
-        const COLOR_ACTIVE = 0x1d3557;
-        const BORDER_IDLE = 0x457b9d;
-        const BORDER_ACTIVE = 0xa8dadc;
-
-        // Background rectangle (acts as the hit area)
-        const button = this.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
-            .setOrigin(0, 0)
-            .setDepth(10)
-            .setInteractive({ useHandCursor: true });
-
-        // Border drawn with Graphics
-        const border = this.add.graphics().setDepth(11);
-        const drawBorder = (active) => {
-            border.clear();
-            border.lineStyle(2, active ? BORDER_ACTIVE : BORDER_IDLE, 1);
-            border.strokeRect(x, y, WIDTH, HEIGHT);
-        };
-        drawBorder(false);
-
-        // Label text
-        const text = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, label, {
-            fontSize: '11px',
-            color: '#a8dadc',
-            fontStyle: 'bold',
-        }).setOrigin(0.5).setDepth(12);
-
-        // ── Interaction ───────────────────────────────────────────────────
-        button.on('pointerover', () => {
-            if (this.activeButton !== button) {
-                button.setFillStyle(0x1a3a5c);
-            }
-        });
-
-        button.on('pointerout', () => {
-            if (this.activeButton !== button) {
-                button.setFillStyle(COLOR_IDLE);
-                drawBorder(false);
-            }
-        });
-
-        button.on('pointerdown', () => {
-
-            if (this.activeButton === button) {
-                // Clicking the active button deselects
-                this.#placer.deselect();
-                this.#setButtonState(button, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
-                this.activeButton = null;
-            } else {
-                // Deactivate previously active button
-                if (this.activeButton) {
-                    this.activeButton.emit('_deactivate');
-                }
-                this.#placer.select(structureType);
-                this.#setButtonState(button, border, text, true, COLOR_ACTIVE, BORDER_ACTIVE, drawBorder);
-                this.activeButton = button;
-            }
-        });
-
-        // Internal deactivate event so sibling buttons can reset each other
-        button.on('_deactivate', () => {
-            this.#setButtonState(button, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
-        });
-
-        return { button, border, text };
-    }
-
     #newControlButton(x, y, action, label) {
         const WIDTH = 100;
         const HEIGHT = 36;
@@ -226,20 +152,5 @@ class HudScene extends Phaser.Scene {
         });
 
         return { button, text, event };
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    #setButtonState(button, border, text, active, fillColor, borderColor, drawBorder) {
-        button.setFillStyle(fillColor);
-        drawBorder(active);
-        text.setColor(active ? '#ffffff' : '#a8dadc');
-    }
-
-    #clearButtonStates() {
-        if (this.activeButton) {
-            this.activeButton.emit('_deactivate');
-            this.activeButton = null;
-        }
     }
 }
