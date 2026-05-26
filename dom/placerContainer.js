@@ -3,10 +3,17 @@ class PlacerContainer extends Phaser.GameObjects.Container {
     #placer;
 
     #activeButton;
+    #border;
 
     #paddingLeft = 8;
     #paddingTop = 8;
-    #betweenGap = 42;
+    #betweenGap = 6;
+    #buttonWidth = 100;
+    #buttonHeight = 36;
+    #fillColorIdle = 0x16213e;
+    #fillColorActive = 0x1d3557;
+    #borderColorIdle = 0x457b9d;
+    #borderColorActive = 0xa8dadc;
 
     /**
      * @param {Phaser.Scene} scene
@@ -24,7 +31,7 @@ class PlacerContainer extends Phaser.GameObjects.Container {
         placeableStructures.forEach((structure, i) => {
             const { internalType, placerLabel } = structure;
             const x = this.#paddingLeft;
-            const y = this.#paddingTop + i * this.#betweenGap;
+            const y = this.#paddingTop + i * (this.#buttonHeight + this.#betweenGap);
 
             this.#newPlacerButton(x, y, internalType, placerLabel);
         });
@@ -39,34 +46,22 @@ class PlacerContainer extends Phaser.GameObjects.Container {
     }
 
     #newPlacerButton(x, y, structureType, label) {
-        // TODO: move constants to class
-        const WIDTH = 100;
-        const HEIGHT = 36;
-
-        const COLOR_IDLE = 0x16213e;
-        const COLOR_ACTIVE = 0x1d3557;
-        const BORDER_IDLE = 0x457b9d;
-        const BORDER_ACTIVE = 0xa8dadc;
 
         // Background rectangle (acts as the hit area)
-        const button = this.#hudScene.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
+        const button = this.#hudScene.add.rectangle(x, y, this.#buttonWidth, this.#buttonHeight, this.#fillColorIdle)
             .setOrigin(0, 0)
             .setDepth(10)
             .setInteractive({ useHandCursor: true });
         this.add(button);
 
         // Border drawn with Graphics
-        const border = this.#hudScene.add.graphics().setDepth(11);
-        const drawBorder = (active) => {
-            border.clear();
-            border.lineStyle(2, active ? BORDER_ACTIVE : BORDER_IDLE, 1);
-            border.strokeRect(x, y, WIDTH, HEIGHT);
-        };
-        drawBorder(false);
-        this.add(border);
+        this.#border = this.#hudScene.add.graphics().setDepth(11);
+
+        this.#drawBorder(x, y, false);
+        this.add(this.#border);
 
         // Label text
-        const text = this.#hudScene.add.text(x + WIDTH / 2, y + HEIGHT / 2, label, {
+        const text = this.#hudScene.add.text(x + this.#buttonWidth / 2, y + this.#buttonHeight / 2, label, {
             fontSize: '11px',
             color: '#a8dadc',
             fontStyle: 'bold',
@@ -82,8 +77,8 @@ class PlacerContainer extends Phaser.GameObjects.Container {
 
         button.on('pointerout', () => {
             if (this.#activeButton !== button) {
-                button.setFillStyle(COLOR_IDLE);
-                drawBorder(false);
+                button.setFillStyle(this.#fillColorIdle);
+                this.#drawBorder(x, y, false);
             }
         });
 
@@ -92,7 +87,7 @@ class PlacerContainer extends Phaser.GameObjects.Container {
             if (this.#activeButton === button) {
                 // Clicking the active button deselects
                 this.#placer.deselect();
-                this.#setButtonState(button, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
+                this.#setButtonState(x, y, button, text, false, this.#fillColorIdle);
                 this.#activeButton = null;
             } else {
                 // Deactivate previously active button
@@ -100,22 +95,28 @@ class PlacerContainer extends Phaser.GameObjects.Container {
                     this.#activeButton.emit('_deactivate');
                 }
                 this.#placer.select(structureType);
-                this.#setButtonState(button, border, text, true, COLOR_ACTIVE, BORDER_ACTIVE, drawBorder);
+                this.#setButtonState(x, y, button, text, true, this.#fillColorActive);
                 this.#activeButton = button;
             }
         });
 
         // Internal deactivate event so sibling buttons can reset each other
         button.on('_deactivate', () => {
-            this.#setButtonState(button, border, text, false, COLOR_IDLE, BORDER_IDLE, drawBorder);
+            this.#setButtonState(x, y, button, text, false, this.#fillColorIdle, this.#borderColorIdle);
         });
-
-        return { button, border, text };
     }
 
-    #setButtonState(button, border, text, active, fillColor, borderColor, drawBorder) {
+    #drawBorder(x, y, active) {
+        const borderColor = active ? this.#borderColorActive : this.#borderColorIdle;
+
+        this.#border.clear();
+        this.#border.lineStyle(2, borderColor, 1);
+        this.#border.strokeRect(x, y, this.#buttonWidth, this.#buttonHeight);
+    };
+
+    #setButtonState(x, y, button, text, active, fillColor) {
         button.setFillStyle(fillColor);
-        drawBorder(active);
+        this.#drawBorder(x, y, active);
         text.setColor(active ? '#ffffff' : '#a8dadc');
     }
 
