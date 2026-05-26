@@ -1,129 +1,170 @@
-class PlacerContainer extends Phaser.GameObjects.Container {
-    #hudScene;
-    #placer;
+/**
+ * Self-contained button that owns its rectangle, border graphics,
+ * label text, and active/hover state.  PlacerContainer just calls
+ * activate() / deactivate() and listens to the 'select' event.
+ */
+class PlacerButton extends Phaser.GameObjects.Container {
+    // ── Layout / theme (shared across all instances) ──────────────────
+    static #WIDTH            = 100;
+    static #HEIGHT           = 36;
+    static #FILL_IDLE        = 0x16213e;
+    static #FILL_HOVER       = 0x1a3a5c;
+    static #FILL_ACTIVE      = 0x1d3557;
+    static #BORDER_IDLE      = 0x457b9d;
+    static #BORDER_ACTIVE    = 0xa8dadc;
+    static #TEXT_IDLE        = '#a8dadc';
+    static #TEXT_ACTIVE      = '#ffffff';
 
-    #activeButton;
-    #border;
-
-    #paddingLeft = 8;
-    #paddingTop = 8;
-    #betweenGap = 6;
-    #buttonWidth = 100;
-    #buttonHeight = 36;
-    #fillColorIdle = 0x16213e;
-    #fillColorActive = 0x1d3557;
-    #borderColorIdle = 0x457b9d;
-    #borderColorActive = 0xa8dadc;
+    // ── Instance fields ───────────────────────────────────────────────
+    #rect;
+    #borderGfx;
+    #label;
+    #active = false;
 
     /**
      * @param {Phaser.Scene} scene
-     * @param {number}       cx      - Center x
-     * @param {number}       cy      - Center y
+     * @param {number}       x        - Top-left x (container-local)
+     * @param {number}       y        - Top-left y (container-local)
+     * @param {string}       label    - Button text
+     * @param {string}       structureType
+     */
+    constructor(scene, x, y, label, structureType) {
+        super(scene, x, y);
+
+        this.#rect = scene.add
+            .rectangle(0, 0, PlacerButton.#WIDTH, PlacerButton.#HEIGHT, PlacerButton.#FILL_IDLE)
+            .setOrigin(0, 0)
+            .setInteractive({ useHandCursor: true });
+
+        this.#borderGfx = scene.add.graphics();
+        this.#drawBorder();
+
+        this.#label = scene.add.text(
+            PlacerButton.#WIDTH / 2,
+            PlacerButton.#HEIGHT / 2,
+            label,
+            { fontSize: '11px', color: PlacerButton.#TEXT_IDLE, fontStyle: 'bold' }
+        ).setOrigin(0.5);
+
+        this.add([this.#rect, this.#borderGfx, this.#label]);
+        this.#registerPointerEvents(structureType);
+        scene.add.existing(this);
+    }
+
+    // ── Public API ────────────────────────────────────────────────────
+
+    activate() {
+        this.#active = true;
+        this.#applyTheme();
+    }
+
+    deactivate() {
+        this.#active = false;
+        this.#applyTheme();
+    }
+
+    get isActive() { return this.#active; }
+
+    // ── Private helpers ───────────────────────────────────────────────
+
+    #drawBorder(color = PlacerButton.#BORDER_IDLE) {
+        this.#borderGfx.clear();
+        this.#borderGfx.lineStyle(2, color, 1);
+        this.#borderGfx.strokeRect(0, 0, PlacerButton.#WIDTH, PlacerButton.#HEIGHT);
+    }
+
+    #applyTheme() {
+        const active = this.#active;
+        this.#rect.setFillStyle(active ? PlacerButton.#FILL_ACTIVE : PlacerButton.#FILL_IDLE);
+        this.#drawBorder(active ? PlacerButton.#BORDER_ACTIVE : PlacerButton.#BORDER_IDLE);
+        this.#label.setColor(active ? PlacerButton.#TEXT_ACTIVE : PlacerButton.#TEXT_IDLE);
+    }
+
+    #registerPointerEvents(structureType) {
+        this.#rect.on('pointerover',  () => {
+            if (!this.#active)
+                this.#rect.setFillStyle(PlacerButton.#FILL_HOVER);
+        });
+
+        this.#rect.on('pointerout', () => {
+            if (!this.#active)
+                this.#rect.setFillStyle(PlacerButton.#FILL_IDLE);
+        });
+
+        this.#rect.on('pointerdown', () =>
+            this.emit('select', structureType, this)
+        );
+    }
+}
+
+
+/**
+ * Toolbar container that holds one PlacerButton per placeable structure
+ * and coordinates mutual exclusion between them.
+ */
+class PlacerContainer extends Phaser.GameObjects.Container {
+    #placer;
+    #activeButton = null;
+
+    static #PADDING_X    = 8;
+    static #PADDING_Y    = 8;
+    static #BUTTON_GAP   = 6;
+    static #BUTTON_HEIGHT = 36;
+
+    /**
+     * @param {Phaser.Scene} scene
+     * @param {number}       cx   - Center x
+     * @param {number}       cy   - Center y
      */
     constructor(scene, cx, cy) {
         super(scene, cx, cy);
-        this.#hudScene = scene;
-        this.#placer = this.#hudScene.registry.get(config.registryKeys.placer);
+        this.#placer = scene.registry.get(config.registryKeys.placer);
 
-        const placeableStructures = Object.values(config.structures)
-            .filter(s => s.placerLabel !== undefined);
+        Object.values(config.structures)
+            .filter(s => s.placerLabel !== undefined)
+            .forEach((s, i) => this.#addButton(s, i));
 
-        placeableStructures.forEach((structure, i) => {
-            const { internalType, placerLabel } = structure;
-            const x = this.#paddingLeft;
-            const y = this.#paddingTop + i * (this.#buttonHeight + this.#betweenGap);
-
-            this.#newPlacerButton(x, y, internalType, placerLabel);
-        });
-
-        // Listen for deselect from placer (e.g. after placing or pressing Escape)
-        // so the button highlight clears automatically
-        this.#hudScene.registry.events.on(`changedata-${config.registryKeys.placerActiveStructure}`, (parent, value) => {
-            if (value === null) this.#clearButtonStates();
-        });
+        scene.registry.events.on(
+            `changedata-${config.registryKeys.placerActiveStructure}`,
+            (_parent, value) => { if (value === null) this.#deactivateAll(); }
+        );
 
         scene.add.existing(this);
     }
 
-    #newPlacerButton(x, y, structureType, label) {
+    // ── Private helpers ───────────────────────────────────────────────
 
-        // Background rectangle (acts as the hit area)
-        const button = this.#hudScene.add.rectangle(x, y, this.#buttonWidth, this.#buttonHeight, this.#fillColorIdle)
-            .setOrigin(0, 0)
-            .setDepth(10)
-            .setInteractive({ useHandCursor: true });
-        this.add(button);
+    #addButton(structure, index) {
+        const x = PlacerContainer.#PADDING_X;
+        const y = PlacerContainer.#PADDING_Y
+                + index * (PlacerContainer.#BUTTON_HEIGHT + PlacerContainer.#BUTTON_GAP);
 
-        // Border drawn with Graphics
-        this.#border = this.#hudScene.add.graphics().setDepth(11);
+        const btn = new PlacerButton(
+            this.scene, x, y, structure.placerLabel, structure.internalType
+        );
 
-        this.#drawBorder(x, y, false);
-        this.add(this.#border);
+        btn.on('select', (structureType, sender) =>
+            this.#onButtonSelect(structureType, sender)
+        );
 
-        // Label text
-        const text = this.#hudScene.add.text(x + this.#buttonWidth / 2, y + this.#buttonHeight / 2, label, {
-            fontSize: '11px',
-            color: '#a8dadc',
-            fontStyle: 'bold',
-        }).setOrigin(0.5).setDepth(12);
-        this.add(text);
-
-        // ── Interaction ───────────────────────────────────────────────────
-        button.on('pointerover', () => {
-            if (this.#activeButton !== button) {
-                button.setFillStyle(0x1a3a5c);
-            }
-        });
-
-        button.on('pointerout', () => {
-            if (this.#activeButton !== button) {
-                button.setFillStyle(this.#fillColorIdle);
-                this.#drawBorder(x, y, false);
-            }
-        });
-
-        button.on('pointerdown', () => {
-
-            if (this.#activeButton === button) {
-                // Clicking the active button deselects
-                this.#placer.deselect();
-                this.#setButtonState(x, y, button, text, false, this.#fillColorIdle);
-                this.#activeButton = null;
-            } else {
-                // Deactivate previously active button
-                if (this.#activeButton) {
-                    this.#activeButton.emit('_deactivate');
-                }
-                this.#placer.select(structureType);
-                this.#setButtonState(x, y, button, text, true, this.#fillColorActive);
-                this.#activeButton = button;
-            }
-        });
-
-        // Internal deactivate event so sibling buttons can reset each other
-        button.on('_deactivate', () => {
-            this.#setButtonState(x, y, button, text, false, this.#fillColorIdle, this.#borderColorIdle);
-        });
+        this.add(btn);
     }
 
-    #drawBorder(x, y, active) {
-        const borderColor = active ? this.#borderColorActive : this.#borderColorIdle;
-
-        this.#border.clear();
-        this.#border.lineStyle(2, borderColor, 1);
-        this.#border.strokeRect(x, y, this.#buttonWidth, this.#buttonHeight);
-    };
-
-    #setButtonState(x, y, button, text, active, fillColor) {
-        button.setFillStyle(fillColor);
-        this.#drawBorder(x, y, active);
-        text.setColor(active ? '#ffffff' : '#a8dadc');
-    }
-
-    #clearButtonStates() {
-        if (this.#activeButton) {
-            this.#activeButton.emit('_deactivate');
+    #onButtonSelect(structureType, sender) {
+        if (this.#activeButton === sender) {
+            this.#placer.deselect();
+            sender.deactivate();
             this.#activeButton = null;
+        } else {
+            this.#activeButton?.deactivate();
+            this.#placer.select(structureType);
+            sender.activate();
+            this.#activeButton = sender;
         }
+    }
+
+    #deactivateAll() {
+        this.#activeButton?.deactivate();
+        this.#activeButton = null;
     }
 }
