@@ -121,7 +121,7 @@ const config = {
         }
     },
     waves: [
-        { lengthInSeconds: 15, spawnRate: 2000, enemyHealth: 30 },
+        { lengthInSeconds: 2, spawnRate: 2000, enemyHealth: 30 },
     ],
     sceneKeys: {
         game: 'gameScene',

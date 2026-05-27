@@ -27,7 +27,7 @@ class ProgressManager {
      * @param {string} structureType
      */
     unlock(structureType) {
-        if (this.isUnlocked(structureType)) return;
+        if (structureType && structureType != '' && this.isUnlocked(structureType)) return;
 
         this.#state.unlockedStructures.push(structureType);
         this.#commit();

@@ -1,4 +1,5 @@
 class Card extends Phaser.GameObjects.Container {
+    #buttonCallback;
 
     /**
      * @param {Phaser.Scene} scene
@@ -9,10 +10,13 @@ class Card extends Phaser.GameObjects.Container {
      * @param {string}       data.description
      * @param {number}       data.color       - Hex color for the icon placeholder
      * @param {number}       data.cost
+     * @param {function}     data.buttonCallback
      * @param {boolean}      [data.popular]
      */
     constructor(scene, cx, cy, data) {
         super(scene, cx, cy);
+
+        this.#buttonCallback = data.buttonCallback ?? function () { console.log('default card button callback') };
 
         const CW = config.shop.layout.cardWidth;
         const CH = config.shop.layout.cardHeight;
@@ -84,6 +88,8 @@ class Card extends Phaser.GameObjects.Container {
             new RoundedButton(scene, 0, top + CH - 22, CW - 24, 28, `${data.cost} coins`, {
                 fontSize: '13px',
                 textColor: '#a8dadc',
+            }).on('pointerdown', () => {
+                this.#buttonCallback();
             })
         );
 

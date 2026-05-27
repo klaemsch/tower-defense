@@ -191,6 +191,6 @@ class PlacerContainer extends Phaser.GameObjects.Container {
         console.log('destroying buttons');
         this.#deactivateAll();
         this.#buttons.forEach(btn => btn.destroy());
-        this.#buttons.clear();
+        this.#buttons = [];
     }
 }

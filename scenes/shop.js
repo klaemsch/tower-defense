@@ -4,6 +4,8 @@ class ShopScene extends Phaser.Scene {
     #cardHeight = config.shop.layout.cardHeight;
     #cardGap = config.shop.layout.cardGap;
 
+    #progressManager;
+
     constructor() {
         super(config.sceneKeys.shop);
     }
@@ -12,6 +14,8 @@ class ShopScene extends Phaser.Scene {
 
     create() {
         this.#registerEventListeners();
+
+        this.#progressManager = this.registry.get(config.registryKeys.progressManager);
 
         const W = this.scale.width;
         const H = this.scale.height;
@@ -41,6 +45,10 @@ class ShopScene extends Phaser.Scene {
 
         cards.forEach((card, i) => {
             const cx = startX + i * (this.#cardWidth + this.#cardGap) + this.#cardWidth / 2;
+            card.buttonCallback = () => {
+                this.#progressManager.unlock(card.structureType);
+                this.#closeShop();
+            }
             new Card(this, cx, cardY, card).setDepth(101);
         });
 
