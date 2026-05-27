@@ -76,6 +76,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     // Apply damage. Destroys self if health reaches zero. Returns true if killed
     doDamage(amount) {
+        // TODO: maybe let the enemy flicker or turn white for a second or so to indicate damage
         this.#health -= amount;
         if (this.#health <= 0) {
             this.destroy();

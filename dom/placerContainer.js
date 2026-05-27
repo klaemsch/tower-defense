@@ -5,15 +5,15 @@
  */
 class PlacerButton extends Phaser.GameObjects.Container {
     // ── Layout / theme (shared across all instances) ──────────────────
-    static #WIDTH            = 100;
-    static #HEIGHT           = 36;
-    static #FILL_IDLE        = 0x16213e;
-    static #FILL_HOVER       = 0x1a3a5c;
-    static #FILL_ACTIVE      = 0x1d3557;
-    static #BORDER_IDLE      = 0x457b9d;
-    static #BORDER_ACTIVE    = 0xa8dadc;
-    static #TEXT_IDLE        = '#a8dadc';
-    static #TEXT_ACTIVE      = '#ffffff';
+    static #WIDTH = 100;
+    static #HEIGHT = 36;
+    static #FILL_IDLE = 0x16213e;
+    static #FILL_HOVER = 0x1a3a5c;
+    static #FILL_ACTIVE = 0x1d3557;
+    static #BORDER_IDLE = 0x457b9d;
+    static #BORDER_ACTIVE = 0xa8dadc;
+    static #TEXT_IDLE = '#a8dadc';
+    static #TEXT_ACTIVE = '#ffffff';
 
     // ── Instance fields ───────────────────────────────────────────────
     #rect;
@@ -81,7 +81,7 @@ class PlacerButton extends Phaser.GameObjects.Container {
     }
 
     #registerPointerEvents(structureType) {
-        this.#rect.on('pointerover',  () => {
+        this.#rect.on('pointerover', () => {
             if (!this.#active)
                 this.#rect.setFillStyle(PlacerButton.#FILL_HOVER);
         });
@@ -104,11 +104,13 @@ class PlacerButton extends Phaser.GameObjects.Container {
  */
 class PlacerContainer extends Phaser.GameObjects.Container {
     #placer;
+    #progressManager;
     #activeButton = null;
+    #buttons = [];
 
-    static #PADDING_X    = 8;
-    static #PADDING_Y    = 8;
-    static #BUTTON_GAP   = 6;
+    static #PADDING_X = 8;
+    static #PADDING_Y = 8;
+    static #BUTTON_GAP = 6;
     static #BUTTON_HEIGHT = 36;
 
     /**
@@ -119,14 +121,23 @@ class PlacerContainer extends Phaser.GameObjects.Container {
     constructor(scene, cx, cy) {
         super(scene, cx, cy);
         this.#placer = scene.registry.get(config.registryKeys.placer);
+        this.#progressManager = scene.registry.get(config.registryKeys.progressManager);
 
-        Object.values(config.structures)
-            .filter(s => s.placerLabel !== undefined)
-            .forEach((s, i) => this.#addButton(s, i));
+        this.#createButtons();
 
+        // listen for change in active structure
         scene.registry.events.on(
             `changedata-${config.registryKeys.placerActiveStructure}`,
             (_parent, value) => { if (value === null) this.#deactivateAll(); }
+        );
+
+        // listen for change in progress
+        scene.registry.events.on(
+            `changedata-${config.registryKeys.progress}`,
+            (_parent, _state) => {
+                this.#destroyButtons();
+                this.#createButtons();
+            }
         );
 
         scene.add.existing(this);
@@ -134,10 +145,17 @@ class PlacerContainer extends Phaser.GameObjects.Container {
 
     // ── Private helpers ───────────────────────────────────────────────
 
+    #createButtons() {
+        Object.values(config.structures)
+            .filter(s => s.placerLabel !== undefined)
+            .filter(s => this.#progressManager.isUnlocked(s.internalType))
+            .forEach((s, i) => this.#addButton(s, i));
+    }
+
     #addButton(structure, index) {
         const x = PlacerContainer.#PADDING_X;
         const y = PlacerContainer.#PADDING_Y
-                + index * (PlacerContainer.#BUTTON_HEIGHT + PlacerContainer.#BUTTON_GAP);
+            + index * (PlacerContainer.#BUTTON_HEIGHT + PlacerContainer.#BUTTON_GAP);
 
         const btn = new PlacerButton(
             this.scene, x, y, structure.placerLabel, structure.internalType
@@ -148,6 +166,7 @@ class PlacerContainer extends Phaser.GameObjects.Container {
         );
 
         this.add(btn);
+        this.#buttons.push(btn);
     }
 
     #onButtonSelect(structureType, sender) {
@@ -166,5 +185,12 @@ class PlacerContainer extends Phaser.GameObjects.Container {
     #deactivateAll() {
         this.#activeButton?.deactivate();
         this.#activeButton = null;
+    }
+
+    #destroyButtons() {
+        console.log('destroying buttons');
+        this.#deactivateAll();
+        this.#buttons.forEach(btn => btn.destroy());
+        this.#buttons.clear();
     }
 }

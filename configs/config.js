@@ -6,7 +6,11 @@ const config = {
         generation: {
             numTrees: 15,
         },
-        backgroundColor: '#1a1a2e'
+        backgroundColor: '#1a1a2e',
+        structuresAvailableAtStart: [
+            'woodShop',
+            'tower',
+        ]
     },
     structures: {
         /**
@@ -130,6 +134,8 @@ const config = {
         enemyManager: 'enemyManager',
         placer: 'placer',
         gameFlowManager: 'gameFlowManager',
+        progressManager: 'progressManager',
+        progress: 'progress',
     },
     eventKeys: {
         gamePause: 'game:pause',            // emitted when the game is paused
