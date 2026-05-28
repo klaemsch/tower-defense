@@ -19,7 +19,7 @@ class WoodShop extends Structure {
         const tileSize = config.world.tileSize;
 
         // Radius overlay
-        this.#radiusVisual = this.scene.add.graphics().setDepth(0);
+        this.#radiusVisual = this.scene.add.graphics().setDepth(config.depthMap.woodShopRadius);
         this.#radiusVisual.lineStyle(1, 0xa8dadc, 0.25);
         this.#radiusVisual.strokeRect(
             (this.col - this.#radius) * tileSize,

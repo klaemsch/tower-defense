@@ -21,7 +21,7 @@ class ShopScene extends Phaser.Scene {
         const H = this.scale.height;
 
         // ── Overlay with opacity to "blur" the game in the background ────────
-        //this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(100);
+        this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(config.depthMap.shopBackgroundBlur);
 
         // ── Title ────────────────────────────────────────────────────────────
         this.add.text(W / 2, 72, config.shop.title, {
@@ -30,13 +30,13 @@ class ShopScene extends Phaser.Scene {
             fontStyle: 'bold',
             stroke: '#000000',
             strokeThickness: 3,
-        }).setOrigin(0.5).setDepth(101);
+        }).setOrigin(0.5).setDepth(config.depthMap.shopText);
 
         // ── Subtitle ──────────────────────────────────────────────────────────
         this.add.text(W / 2, 116, config.shop.subtitle, {
             fontSize: '16px',
             color: '#7ecfc2',
-        }).setOrigin(0.5).setDepth(101);
+        }).setOrigin(0.5).setDepth(config.depthMap.shopText);
 
         // ── Cards ─────────────────────────────────────────────────────────────
         const totalWidth = cards.length * this.#cardWidth + (cards.length - 1) * this.#cardGap;
@@ -52,7 +52,7 @@ class ShopScene extends Phaser.Scene {
             }
 
             // create card and attach the resulting container element to the config for later usage
-            card.cardElement = new Card(this, cx, cardY, card).setDepth(101);
+            card.cardElement = new Card(this, cx, cardY, card).setDepth(config.depthMap.shopText);
         });
 
         // ── Continue button ───────────────────────────────────────────────────
@@ -61,7 +61,7 @@ class ShopScene extends Phaser.Scene {
             radius: 10,
             fontSize: '18px',
         })
-            .setDepth(101)
+            .setDepth(config.depthMap.shopText)
             .on('pointerdown', () => {
                 this.#closeShop();
             });

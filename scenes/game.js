@@ -23,7 +23,7 @@ class GameScene extends Phaser.Scene {
 
     constructor() {
         super(config.sceneKeys.game);
-        this.gameOver = false;
+        //this.gameOver = false;
     }
 
     preload() { }
@@ -63,34 +63,16 @@ class GameScene extends Phaser.Scene {
         this.#destroyEventListeners();
     }
 
-    // TODO: rework and move overlay to HUD
-    triggerGameOver() {
-        const { tileSize, numCols, numRows } = config.world;
-
-        console.log('game over triggered');
-        this.gameOver = true;
-        const cx = (numCols * tileSize) / 2;
-        const cy = (numRows * tileSize) / 2;
-        this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(50);
-        this.add.text(cx, cy - 30, 'GAME OVER', {
-            fontSize: '48px', color: '#e63946', fontStyle: 'bold',
-            stroke: '#000000', strokeThickness: 6,
-        }).setOrigin(0.5).setDepth(51);
-        this.add.text(cx, cy + 24, 'Your HQ was destroyed', {
-            fontSize: '18px', color: '#ffffff',
-        }).setOrigin(0.5).setDepth(51);
-
-        this.scene.pause();
-    }
-
     #registerEventListeners() {
         this.game.events.on(config.eventKeys.gameResume, () => this.scene.wake());
         this.game.events.on(config.eventKeys.gamePause, () => this.scene.sleep());
+        this.game.events.on(config.eventKeys.gameOver, () => this.scene.pause());
     }
 
     #destroyEventListeners() {
         this.game.events.off(config.eventKeys.gamePause);
         this.game.events.off(config.eventKeys.gamePause);
+        this.game.events.off(config.eventKeys.gameOver);
     }
 }
 

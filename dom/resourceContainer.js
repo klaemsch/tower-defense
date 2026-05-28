@@ -36,7 +36,7 @@ class ResourceContainer extends Phaser.GameObjects.Container {
             fontStyle: 'bold',
             backgroundColor: '#00000066',
             padding: { x: 6, y: 3 },
-        }).setDepth(10);
+        }).setDepth(config.depthMap.resourceLabel);
 
         this.add(textElement);
 

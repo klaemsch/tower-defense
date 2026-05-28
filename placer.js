@@ -12,7 +12,7 @@ class Placer {
 
     constructor(scene) {
         this.#scene = scene;
-        this.#hoverGraphics = scene.add.graphics().setDepth(5);  // hover grid
+        this.#hoverGraphics = scene.add.graphics().setDepth(config.depthMap.hoverGrid);  // hover grid
         this.#activeStructure = null;
 
         // mouse listeners
@@ -61,7 +61,7 @@ class Placer {
 
     #onPointerMove(pointer) {
         //console.log('move')
-        if (this.#scene.gameOver) return;
+        //if (this.#scene.gameOver) return;
         if (this.#activeStructure === null) {
             this.#hoverGraphics.clear();
             return;
@@ -77,7 +77,7 @@ class Placer {
 
     #onPointerDown(pointer) {
         //console.log('down')
-        if (this.#scene.gameOver) return;
+        //if (this.#scene.gameOver) return;
         const { col, row } = worldToGrid(pointer.x, pointer.y);
         this.place(col, row);
     }

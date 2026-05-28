@@ -40,7 +40,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#attackTimer = 0;
 
         this.#gfx = scene.add.graphics();
-        this.#pathGfx = scene.add.graphics().setDepth(1);
+        this.#pathGfx = scene.add.graphics().setDepth(config.depthMap.enemyPath);
 
         scene.sys.updateList.add(this);
 

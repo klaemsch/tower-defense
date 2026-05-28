@@ -121,7 +121,7 @@ const config = {
         }
     },
     waves: [
-        { lengthInSeconds: 2, spawnRate: 2000, enemyHealth: 30 },
+        { lengthInSeconds: 15, spawnRate: 500, enemyHealth: 30 },
     ],
     sceneKeys: {
         game: 'gameScene',
@@ -140,6 +140,7 @@ const config = {
     eventKeys: {
         gamePause: 'game:pause',            // emitted when the game is paused
         gameResume: 'game:resume',          // emitted when the game is paused
+        gameOver: 'game:over',              // emitted when the HQ is destroyed
         shopOpen: 'shop:open',              // emitted when the shop is opened
         shopClose: 'shop:close',            // emitted when the shop is closed
         enemyDestroyed: 'enemy:destroyed',  // emitted after an enemy was destroyed
@@ -154,6 +155,24 @@ const config = {
             imgSize: 72,
         }
     },
+    depthMap: {
+        // 1. Normal Game
+        towerRadius: 0,
+        woodShopRadius: 0,
+        enemyPath: 1,
+        hoverGrid: 5,
+        bullet: 8,
+        structureProductionFx: 10,
+        // 2. HUD
+        resourceContainer: 11,
+        resourceLabel: 11,
+        progressBar: 15,
+        // 3. Shop and Game Over (MutEx)
+        gameOverRect: 50,
+        gameOverText: 51,
+        shopBackgroundBlur: 50,
+        shopText: 51,
+    }
 }
 
 const phaserConfig = {

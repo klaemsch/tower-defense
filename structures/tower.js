@@ -27,7 +27,7 @@ class Tower extends Structure {
         const tileSize = config.world.tileSize;
 
         // Radius overlay
-        this.#radiusVisual = this.scene.add.graphics().setDepth(0);
+        this.#radiusVisual = this.scene.add.graphics().setDepth(config.depthMap.towerRadius);
         this.#radiusVisual.lineStyle(1, 0xa8dadc, 0.25);
         this.#radiusVisual.strokeCircle(this.pixelX, this.pixelY, this.#radiusInPixel);
     }

@@ -25,7 +25,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
         this.#trailPositions = [{ x: this.x, y: this.y }];
 
         // Graphics — one shared object per bullet
-        this.#gfx = scene.add.graphics().setDepth(8);
+        this.#gfx = scene.add.graphics().setDepth(config.depthMap.bullet);
 
         scene.sys.updateList.add(this);
         this.#draw();

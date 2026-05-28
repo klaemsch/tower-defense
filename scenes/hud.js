@@ -14,6 +14,8 @@ class HudScene extends Phaser.Scene {
     preload() { }
 
     create() {
+        this.#registerEventListeners();
+
         this.#enemyManager = this.registry.get(config.registryKeys.enemyManager);
         this.#placer = this.registry.get(config.registryKeys.placer);
         this.#gameFlowManager = this.registry.get(config.registryKeys.gameFlowManager);
@@ -31,7 +33,7 @@ class HudScene extends Phaser.Scene {
         this.#progressBar = new ProgressBar(this, {
             leftIcon: '▶',
             rightIcon: '⚑',
-        }).setDepth(150);
+        }).setDepth(config.depthMap.progressBar);
     }
 
     update(time, delta) {
@@ -41,6 +43,18 @@ class HudScene extends Phaser.Scene {
         }
 
         this.registry.set('enemies', this.#enemyManager.enemies.getLength()); // TODO: doing this every loop is a bit unnecessary
+    }
+
+    destroy() {
+        this.#destroyEventListeners();
+    }
+
+    #registerEventListeners() {
+        this.game.events.on(config.eventKeys.gameOver, () => this.#showGameOver());
+    }
+
+    #destroyEventListeners() {
+        this.game.events.off(config.eventKeys.gameOver);
     }
 
     /*#createPlacerButtons() {
@@ -94,6 +108,28 @@ class HudScene extends Phaser.Scene {
                 textElement.text = pauseLabel;
             }
         });
+    }
+
+    #showGameOver() {
+        const { tileSize, numCols, numRows } = config.world;
+        const cx = (numCols * tileSize) / 2;
+        const cy = (numRows * tileSize) / 2;
+
+        console.log('game over triggered');
+        //this.gameOver = true;
+
+        this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(config.depthMap.gameOverRect);
+
+        this.add.text(cx, cy - 30, 'GAME OVER', {
+            fontSize: '48px', color: '#e63946', fontStyle: 'bold',
+            stroke: '#000000', strokeThickness: 6,
+        }).setOrigin(0.5).setDepth(config.depthMap.gameOverText);
+
+        this.add.text(cx, cy + 24, 'Your HQ was destroyed', {
+            fontSize: '18px', color: '#ffffff',
+        }).setOrigin(0.5).setDepth(config.depthMap.gameOverText);
+
+        this.scene.pause();
     }
 
     // ── HUD text ──────────────────────────────────────────────────────────────

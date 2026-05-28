@@ -69,7 +69,7 @@ class Structure extends Phaser.GameObjects.GameObject {
             color: '#a8dadc',
             //stroke: '#000000',
             //strokeThickness: 3,
-        }).setOrigin(0.5, 1).setDepth(200).setAlpha(1);
+        }).setOrigin(0.5, 1).setDepth(config.depthMap.structureProductionFx).setAlpha(1);
 
         this.scene.tweens.add({
             targets: labelElement,

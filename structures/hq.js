@@ -9,7 +9,7 @@ class HQ extends Structure {
     }
 
     destroy(fromScene) {
-        this.scene.triggerGameOver();
+        this.scene.game.events.emit(config.eventKeys.gameOver);
         // do not call super.destroy(fromScene); - this would destroy the HQ, i currently like it in the background of the Game Over Screen
     }
 }
