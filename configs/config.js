@@ -120,8 +120,10 @@ const config = {
             initialValue: 0,
         }
     },
-    waves: [
-        { lengthInSeconds: 15, spawnRate: 500, enemyHealth: 30 },
+    flow: [
+        { type: 'peace', lengthInSeconds: 2 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30 },
+        { type: 'peace', lengthInSeconds: 10 },
     ],
     sceneKeys: {
         game: 'gameScene',

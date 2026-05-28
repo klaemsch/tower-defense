@@ -1,28 +1,34 @@
 class GameFlowManager {
     #gameScene;
-    #waveIndex = 0;
-    #waveData;
-    #currentWave = null;
+    #flowIndex;
+    #flowData;
     #enemyManager;
     #peacePeriodTimer;
 
     constructor(gameScene) {
         this.#gameScene = gameScene; // TODO: undestand the difference between this.#scene and this.#scene.scene
         this.#enemyManager = this.#gameScene.registry.get(config.registryKeys.enemyManager);
-        this.#waveData = config.waves;
+
+        this.#flowIndex = 0;
+        this.#flowData = config.flow;
+
+        // init pauseResumeState
         this.#gameScene.registry.set(config.registryKeys.pauseResumeState, false);
 
         // subscribe to event that fires when an enemy is destroyed -> check if wave is completed
         this.#gameScene.game.events.on(config.eventKeys.enemyDestroyed, this.#checkWaveCompleted, this);
 
-        this.#resetPeacePeriodTimer();
+        // subscribe to event that fires when shop is closed -> start peace period timer
+        this.#gameScene.game.events.on(config.eventKeys.shopClose, this.#startNextStep, this);
+
+        this.#startNextStep();
     }
 
     // ── Public API ───────────────────────────────────────────────────────────
 
     startWave() {
         console.log('startWave called');
-        this.#startNextWave();
+        this.#startNextStep();
     }
 
     pauseWave() {
@@ -55,15 +61,6 @@ class GameFlowManager {
 
     // ── Wave Management ──────────────────────────────────────────────────────
 
-    #startNextWave() {
-        const wave = this.#waveData[this.#waveIndex];
-        if (!wave) return;
-        this.#currentWave = wave;
-
-        // Start spawning enemies via EnemyManager
-        this.#enemyManager.startSpawning(wave.spawnRate, wave.lengthInSeconds / (wave.spawnRate / 1000));
-    }
-
     #checkWaveCompleted() {
         // get progress of wave spawn timer -> 1 means all enemies have been spawned
         const timerProgress = this.#enemyManager.spawnTimer.getOverallProgress();
@@ -75,24 +72,64 @@ class GameFlowManager {
         // if all enemies have been spawned AND destroyed
         if (timerProgress == 1 && enemiesLeft <= 0) {
             //console.log('wave completed')
+
+            // mark current wave as done
+            this.#flowData[this.#flowIndex].finished = true;
+            this.#flowIndex++;
+
             // pause game and open shop
             this.#gameScene.game.events.emit(config.eventKeys.gamePause);
             this.#gameScene.game.events.emit(config.eventKeys.shopOpen);
         }
     }
 
-    #resetPeacePeriodTimer() {
-        if (!this.#peacePeriodTimer) {
-            this.#peacePeriodTimer = this.#gameScene.time.delayedCall(
-                3000,
-                () => {
-                    console.log('peace period ended, start next wave')
-                    this.#startNextWave();
-                }
-            );
+    #startNextStep() {
+        console.log('start next steps');
+        console.log(this.#flowData);
+
+        const currentStep = this.#flowData[this.#flowIndex];
+        if (!currentStep) {
+            console.error('couldnt get current step')
+            return;
         }
-        else {
-            this.#peacePeriodTimer.reset();
+
+        if (currentStep.started) {
+            // currentStep was already started, this means its finished, mark and continue to next step
+            currentStep.finished = true;
+            this.#flowIndex++;
+            this.#startNextStep();
+        } else {
+            // use this step
+            currentStep.started = true;
+
+            switch (currentStep.type) {
+                case 'wave':
+                    // Start spawning enemies via enemyManager
+                    console.log('GameFlowManager starts spawning enemies');
+                    this.#enemyManager.startSpawning(currentStep.spawnRate, currentStep.lengthInSeconds / (currentStep.spawnRate / 1000));
+                    break;
+                case 'peace':
+                    // Start spawning enemies via EnemyManager
+                    console.log('GameFlowManager starts peace period timer');
+                    this.#startPeacePeriodTimer(currentStep.lengthInSeconds * 1000);
+                    break;
+                default:
+                    console.warn('unknown default switch for flow type');
+                    break;
+            }
         }
+    }
+
+    #startPeacePeriodTimer(delayInMs = 3000) {
+        this.#peacePeriodTimer?.remove();
+        this.#peacePeriodTimer = this.#gameScene.time.delayedCall(
+            delayInMs,
+            () => this.#peacePeriodCallback(),
+        );
+    }
+
+    #peacePeriodCallback() {
+        console.log('peace period ended, start next wave')
+        this.#startNextStep();
     }
 }

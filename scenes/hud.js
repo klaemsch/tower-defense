@@ -128,6 +128,7 @@ class HudScene extends Phaser.Scene {
             fontSize: '18px', color: '#ffffff',
         }).setOrigin(0.5).setDepth(config.depthMap.gameOverText);
 
+        // pause scene so buttons arent clickable anymore
         this.scene.pause();
     }
 
