@@ -59,6 +59,25 @@ class GameFlowManager {
         return this.#gameScene.registry.get(config.registryKeys.pauseResumeState);
     }
 
+    getOverallProgressOfCurrentTimer() {
+        const currentStep = this.getCurrentStep();
+        if (currentStep.type === 'wave') {
+            return this.#enemyManager.spawnTimer.getOverallProgress();
+        } else if (currentStep.type === 'peace') {
+            return this.#peacePeriodTimer.getOverallProgress();
+        }
+    }
+
+    getCurrentStep() {
+        const currentStep = this.#flowData[this.#flowIndex];
+        if (!currentStep) {
+            console.error('couldnt get current step')
+            return null;
+        }
+        return currentStep;
+    }
+
+
     // ── Wave Management ──────────────────────────────────────────────────────
 
     #checkWaveCompleted() {
@@ -87,11 +106,8 @@ class GameFlowManager {
         console.log('start next steps');
         console.log(this.#flowData);
 
-        const currentStep = this.#flowData[this.#flowIndex];
-        if (!currentStep) {
-            console.error('couldnt get current step')
-            return;
-        }
+        const currentStep = this.getCurrentStep();
+        if (!currentStep) return;
 
         if (currentStep.started) {
             // currentStep was already started, this means its finished, mark and continue to next step

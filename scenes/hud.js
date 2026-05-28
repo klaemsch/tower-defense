@@ -37,10 +37,8 @@ class HudScene extends Phaser.Scene {
     }
 
     update(time, delta) {
-        if (this.#enemyManager.spawnTimer) {
-            const progress = this.#enemyManager.spawnTimer.getOverallProgress();
-            this.#progressBar.setProgress(progress);
-        }
+        const progress = this.#gameFlowManager.getOverallProgressOfCurrentTimer();
+        this.#progressBar.setProgress(progress);
 
         this.registry.set('enemies', this.#enemyManager.enemies.getLength()); // TODO: doing this every loop is a bit unnecessary
     }
