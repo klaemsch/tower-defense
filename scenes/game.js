@@ -57,9 +57,6 @@ class GameScene extends Phaser.Scene {
         const gameFlowManager = new GameFlowManager(this);
         this.registry.set(config.registryKeys.gameFlowManager, gameFlowManager);
 
-        // initialise resources
-        this.#initResources();
-
     }
 
     destroy() {
@@ -84,15 +81,6 @@ class GameScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(51);
 
         this.scene.pause();
-    }
-
-    #initResources() {
-        //console.debug('initResources');
-        for (const resource of Object.values(config.resources)) {
-            const { registryKey, label, initialValue } = resource;
-            //console.debug(`Setting ${registryKey} to ${initialValue}`);
-            this.registry.set(registryKey, initialValue);
-        }
     }
 
     #registerEventListeners() {

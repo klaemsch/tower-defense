@@ -153,7 +153,7 @@ const config = {
             cardGap: 24,
             imgSize: 72,
         }
-    }
+    },
 }
 
 const phaserConfig = {

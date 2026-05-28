@@ -85,7 +85,7 @@ class Card extends Phaser.GameObjects.Container {
 
         // ── Buy button ────────────────────────────────────────────────────────
         this.add(
-            new RoundedButton(scene, 0, top + CH - 22, CW - 24, 28, `${data.cost} coins`, {
+            new RoundedButton(scene, 0, top + CH - 22, CW - 24, 28, `${data.cost} ${config.resources.token.label}`, {
                 fontSize: '13px',
                 textColor: '#a8dadc',
             }).on('pointerdown', () => {

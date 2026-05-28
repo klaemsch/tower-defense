@@ -10,6 +10,7 @@ class ProgressManager {
     constructor(gameScene) {
         this.#gameScene = gameScene;
         this.reset();
+        this.#initResources();
         console.log('init progress manager');
     }
 
@@ -39,6 +40,15 @@ class ProgressManager {
     }
 
     // ── Private ───────────────────────────────────────────────────────
+
+    #initResources() {
+        //console.debug('initResources');
+        for (const resource of Object.values(config.resources)) {
+            const { registryKey, label, initialValue } = resource;
+            //console.debug(`Setting ${registryKey} to ${initialValue}`);
+            this.#gameScene.registry.set(registryKey, initialValue);
+        }
+    }
 
     /**
      * Write state to the registry so all scenes can react via changedata events.

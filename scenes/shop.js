@@ -21,7 +21,7 @@ class ShopScene extends Phaser.Scene {
         const H = this.scale.height;
 
         // ── Overlay with opacity to "blur" the game in the background ────────
-        this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(100);
+        //this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(100);
 
         // ── Title ────────────────────────────────────────────────────────────
         this.add.text(W / 2, 72, config.shop.title, {
@@ -45,11 +45,14 @@ class ShopScene extends Phaser.Scene {
 
         cards.forEach((card, i) => {
             const cx = startX + i * (this.#cardWidth + this.#cardGap) + this.#cardWidth / 2;
+
+            // attach a callback to the cards config that is fired in the Card when the button is pressed
             card.buttonCallback = () => {
-                this.#progressManager.unlock(card.structureType);
-                this.#closeShop();
+                this.#buyCard(card);
             }
-            new Card(this, cx, cardY, card).setDepth(101);
+
+            // create card and attach the resulting container element to the config for later usage
+            card.cardElement = new Card(this, cx, cardY, card).setDepth(101);
         });
 
         // ── Continue button ───────────────────────────────────────────────────
@@ -66,6 +69,19 @@ class ShopScene extends Phaser.Scene {
 
     destroy() {
         this.#destroyEventListeners();
+    }
+
+    #buyCard(card) {
+        if (this.registry.get(card.costResourceRegistryKey) - card.cost >= 0) {
+            this.registry.inc(card.costResourceRegistryKey, -card.cost);
+            this.#progressManager.unlock(card.configEntry.internalType);
+            card.cardElement.destroy();
+            return true;
+        } else {
+            console.log('not enough funds');
+            return false;
+        }
+
     }
 
     #closeShop() {
