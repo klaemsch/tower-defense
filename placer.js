@@ -61,7 +61,6 @@ class Placer {
 
     #onPointerMove(pointer) {
         //console.log('move')
-        //if (this.#scene.gameOver) return;
         if (this.#activeStructure === null) {
             this.#hoverGraphics.clear();
             return;
@@ -77,7 +76,6 @@ class Placer {
 
     #onPointerDown(pointer) {
         //console.log('down')
-        //if (this.#scene.gameOver) return;
         const { col, row } = worldToGrid(pointer.x, pointer.y);
         this.place(col, row);
     }

@@ -116,7 +116,6 @@ class HudScene extends Phaser.Scene {
         const cy = (numRows * tileSize) / 2;
 
         console.log('game over triggered');
-        //this.gameOver = true;
 
         this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(config.depthMap.gameOverRect);
 

@@ -23,7 +23,6 @@ class GameScene extends Phaser.Scene {
 
     constructor() {
         super(config.sceneKeys.game);
-        //this.gameOver = false;
     }
 
     preload() { }
