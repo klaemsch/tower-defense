@@ -1,7 +1,6 @@
 class WoodShop extends Structure {
     #lastHarvest;
     #harvestRateMs;
-    #radiusVisual;
     #radius;
 
     constructor(scene, col, row, structureConfig) {
@@ -11,22 +10,6 @@ class WoodShop extends Structure {
 
         this.#lastHarvest = 0;
         this.#harvestRateMs = structureConfig.harvestRateMs;
-
-        this.#createRadiusVisual();
-    }
-
-    #createRadiusVisual() {
-        const tileSize = config.world.tileSize;
-
-        // Radius overlay
-        this.#radiusVisual = this.scene.add.graphics().setDepth(config.depthMap.woodShopRadius);
-        this.#radiusVisual.lineStyle(1, 0xa8dadc, 0.25);
-        this.#radiusVisual.strokeRect(
-            (this.col - this.#radius) * tileSize,
-            (this.row - this.#radius) * tileSize,
-            (this.#radius * 2 + 1) * tileSize,
-            (this.#radius * 2 + 1) * tileSize,
-        );
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -58,7 +41,6 @@ class WoodShop extends Structure {
     }
 
     destroy(fromScene) {
-        this.#radiusVisual.destroy();
         super.destroy(fromScene);
     }
 }

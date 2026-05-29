@@ -1,8 +1,14 @@
 class Structure extends Phaser.GameObjects.GameObject {
     #health;
-    #gfx;
+    #container;
+    #radius;
+    #radiusInPixel;
+    #radiusType;
+
+    #bgGfx;
     #labelElement;
     #healthElement;
+    #radiusGfx;
 
     constructor(scene, col, row, structureConfig) {
         super(scene, structureConfig.internalType);
@@ -21,15 +27,24 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.label = structureConfig.label;
 
         this.#health = structureConfig.health;
+        this.#radius = structureConfig.radiusInTiles;
+        this.#radiusInPixel = this.#radius * config.world.tileSize;
+        this.#radiusType = structureConfig.radiusType;
         this.attackable = true;
 
-        // Internal Graphics object that does the actual drawing
-        this.#gfx = scene.add.graphics();
+        // create visuals and if configured the radius visuals
+        this.#createVisuals();
+        if (this.#radius > 0 && this.#radiusType !== undefined) this.#createRadiusVisuals();
 
-        // Draw once at spawn position
-        this.#draw(scene);
+        // if structure is moveable, create event handler
+        if (structureConfig.moveable) {
+            this.#bgGfx.setInteractive();
+            this.#bgGfx.on('pointerdown', (_pointer, _localX, _localY, event) => {
+                event.stopPropagation();
+                this.pickup();
+            });
+        }
 
-        // Register in the shared structure map (pass `this` as the owner ref)
         placeInMap(col, row, this);
 
         // Register with the scene so preUpdate() fires every frame
@@ -38,25 +53,46 @@ class Structure extends Phaser.GameObjects.GameObject {
 
     preUpdate() { }
 
-    // TODO: maybe return the created elements (gfx, label), set them in the call to this function and destroy them later
-    // analog to woodshop.js createVisuals
-    #draw(scene) {
-        this.#gfx.clear();
+    #createVisuals() {
 
-        const rect = new Phaser.Geom.Rectangle(this.pixelX - this.size / 2, this.pixelY - this.size / 2, this.size, this.size);
-        this.#gfx.fillStyle(this.color, 1);
-        this.#gfx.fillRectShape(rect);
+        // background graphics
+        this.#bgGfx = this.scene.add.rectangle(0, 0, this.size, this.size, this.color);
 
-        this.#labelElement = scene.add.text(this.pixelX, this.pixelY - 10, this.label, {
+        // label
+        this.#labelElement = this.scene.add.text(0, -10, this.label, {
             fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        this.#healthElement = scene.add.text(this.pixelX, this.pixelY + 10, this.#health, {
+        // health
+        this.#healthElement = this.scene.add.text(0, 10, this.#health, {
             fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
         }).setOrigin(0.5);
+
+        // container that summarises all graphic/visual elements
+        this.#container = this.scene.add.container(this.pixelX, this.pixelY);
+        this.#container.add([this.#bgGfx, this.#labelElement, this.#healthElement]);
     }
 
-    // ── Produce FX ────────────────────────────────────────────────────────────
+    #createRadiusVisuals() {
+        const tileSize = config.world.tileSize;
+
+        this.#radiusGfx = this.scene.add.graphics().setDepth(config.depthMap.structureRadius);
+
+        if (this.#radiusType == RadiusType.Rectangular) {
+            this.#radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
+            this.#radiusGfx.strokeRect(
+                -(this.#radius + 0.5) * tileSize,
+                -(this.#radius + 0.5) * tileSize,
+                (this.#radius * 2 + 1) * tileSize,
+                (this.#radius * 2 + 1) * tileSize,
+            );
+        } else if (this.#radiusType == RadiusType.Circular) {
+            this.#radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
+            this.#radiusGfx.strokeCircle(0, 0, this.#radiusInPixel);
+        }
+        this.#container.add([this.#radiusGfx]);
+    }
+
     #spawnProduceFx(label, amount) {
         const tileSize = config.world.tileSize;
         const x = this.col * tileSize + tileSize / 2;
@@ -81,19 +117,6 @@ class Structure extends Phaser.GameObjects.GameObject {
         });
     }
 
-    destroy(fromScene) {
-        console.log('structure of type', this.type, 'was destroyed')
-
-        // TEST TEST TEST
-        const key = gridKey(this.col, this.row);
-        structureMap.delete(key);
-
-        this.#gfx.destroy();
-        this.#labelElement.destroy();
-        this.#healthElement.destroy();
-        super.destroy(fromScene);
-    }
-
     // applies the damage (amount) to this structure
     // returns true if destroyed (and destroys itself)
     // returns false if not destroyed but damaged
@@ -116,8 +139,103 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.#spawnProduceFx(label, amount);
     }
 
-    // use this static creator instead of 'new Structure(...)'
-    // it does cost checking and creation of the class/object
+    pickup() {
+        const placer = this.scene.registry.get(config.registryKeys.placer);
+        placer.selectExistingForMove(this);
+    }
+
+    moveTo(col, row) {
+        if (isCellOccupied(col, row)) return;
+
+        removeFromMap(this.col, this.row);
+
+        this.col = col;
+        this.row = row;
+
+        const pos = gridToWorld(col, row);
+        this.pixelX = pos.x;
+        this.pixelY = pos.y;
+
+        // move container -> moves visuals
+        this.#container.setPosition(this.pixelX, this.pixelY);
+
+        placeInMap(col, row, this);
+    }
+
+    destroy(fromScene) {
+        console.log('structure of type', this.type, 'was destroyed')
+
+        removeFromMap(this.col, this.row);
+
+        // destroys gfx, labels, and any children added by subclasses
+        this.#container.destroy(true);
+        super.destroy(fromScene);
+    }
+
+    // static to create a hove preview for the grid
+    // returns move and destroy functions
+    // generated by Claude
+    static createPreview(scene, structureConfig) {
+        const { tileSize } = config.world;
+        const half = tileSize / 2;
+
+        const gfx = scene.add.graphics();
+        gfx.fillStyle(structureConfig.color, 1);
+        gfx.fillRect(-half, -half, tileSize, tileSize);
+
+        const label = scene.add.text(0, -10, structureConfig.label, {
+            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        const children = [gfx, label];
+
+        // Mirror radius visuals if configured
+        const radius = structureConfig.radiusInTiles;
+        const radiusType = structureConfig.radiusType;
+        if (radius > 0 && radiusType !== undefined) {
+            const radiusGfx = scene.add.graphics();
+            radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
+
+            if (radiusType === RadiusType.Rectangular) {
+                radiusGfx.strokeRect(
+                    -(radius + 0.5) * tileSize,
+                    -(radius + 0.5) * tileSize,
+                    (radius * 2 + 1) * tileSize,
+                    (radius * 2 + 1) * tileSize,
+                );
+            } else if (radiusType === RadiusType.Circular) {
+                radiusGfx.strokeCircle(0, 0, radius * tileSize);
+            }
+
+            children.push(radiusGfx);
+        }
+
+        const container = scene.add.container(0, 0, children)
+            .setDepth(config.depthMap.hoverGrid)
+            .setAlpha(0.45);
+
+        const moveTo = (col, row) => {
+            const { x, y } = gridToWorld(col, row);
+            container.setPosition(x, y);
+        };
+
+        const setTint = (color) => {
+            gfx.clear();
+            gfx.fillStyle(color, 1);
+            gfx.fillRect(-half, -half, tileSize, tileSize);
+        };
+
+        const clearTint = () => {
+            gfx.clear();
+            gfx.fillStyle(structureConfig.color, 1);
+            gfx.fillRect(-half, -half, tileSize, tileSize);
+        };
+
+        const destroy = () => container.destroy(true);
+
+        return { moveTo, setTint, clearTint, destroy };
+    }
+
     static create(scene, col, row, structureConfig, SubClass) {
         if (structureConfig.costResourceRegistryKey && structureConfig.cost) {
             const currentResourceCount = scene.registry.get(structureConfig.costResourceRegistryKey);

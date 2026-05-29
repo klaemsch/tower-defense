@@ -99,7 +99,6 @@ class HudScene extends Phaser.Scene {
 
         // listen for game state change
         this.registry.events.on(`changedata-${config.registryKeys.pauseResumeState}`, (parent, isPaused) => {
-            //console.log('paused:', isPaused);
             if (isPaused) {
                 textElement.text = resumeLabel;
             } else {

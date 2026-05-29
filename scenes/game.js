@@ -19,6 +19,10 @@ function placeInMap(col, row, gameObject) {
     structureMap.set(gridKey(col, row), gameObject);
 }
 
+function removeFromMap(col, row) {
+    structureMap.delete(gridKey(col, row));
+}
+
 class GameScene extends Phaser.Scene {
 
     constructor() {

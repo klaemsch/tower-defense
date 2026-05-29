@@ -1,3 +1,8 @@
+const RadiusType = {
+    Circular: 'circular',
+    Rectangular: 'rectangular',
+}
+
 const config = {
     world: {
         tileSize: 40,
@@ -26,6 +31,9 @@ const config = {
          * 
          * If the structure can be placed, set this:
          * - placerLabel: visual label for the placer
+         * 
+         * If the structure is moveable, set this:
+         * - moveable: true
          */
         hq: {
             internalType: 'hq',
@@ -41,8 +49,10 @@ const config = {
             costResourceRegistryKey: 'wood',
             cost: 5,
             placerLabel: '🏪 Wood Shop',
+            moveable: true,
 
             radiusInTiles: 1,
+            radiusType: RadiusType.Rectangular,
             harvestRateMs: 1000,
         },
         tower: {
@@ -53,9 +63,11 @@ const config = {
             costResourceRegistryKey: 'wood',
             cost: 10,
             placerLabel: '🗼 Tower',
+            moveable: true,
 
             fireRateMs: 1000,
             radiusInTiles: 3,
+            radiusType: RadiusType.Circular,
             bulletSpeed: 400,
             bulletDamage: 10,
         },
@@ -67,9 +79,11 @@ const config = {
             costResourceRegistryKey: 'wood',
             cost: 10,
             placerLabel: '🗼 Sniper',
+            moveable: true,
 
             fireRateMs: 3000,
             radiusInTiles: 6,
+            radiusType: RadiusType.Circular,
             bulletSpeed: 800,
             bulletDamage: 20,
         },
@@ -81,6 +95,7 @@ const config = {
             costResourceRegistryKey: 'wood',
             cost: 5,
             placerLabel: '🏭 Power Plant',
+            moveable: true,
         },
     },
     bullet: {
@@ -124,6 +139,10 @@ const config = {
         { type: 'peace', lengthInSeconds: 2 },
         { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30 },
         { type: 'peace', lengthInSeconds: 10 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30 },
+        { type: 'peace', lengthInSeconds: 10 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30 },
+        { type: 'peace', lengthInSeconds: 10 },
     ],
     sceneKeys: {
         game: 'gameScene',
@@ -159,8 +178,7 @@ const config = {
     },
     depthMap: {
         // 1. Normal Game
-        towerRadius: 0,
-        woodShopRadius: 0,
+        structureRadius: 0,
         enemyPath: 1,
         hoverGrid: 5,
         bullet: 8,

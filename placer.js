@@ -1,3 +1,10 @@
+const placerPreviewMap = {
+    woodShop: (scene, cfg) => WoodShop.createPreview(scene, cfg),
+    tower: (scene, cfg) => Tower.createPreview(scene, cfg),
+    sniper: (scene, cfg) => Tower.createPreview(scene, cfg),
+    powerPlant: (scene, cfg) => Structure.createPreview(scene, cfg),
+};
+
 const placerFactoryMap = {
     woodShop: (scene, col, row) => scene.add.woodShop(col, row),
     tower: (scene, col, row) => scene.add.tower(col, row, config.structures.tower),
@@ -7,76 +14,107 @@ const placerFactoryMap = {
 
 class Placer {
     #scene;
-    #hoverGraphics;
-    #activeStructure;
+    #activeStructure = null;    // internalType string
+    #movingStructure = null;    // real Structure instance being moved
+    #preview = null;            // { moveTo, destroy }
 
     constructor(scene) {
         this.#scene = scene;
-        this.#hoverGraphics = scene.add.graphics().setDepth(config.depthMap.hoverGrid);  // hover grid
-        this.#activeStructure = null;
 
-        // mouse listeners
         scene.input.on('pointermove', this.#onPointerMove, this);
         scene.input.on('pointerdown', this.#onPointerDown, this);
 
-        // keyboard listeners
         const escKey = scene.input.keyboard.addKey("ESC");
-        escKey.on("down", (event)  => {
-           this.deselect();
-        });
+        escKey.on("down", () => this.deselect());
     }
 
-    // ── Public ────────────────────────────────────────────────────────────────
+    // ── Public ────────────────────────────────────────────────────────
 
-    // selects a type of structure to be placed as string, e.g. 'tower'
     select(structureType) {
+        this.deselect();
         this.#activeStructure = structureType;
         this.#scene.registry.set(config.registryKeys.placerActiveStructure, structureType);
+        this.#spawnPreview(structureType);
     }
 
-    // deselect type of structure
+    // Call this when the player clicks an already-placed structure to move it
+    selectExistingForMove(structureInstance) {
+        this.deselect();
+        this.#movingStructure = structureInstance;
+        this.#activeStructure = structureInstance.type;
+        this.#scene.registry.set(config.registryKeys.placerActiveStructure, structureInstance.type);
+        this.#spawnPreview(structureInstance.type);
+    }
+
     deselect() {
         this.#activeStructure = null;
+        this.#movingStructure = null;
         this.#scene.registry.set(config.registryKeys.placerActiveStructure, null);
-        this.#hoverGraphics.clear();
+        this.#destroyPreview();
     }
 
-    // try to place the currently selected structure type
-    place(col, row) {
+    // ── Private ───────────────────────────────────────────────────────
+
+    #spawnPreview(structureType) {
+        this.#destroyPreview();
+        const structureConfig = config.structures[structureType];
+        const previewFactory = placerPreviewMap[structureType];
+        if (!previewFactory || !structureConfig) return;
+        this.#preview = previewFactory(this.#scene, structureConfig);
+    }
+
+    #destroyPreview() {
+        this.#preview?.destroy();
+        this.#preview = null;
+    }
+
+    #place(col, row) {
         if (!this.#activeStructure) return;
 
         const { numCols, numRows } = config.world;
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
-        if (isCellOccupied(col, row)) return;
 
-        const factory = placerFactoryMap[this.#activeStructure];
-        if (!factory) { console.warn(`Unknown structure type: ${this.#activeStructure}`); return; }
+        if (this.#movingStructure) {
+            // Move the existing structure, no cost re-applied
+            this.#movingStructure.moveTo(col, row);
+        } else {
+            // Place new — factory handles cost check
+            if (isCellOccupied(col, row)) return;
+            const factory = placerFactoryMap[this.#activeStructure];
+            if (!factory) { console.warn(`Unknown structure type: ${this.#activeStructure}`); return; }
+            this.#destroyPreview();
+            factory(this.#scene, col, row);
 
-        factory(this.#scene, col, row);
-
+        }
         this.deselect();
     }
 
-    // ── Input handlers ────────────────────────────────────────────────────────
-
+    // event fired everytime the pointer moves
     #onPointerMove(pointer) {
-        //console.log('move')
-        if (this.#activeStructure === null) {
-            this.#hoverGraphics.clear();
-            return;
-        }
-        const { tileSize, numCols, numRows } = config.world;
+        // check if a structure is selected and a preview exist
+        if (!this.#activeStructure || !this.#preview) return;
+
+        // check if new position (get through pointer pos) is out of world bounds
         const { col, row } = worldToGrid(pointer.x, pointer.y);
-        this.#hoverGraphics.clear();
+        const { numCols, numRows } = config.world;
+
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
-        const occupied = isCellOccupied(col, row);
-        this.#hoverGraphics.lineStyle(2, occupied ? 0xff4444 : 0xffffff, 0.6);
-        this.#hoverGraphics.strokeRect(col * tileSize + 1, row * tileSize + 1, tileSize - 2, tileSize - 2);
+
+        // move preview to pinter pos / cell
+        this.#preview.moveTo(col, row);
+
+        // Tint red if occupied by something else
+        if (isCellOccupied(col, row)) {
+            this.#preview.setTint?.(0xff6666);
+        } else {
+            this.#preview.clearTint?.();
+        }
     }
 
+    // event fired everytime the pointer is clicked
     #onPointerDown(pointer) {
-        //console.log('down')
+        if (!this.#activeStructure) return;
         const { col, row } = worldToGrid(pointer.x, pointer.y);
-        this.place(col, row);
+        this.#place(col, row);
     }
 }

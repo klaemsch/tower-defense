@@ -1,6 +1,5 @@
 class Tower extends Structure {
     #attackTimer = 0;
-    #radiusVisual;
     #radius;
     #radiusInPixel;
     #bulletDamage;
@@ -19,17 +18,6 @@ class Tower extends Structure {
         this.#bulletSpeed = structureConfig.bulletSpeed;
 
         this.#enemyManager = this.scene.registry.get(config.registryKeys.enemyManager);
-
-        this.#createRadiusVisual();
-    }
-
-    #createRadiusVisual() {
-        const tileSize = config.world.tileSize;
-
-        // Radius overlay
-        this.#radiusVisual = this.scene.add.graphics().setDepth(config.depthMap.towerRadius);
-        this.#radiusVisual.lineStyle(1, 0xa8dadc, 0.25);
-        this.#radiusVisual.strokeCircle(this.pixelX, this.pixelY, this.#radiusInPixel);
     }
 
     preUpdate(time, delta) {
@@ -61,7 +49,6 @@ class Tower extends Structure {
     }
 
     destroy(fromScene) {
-        this.#radiusVisual.destroy();
         super.destroy(fromScene);
     }
 }
