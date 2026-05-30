@@ -132,7 +132,8 @@ class Enemy extends Phaser.GameObjects.GameObject {
     // ── Attack ────────────────────────────────────────────────────────────────
 
     #tickAttack(delta) {
-        if (!this.#targetIsAlive()) {
+        if (!this.#targetIsAlive() || !this.#targetInRange()) {
+            console.log('target change (target dead or out of range)');
             this.#attacking = false;
             this.#retarget();
             return;
@@ -208,8 +209,15 @@ class Enemy extends Phaser.GameObjects.GameObject {
         return best;
     }
 
+    // returns true if this.#target is alive
     #targetIsAlive() {
         return this.#target && structureMap.has(gridKey(this.#target.col, this.#target.row));
+    }
+
+    // returns true if this.#target is in range
+    #targetInRange() {
+        return Enemy.#adjacentCells(this.gridX, this.gridY)
+            .some(cell => cell.col === this.#target.col && cell.row === this.#target.row);
     }
 
     // ── Drawing ───────────────────────────────────────────────────────────────
