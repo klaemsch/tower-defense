@@ -70,12 +70,14 @@ class GameScene extends Phaser.Scene {
         this.game.events.on(config.eventKeys.gameResume, () => this.scene.wake());
         this.game.events.on(config.eventKeys.gamePause, () => this.scene.sleep());
         this.game.events.on(config.eventKeys.gameOver, () => this.scene.pause());
+        this.game.events.on(config.eventKeys.gameWon, () => this.scene.pause());
     }
 
     #destroyEventListeners() {
         this.game.events.off(config.eventKeys.gamePause);
         this.game.events.off(config.eventKeys.gamePause);
         this.game.events.off(config.eventKeys.gameOver);
+        this.game.events.off(config.eventKeys.gameWon);
     }
 }
 

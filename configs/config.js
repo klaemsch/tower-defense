@@ -17,6 +17,12 @@ const config = {
             'tower',
         ]
     },
+    texts: {
+        gameOverTitle: 'GAME OVER',
+        gameOverSubtitle: 'Your HQ was destroyed',
+        gameWonTitle: 'YOU WON',
+        gameWonSubtitle: 'You survived every wave!',
+    },
     structures: {
         /**
          * A valid structure config needs:
@@ -168,6 +174,7 @@ const config = {
         gamePause: 'game:pause',            // emitted when the game is paused
         gameResume: 'game:resume',          // emitted when the game is paused
         gameOver: 'game:over',              // emitted when the HQ is destroyed
+        gameWon: 'game:won',                // emitted when last wave survived -> game won
         shopOpen: 'shop:open',              // emitted when the shop is opened
         shopClose: 'shop:close',            // emitted when the shop is closed
         enemyDestroyed: 'enemy:destroyed',  // emitted after an enemy was destroyed

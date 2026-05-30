@@ -48,11 +48,13 @@ class HudScene extends Phaser.Scene {
     }
 
     #registerEventListeners() {
-        this.game.events.on(config.eventKeys.gameOver, () => this.#showGameOver());
+        this.game.events.on(config.eventKeys.gameOver, () => this.#showGameOver(config.texts.gameOverTitle, config.texts.gameOverSubtitle));
+        this.game.events.on(config.eventKeys.gameWon, () => this.#showGameOver(config.texts.gameWonTitle, config.texts.gameWonSubtitle));
     }
 
     #destroyEventListeners() {
         this.game.events.off(config.eventKeys.gameOver);
+        this.game.events.off(config.eventKeys.gameWon);
     }
 
     /*#createPlacerButtons() {
@@ -107,7 +109,7 @@ class HudScene extends Phaser.Scene {
         });
     }
 
-    #showGameOver() {
+    #showGameOver(titleText, subtitleText) {
         const { tileSize, numCols, numRows } = config.world;
         const cx = (numCols * tileSize) / 2;
         const cy = (numRows * tileSize) / 2;
@@ -116,12 +118,12 @@ class HudScene extends Phaser.Scene {
 
         this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(config.depthMap.gameOverRect);
 
-        this.add.text(cx, cy - 30, 'GAME OVER', {
+        this.add.text(cx, cy - 30, titleText, {
             fontSize: '48px', color: '#e63946', fontStyle: 'bold',
             stroke: '#000000', strokeThickness: 6,
         }).setOrigin(0.5).setDepth(config.depthMap.gameOverText);
 
-        this.add.text(cx, cy + 24, 'Your HQ was destroyed', {
+        this.add.text(cx, cy + 24, subtitleText, {
             fontSize: '18px', color: '#ffffff',
         }).setOrigin(0.5).setDepth(config.depthMap.gameOverText);
 

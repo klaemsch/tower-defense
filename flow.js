@@ -61,6 +61,8 @@ class GameFlowManager {
 
     getOverallProgressOfCurrentTimer() {
         const currentStep = this.getCurrentStep();
+        if (!currentStep) return;
+
         if (currentStep.type === 'wave') {
             return this.#enemyManager.spawnTimer.getOverallProgress();
         } else if (currentStep.type === 'peace') {
@@ -71,7 +73,7 @@ class GameFlowManager {
     getCurrentStep() {
         const currentStep = this.#flowData[this.#flowIndex];
         if (!currentStep) {
-            console.error('couldnt get current step')
+            //console.error('couldnt get current step')
             return null;
         }
         return currentStep;
@@ -105,6 +107,11 @@ class GameFlowManager {
     #startNextStep() {
         console.log('start next steps');
         console.log(this.#flowData);
+
+        if (this.#flowIndex >= this.#flowData.length) {
+            console.log('last wave survived');
+            this.#gameScene.game.events.emit(config.eventKeys.gameWon);
+        }
 
         const currentStep = this.getCurrentStep();
         if (!currentStep) return;
