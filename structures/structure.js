@@ -2,10 +2,9 @@ class Structure extends Phaser.GameObjects.GameObject {
     #health;
     #container;
     #radius;
-    #radiusInPixel;
     #radiusType;
 
-    #bgGfx;
+    #bgRect;
     #labelElement;
     #healthElement;
     #radiusGfx;
@@ -22,24 +21,30 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
-        this.size = config.world.tileSize;
+        this.sizeInTiles = structureConfig.sizeInTiles;
         this.color = structureConfig.color;
         this.label = structureConfig.label;
 
         this.#health = structureConfig.health;
         this.#radius = structureConfig.radiusInTiles;
-        this.#radiusInPixel = this.#radius * config.world.tileSize;
         this.#radiusType = structureConfig.radiusType;
         this.attackable = true;
 
         // create visuals and if configured the radius visuals
-        this.#createVisuals();
-        if (this.#radius > 0 && this.#radiusType !== undefined) this.#createRadiusVisuals();
+        const visuals = Structure.buildVisuals(this.scene, structureConfig);
+        this.#bgRect = visuals.bgRect, this.#labelElement = visuals.labelElement, this.#healthElement = visuals.healthElement;
+
+        this.#container = this.scene.add.container(this.pixelX, this.pixelY);
+        this.#container.add([this.#bgRect, this.#labelElement, this.#healthElement]);
+        if (this.#radius > 0) {
+            this.#radiusGfx = Structure.buildRadiusVisuals(this.scene, structureConfig);
+            this.#container.add([this.#radiusGfx]);
+        }
 
         // if structure is moveable, create event handler
         if (structureConfig.moveable) {
-            this.#bgGfx.setInteractive();
-            this.#bgGfx.on('pointerdown', (_pointer, _localX, _localY, event) => {
+            this.#bgRect.setInteractive();
+            this.#bgRect.on('pointerdown', (_pointer, _localX, _localY, event) => {
                 event.stopPropagation();
                 this.pickup();
             });
@@ -52,46 +57,6 @@ class Structure extends Phaser.GameObjects.GameObject {
     }
 
     preUpdate() { }
-
-    #createVisuals() {
-
-        // background graphics
-        this.#bgGfx = this.scene.add.rectangle(0, 0, this.size, this.size, this.color);
-
-        // label
-        this.#labelElement = this.scene.add.text(0, -10, this.label, {
-            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
-        }).setOrigin(0.5);
-
-        // health
-        this.#healthElement = this.scene.add.text(0, 10, this.#health, {
-            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
-        }).setOrigin(0.5);
-
-        // container that summarises all graphic/visual elements
-        this.#container = this.scene.add.container(this.pixelX, this.pixelY);
-        this.#container.add([this.#bgGfx, this.#labelElement, this.#healthElement]);
-    }
-
-    #createRadiusVisuals() {
-        const tileSize = config.world.tileSize;
-
-        this.#radiusGfx = this.scene.add.graphics().setDepth(config.depthMap.structureRadius);
-
-        if (this.#radiusType == RadiusType.Rectangular) {
-            this.#radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
-            this.#radiusGfx.strokeRect(
-                -(this.#radius + 0.5) * tileSize,
-                -(this.#radius + 0.5) * tileSize,
-                (this.#radius * 2 + 1) * tileSize,
-                (this.#radius * 2 + 1) * tileSize,
-            );
-        } else if (this.#radiusType == RadiusType.Circular) {
-            this.#radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
-            this.#radiusGfx.strokeCircle(0, 0, this.#radiusInPixel);
-        }
-        this.#container.add([this.#radiusGfx]);
-    }
 
     #spawnProduceFx(label, amount) {
         const tileSize = config.world.tileSize;
@@ -172,6 +137,47 @@ class Structure extends Phaser.GameObjects.GameObject {
         super.destroy(fromScene);
     }
 
+    // static function that creates structure visuals and returns them
+    static buildVisuals(scene, structureConfig) {
+        const bgRectSize = structureConfig.sizeInTiles * config.world.tileSize;
+        // background graphics
+        const bgRect = scene.add.rectangle(0, 0, bgRectSize, bgRectSize, structureConfig.color);
+
+        // label
+        const labelElement = scene.add.text(0, -10, structureConfig.label, {
+            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        // health
+        const healthElement = scene.add.text(0, 10, structureConfig.health, {
+            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+        return { bgRect, labelElement, healthElement };
+    }
+
+    // static function that creates radius visuals and returns them
+    static buildRadiusVisuals(scene, structureConfig) {
+        const tileSize = config.world.tileSize;
+        const radius = structureConfig.radiusInTiles;
+
+        const radiusGfx = scene.add.graphics().setDepth(config.depthMap.structureRadius);
+
+        if (structureConfig.radiusType == RadiusType.Rectangular) {
+            radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
+            radiusGfx.strokeRect(
+                -(radius + 0.5) * tileSize,
+                -(radius + 0.5) * tileSize,
+                (radius * 2 + 1) * tileSize,
+                (radius * 2 + 1) * tileSize,
+            );
+        } else if (structureConfig.radiusType == RadiusType.Circular) {
+            radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
+            radiusGfx.strokeCircle(0, 0, radius * config.world.tileSize);
+        }
+        return radiusGfx;
+    }
+
     // static to create a hove preview for the grid
     // returns move and destroy functions
     // generated by Claude
@@ -179,56 +185,27 @@ class Structure extends Phaser.GameObjects.GameObject {
         const { tileSize } = config.world;
         const half = tileSize / 2;
 
-        const gfx = scene.add.graphics();
-        gfx.fillStyle(structureConfig.color, 1);
-        gfx.fillRect(-half, -half, tileSize, tileSize);
+        const { bgRect, labelElement, healthElement } = Structure.buildVisuals(scene, structureConfig);
+        const radiusGfx = Structure.buildRadiusVisuals(scene, structureConfig);
 
-        const label = scene.add.text(0, -10, structureConfig.label, {
-            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
-        }).setOrigin(0.5);
-
-        const children = [gfx, label];
-
-        // Mirror radius visuals if configured
-        const radius = structureConfig.radiusInTiles;
-        const radiusType = structureConfig.radiusType;
-        if (radius > 0 && radiusType !== undefined) {
-            const radiusGfx = scene.add.graphics();
-            radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
-
-            if (radiusType === RadiusType.Rectangular) {
-                radiusGfx.strokeRect(
-                    -(radius + 0.5) * tileSize,
-                    -(radius + 0.5) * tileSize,
-                    (radius * 2 + 1) * tileSize,
-                    (radius * 2 + 1) * tileSize,
-                );
-            } else if (radiusType === RadiusType.Circular) {
-                radiusGfx.strokeCircle(0, 0, radius * tileSize);
-            }
-
-            children.push(radiusGfx);
-        }
-
-        const container = scene.add.container(0, 0, children)
+        const container = scene.add.container(0, 0, [bgRect, labelElement, healthElement, radiusGfx])
             .setDepth(config.depthMap.hoverGrid)
             .setAlpha(0.45);
 
+        // move this preview to another cell
         const moveTo = (col, row) => {
             const { x, y } = gridToWorld(col, row);
             container.setPosition(x, y);
         };
 
+        // set new color to the background rectangle
         const setTint = (color) => {
-            gfx.clear();
-            gfx.fillStyle(color, 1);
-            gfx.fillRect(-half, -half, tileSize, tileSize);
+            bgRect.setFillStyle(color);
         };
 
+        // clear previously set color back to original color for the background rectangle
         const clearTint = () => {
-            gfx.clear();
-            gfx.fillStyle(structureConfig.color, 1);
-            gfx.fillRect(-half, -half, tileSize, tileSize);
+            bgRect.setFillStyle(structureConfig.color);
         };
 
         const destroy = () => container.destroy(true);

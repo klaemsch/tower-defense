@@ -22,8 +22,9 @@ const config = {
          * A valid structure config needs:
          * - internalType: Phaser uses this internally to name the GameObjects
          * - health
-         * - color: visual color of the underlying rectangle
-         * - label: visual label that gets printed on the rectangle
+         * - color:         visual color of the underlying rectangle
+         * - label:         visual label that gets printed on the rectangle
+         * - sizeInTiles:   size of structure in tiles
          * 
          * If the structure costs resources, set these:
          * - costResourceRegistryKey: key of the resource that is needed to build this structure
@@ -40,12 +41,14 @@ const config = {
             health: 200,
             color: 0x888888,
             label: 'HQ',
+            sizeInTiles: 1,
         },
         woodShop: {
             internalType: 'woodShop',
             health: 60,
             color: '#1a1a2e',
             label: '🏪',
+            sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 5,
             placerLabel: '🏪 Wood Shop',
@@ -60,6 +63,7 @@ const config = {
             health: 100,
             color: 0xFF0000,
             label: 'T',
+            sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
             placerLabel: '🗼 Tower',
@@ -76,6 +80,7 @@ const config = {
             health: 100,
             color: 0xFF0000,
             label: 'S',
+            sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
             placerLabel: '🗼 Sniper',
@@ -92,6 +97,7 @@ const config = {
             health: 60,
             color: '#1a1a2e',
             label: '🏭',
+            sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 5,
             placerLabel: '🏭 Power Plant',
