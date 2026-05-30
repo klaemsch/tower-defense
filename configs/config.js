@@ -112,10 +112,8 @@ const config = {
         },
     },
     bullet: {
-        speed: 400,
         color: 0xf1faee,
         size: 4,
-        damage: 10,
     },
     enemy: {
         speed: 0.5,         // cells per second

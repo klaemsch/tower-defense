@@ -7,7 +7,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
     #trailPositions;
     #gfx;
 
-    constructor(scene, origin, target, speed = config.bullet.speed, damage = config.bullet.damage) {
+    constructor(scene, origin, target, speed, damage) {
         super(scene, 'bullet');
 
         this.x = origin.pixelX;
