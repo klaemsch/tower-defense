@@ -148,12 +148,13 @@ const config = {
     },
     flow: [
         { type: 'peace', lengthInSeconds: 2 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30, reward: 5 },
         { type: 'peace', lengthInSeconds: 10 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 40, reward: 10 },
         { type: 'peace', lengthInSeconds: 10 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 500, enemyHealth: 50, reward: 15 },
         { type: 'peace', lengthInSeconds: 10 },
+        { type: 'wave', lengthInSeconds: 15, spawnRate: 500, enemyHealth: 50, reward: 20 },
     ],
     sceneKeys: {
         game: 'gameScene',

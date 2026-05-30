@@ -79,6 +79,10 @@ class GameFlowManager {
         return currentStep;
     }
 
+    hasWon() {
+        return this.#flowIndex >= this.#flowData.length;
+    }
+
 
     // ── Wave Management ──────────────────────────────────────────────────────
 
@@ -92,15 +96,23 @@ class GameFlowManager {
 
         // if all enemies have been spawned AND destroyed
         if (timerProgress == 1 && enemiesLeft <= 0) {
-            //console.log('wave completed')
+
+            const currentStep = this.getCurrentStep()
+            this.#gameScene.registry.inc(config.resources.token.registryKey, currentStep.reward);
+
+            console.log(`wave completed, reward: ${currentStep.reward}`)
 
             // mark current wave as done
             this.#flowData[this.#flowIndex].finished = true;
             this.#flowIndex++;
 
-            // pause game and open shop
-            this.#gameScene.game.events.emit(config.eventKeys.gamePause);
-            this.#gameScene.game.events.emit(config.eventKeys.shopOpen);
+            if (this.hasWon()) {
+                this.#gameScene.game.events.emit(config.eventKeys.gameWon);
+            } else {
+                // pause game and open shop
+                this.#gameScene.game.events.emit(config.eventKeys.gamePause);
+                this.#gameScene.game.events.emit(config.eventKeys.shopOpen);
+            }
         }
     }
 
@@ -108,7 +120,7 @@ class GameFlowManager {
         console.log('start next steps');
         console.log(this.#flowData);
 
-        if (this.#flowIndex >= this.#flowData.length) {
+        if (this.hasWon()) {
             console.log('last wave survived');
             this.#gameScene.game.events.emit(config.eventKeys.gameWon);
         }
