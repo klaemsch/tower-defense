@@ -39,6 +39,11 @@ class Structure extends Phaser.GameObjects.GameObject {
         if (this.#radius > 0) {
             this.#radiusGfx = Structure.buildRadiusVisuals(this.scene, structureConfig);
             this.#container.add([this.#radiusGfx]);
+
+            // make radius visible/invisible depending on if the mouse is over the structure
+            this.#bgRect.setInteractive();
+            this.#bgRect.on('pointerover', () => this.#radiusGfx.setVisible(true));
+            this.#bgRect.on('pointerout', () => this.#radiusGfx.setVisible(false));
         }
 
         // if structure is moveable, create event handler
@@ -175,6 +180,10 @@ class Structure extends Phaser.GameObjects.GameObject {
             radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
             radiusGfx.strokeCircle(0, 0, radius * config.world.tileSize);
         }
+
+        // make invisible
+        radiusGfx.setVisible(false);
+
         return radiusGfx;
     }
 
@@ -187,6 +196,7 @@ class Structure extends Phaser.GameObjects.GameObject {
 
         const { bgRect, labelElement, healthElement } = Structure.buildVisuals(scene, structureConfig);
         const radiusGfx = Structure.buildRadiusVisuals(scene, structureConfig);
+        radiusGfx.setVisible(true);
 
         const container = scene.add.container(0, 0, [bgRect, labelElement, healthElement, radiusGfx])
             .setDepth(config.depthMap.hoverGrid)

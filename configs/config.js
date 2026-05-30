@@ -7,8 +7,8 @@ const config = {
     debug: true,
     world: {
         tileSize: 40,
-        numCols: 20,  // 800 / 40
-        numRows: 15,  // 600 / 40
+        numCols: 30,  // 800 / 40
+        numRows: 20,  // 600 / 40
         generation: {
             numTrees: 15,
         },
