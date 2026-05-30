@@ -87,5 +87,6 @@ phaserConfig.scene = [GameScene, HudScene, ShopScene]
 // ─── Boot (last file loaded fires this) ──────────────────────────────────────
 // Called from the bottom of the last script in load order.
 function startGame() {
-    new Phaser.Game(phaserConfig);
+    const game = new Phaser.Game(phaserConfig);
+    if (config.debug) window.__game = game;
 }

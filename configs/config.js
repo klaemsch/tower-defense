@@ -4,6 +4,7 @@ const RadiusType = {
 }
 
 const config = {
+    debug: true,
     world: {
         tileSize: 40,
         numCols: 20,  // 800 / 40
