@@ -16,6 +16,7 @@ const config = {
         structuresAvailableAtStart: [
             'woodShop',
             'tower',
+            'hammer',
         ]
     },
     texts: {
@@ -81,6 +82,23 @@ const config = {
             radiusType: RadiusType.Circular,
             bulletSpeed: 400,
             bulletDamage: 10,
+        },
+        hammer: {
+            internalType: 'hammer',
+            health: 100,
+            color: 0xFF0000,
+            label: 'H',
+            sizeInTiles: 1,
+            costResourceRegistryKey: 'wood',
+            cost: 10,
+            placerLabel: '🔨 Hammer',
+            moveable: true,
+
+            fireRateMs: 1000,
+            radiusInTiles: 1,
+            radiusType: RadiusType.Rectangular,
+            bulletSpeed: 400,
+            bulletDamage: 20,
         },
         sniper: {
             internalType: 'sniper',

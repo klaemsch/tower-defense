@@ -1,6 +1,7 @@
 const placerPreviewMap = {
     woodShop: (scene, cfg) => WoodShop.createPreview(scene, cfg),
     tower: (scene, cfg) => Tower.createPreview(scene, cfg),
+    hammer: (scene, cfg) => Tower.createPreview(scene, cfg),
     sniper: (scene, cfg) => Tower.createPreview(scene, cfg),
     powerPlant: (scene, cfg) => Structure.createPreview(scene, cfg),
 };
@@ -8,6 +9,7 @@ const placerPreviewMap = {
 const placerFactoryMap = {
     woodShop: (scene, col, row) => scene.add.woodShop(col, row),
     tower: (scene, col, row) => scene.add.tower(col, row, config.structures.tower),
+    hammer: (scene, col, row) => scene.add.tower(col, row, config.structures.hammer),
     sniper: (scene, col, row) => scene.add.tower(col, row, config.structures.sniper),
     powerPlant: (scene, col, row) => scene.add.powerPlant(col, row),
 };
