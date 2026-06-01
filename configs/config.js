@@ -16,7 +16,7 @@ const globalConfig = {
         structuresAvailableAtStart: [
             'woodShop',
             'tower',
-            'sniper',
+            'powerPlant',
         ]
     },
     texts: {
@@ -127,6 +127,8 @@ const globalConfig = {
             cost: 5,
             placerLabel: '🏭 Power Plant',
             moveable: true,
+
+            harvestRateMs: 1000,
         },
     },
     bullet: {
