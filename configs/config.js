@@ -3,7 +3,6 @@ const RadiusType = {
     Rectangular: 'rectangular',
 }
 
-// TODO: rename to globalConfig, or gameConfig to not confuse with local specific configs
 const globalConfig = {
     debug: true,
     world: {
@@ -158,7 +157,7 @@ const globalConfig = {
     },
     flow: [
         { type: 'peace', lengthInSeconds: 2 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 100, enemyHealth: 30, reward: 5 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30, reward: 5 },
         { type: 'peace', lengthInSeconds: 10 },
         { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 40, reward: 10 },
         { type: 'peace', lengthInSeconds: 10 },

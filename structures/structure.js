@@ -1,9 +1,7 @@
 class Structure extends Phaser.GameObjects.GameObject {
-    #health;
-    #container;
-    #radius;
-    #radiusType;
+    config;
 
+    #container;
     #bgRect;
     #labelElement;
     #healthElement;
@@ -13,6 +11,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         super(scene, structureConfig.internalType);
 
         console.log('creating structure with', structureConfig)
+        this.config = structureConfig;
 
         this.col = col;
         this.row = row;
@@ -21,13 +20,6 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
-        this.sizeInTiles = structureConfig.sizeInTiles;
-        this.color = structureConfig.color;
-        this.label = structureConfig.label;
-
-        this.#health = structureConfig.health;
-        this.#radius = structureConfig.radiusInTiles;
-        this.#radiusType = structureConfig.radiusType;
         this.attackable = true;
 
         // create visuals and if configured the radius visuals
@@ -36,7 +28,7 @@ class Structure extends Phaser.GameObjects.GameObject {
 
         this.#container = this.scene.add.container(this.pixelX, this.pixelY);
         this.#container.add([this.#bgRect, this.#labelElement, this.#healthElement]);
-        if (this.#radius > 0) {
+        if (this.config.radiusInTiles > 0) {
             this.#radiusGfx = Structure.buildRadiusVisuals(this.scene, structureConfig);
             this.#container.add([this.#radiusGfx]);
 
@@ -91,12 +83,12 @@ class Structure extends Phaser.GameObjects.GameObject {
     // returns true if destroyed (and destroys itself)
     // returns false if not destroyed but damaged
     doDamage(amount) {
-        this.#health -= amount;
-        if (this.#health <= 0) {
+        this.config.health -= amount;
+        if (this.config.health <= 0) {
             this.destroy();
             return true;
         } else {
-            this.#healthElement.text = this.#health;
+            this.#healthElement.text = this.config.health;
             return false;
         }
     }
