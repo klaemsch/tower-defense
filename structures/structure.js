@@ -17,7 +17,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.col = col;
         this.row = row;
 
-        const pos = gridToWorld(col, row);
+        const pos = helper.gridToWorld(col, row);
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
@@ -55,7 +55,7 @@ class Structure extends Phaser.GameObjects.GameObject {
             });
         }
 
-        placeInMap(col, row, this);
+        structureStorage.place(col, row, this);
 
         // Register with the scene so preUpdate() fires every frame
         scene.sys.updateList.add(this);
@@ -115,27 +115,27 @@ class Structure extends Phaser.GameObjects.GameObject {
     }
 
     moveTo(col, row) {
-        if (isCellOccupied(col, row)) return;
+        if (structureStorage.isOccupied(col, row)) return;
 
-        removeFromMap(this.col, this.row);
+        structureStorage.remove(this.col, this.row);
 
         this.col = col;
         this.row = row;
 
-        const pos = gridToWorld(col, row);
+        const pos = helper.gridToWorld(col, row);
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
         // move container -> moves visuals
         this.#container.setPosition(this.pixelX, this.pixelY);
 
-        placeInMap(col, row, this);
+        structureStorage.place(col, row, this);
     }
 
     destroy(fromScene) {
         console.log('structure of type', this.type, 'was destroyed')
 
-        removeFromMap(this.col, this.row);
+        structureStorage.remove(this.col, this.row);
 
         // destroys gfx, labels, and any children added by subclasses
         this.#container.destroy(true);
@@ -204,7 +204,7 @@ class Structure extends Phaser.GameObjects.GameObject {
 
         // move this preview to another cell
         const moveTo = (col, row) => {
-            const { x, y } = gridToWorld(col, row);
+            const { x, y } = helper.gridToWorld(col, row);
             container.setPosition(x, y);
         };
 

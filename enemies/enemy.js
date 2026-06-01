@@ -19,7 +19,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.gridX = col;
         this.gridY = row;
 
-        const pos = gridToWorld(col, row);
+        const pos = helper.gridToWorld(col, row);
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
@@ -151,7 +151,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
      * Called on every waypoint snap so enemies react to newly placed buildings.
      */
     #recalcPath() {
-        const best = this.#nearestTarget(Math.round(this.gridX), Math.round(this.gridY));
+        const best = structureStorage.getNearestTarget(Math.round(this.gridX), Math.round(this.gridY));
         if (best && best !== this.#target) this.#target = best;
 
         const newPath = helper.findPath(
@@ -167,7 +167,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     /** Pick a new target and path from scratch. Destroys self if none found. */
     #retarget() {
-        const best = this.#nearestTarget(Math.round(this.gridX), Math.round(this.gridY));
+        const best = structureStorage.getNearestTarget(Math.round(this.gridX), Math.round(this.gridY));
         if (!best) { this.destroy(); return; }
 
         const newPath = helper.findPath(
@@ -186,26 +186,9 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     // ── Target selection ──────────────────────────────────────────────────────
 
-    /**
-     * Returns the nearest attackable structure GameObject to (fromCol, fromRow).
-     * Single unified function — used by both #recalcPath and #retarget.
-     */
-    #nearestTarget(fromCol, fromRow) {
-        let best = null;
-        let bestDist = Infinity;
-
-        structureMap.forEach((structure) => {
-            if (!structure.attackable) return;
-            const d = Math.sqrt((structure.col - fromCol) ** 2 + (structure.row - fromRow) ** 2);
-            if (d < bestDist) { bestDist = d; best = structure; }
-        });
-
-        return best;
-    }
-
     // returns true if this.#target is alive
     #targetIsAlive() {
-        return this.#target && structureMap.has(gridKey(this.#target.col, this.#target.row));
+        return this.#target && structureStorage.isOccupied(this.#target.col, this.#target.row);
     }
 
     // returns true if this.#target is in range
@@ -228,11 +211,11 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#pathGfx.lineStyle(1, this.#config.color, 0.3);
         this.#pathGfx.beginPath();
 
-        const start = gridToWorld(Math.round(this.gridX), Math.round(this.gridY));
+        const start = helper.gridToWorld(Math.round(this.gridX), Math.round(this.gridY));
         this.#pathGfx.moveTo(start.x, start.y);
 
         this.#path.slice(this.#pathIdx).forEach(({ col, row }) => {
-            const { x, y } = gridToWorld(col, row);
+            const { x, y } = helper.gridToWorld(col, row);
             this.#pathGfx.lineTo(x, y);
         });
 

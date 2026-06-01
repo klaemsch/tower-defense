@@ -1,28 +1,3 @@
-// ─── Shared State ─────────────────────────────────────────────────────────────
-
-// Central lookup: "col,row" -> gameObject
-const structureMap = new Map();
-
-// ─── Grid Helpers ─────────────────────────────────────────────────────────────
-function worldToGrid(x, y) {
-    const { tileSize } = config.world;
-    return { col: Math.floor(x / tileSize), row: Math.floor(y / tileSize) };
-}
-function gridToWorld(col, row) {
-    const { tileSize } = config.world;
-    return { x: col * tileSize + tileSize / 2, y: row * tileSize + tileSize / 2 };
-}
-function gridKey(col, row) { return `${col},${row}`; }
-function isCellOccupied(col, row) { return structureMap.has(gridKey(col, row)); }
-
-function placeInMap(col, row, gameObject) {
-    structureMap.set(gridKey(col, row), gameObject);
-}
-
-function removeFromMap(col, row) {
-    structureMap.delete(gridKey(col, row));
-}
-
 class GameScene extends Phaser.Scene {
 
     constructor() {

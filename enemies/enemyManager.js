@@ -79,13 +79,13 @@ class EnemyManager {
 
     #spawn() {
         console.log('SPAWN')
-        const candidates = this.#getBorderCells();
+        const candidates = structureStorage.getBorderCells();
         Phaser.Utils.Array.Shuffle(candidates);
 
         for (const { col, row } of candidates) {
-            if (isCellOccupied(col, row)) continue;
+            if (structureStorage.isOccupied(col, row)) continue;
 
-            const target = this.#nearestTarget(col, row);
+            const target = structureStorage.getNearestTarget(col, row);
             if (!target) continue;
 
             const path = helper.findPath(col, row, target.col, target.row);
@@ -104,31 +104,5 @@ class EnemyManager {
         console.log('No position for enemy spawn found');
 
         return null;
-    }
-
-    #nearestTarget(fromCol, fromRow) {
-        let best = null;
-        let bestDist = Infinity;
-
-        structureMap.forEach((entry) => {
-            if (entry.attackable === false) return;
-            const d = Math.sqrt((entry.col - fromCol) ** 2 + (entry.row - fromRow) ** 2);
-            if (d < bestDist) { bestDist = d; best = entry; }
-        });
-        return best;
-    }
-
-    #getBorderCells() {
-        const { numCols, numRows } = config.world;
-        const cells = [];
-        for (let c = 0; c < numCols; c++) {
-            cells.push({ col: c, row: 0 });
-            cells.push({ col: c, row: numRows - 1 });
-        }
-        for (let r = 1; r < numRows - 1; r++) {
-            cells.push({ col: 0, row: r });
-            cells.push({ col: numCols - 1, row: r });
-        }
-        return cells;
     }
 }

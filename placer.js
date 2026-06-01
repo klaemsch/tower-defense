@@ -81,7 +81,7 @@ class Placer {
             this.#movingStructure.moveTo(col, row);
         } else {
             // Place new — factory handles cost check
-            if (isCellOccupied(col, row)) return;
+            if (structureStorage.isOccupied(col, row)) return;
             const factory = placerFactoryMap[this.#activeStructure];
             if (!factory) { console.warn(`Unknown structure type: ${this.#activeStructure}`); return; }
             this.#destroyPreview();
@@ -97,7 +97,7 @@ class Placer {
         if (!this.#activeStructure || !this.#preview) return;
 
         // check if new position (get through pointer pos) is out of world bounds
-        const { col, row } = worldToGrid(pointer.x, pointer.y);
+        const { col, row } = helper.worldToGrid(pointer.x, pointer.y);
         const { numCols, numRows } = config.world;
 
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
@@ -106,7 +106,7 @@ class Placer {
         this.#preview.moveTo(col, row);
 
         // Tint red if occupied by something else
-        if (isCellOccupied(col, row)) {
+        if (structureStorage.isOccupied(col, row)) {
             this.#preview.setTint?.(0xff6666);
         } else {
             this.#preview.clearTint?.();
@@ -116,7 +116,7 @@ class Placer {
     // event fired everytime the pointer is clicked
     #onPointerDown(pointer) {
         if (!this.#activeStructure) return;
-        const { col, row } = worldToGrid(pointer.x, pointer.y);
+        const { col, row } = helper.worldToGrid(pointer.x, pointer.y);
         this.#place(col, row);
     }
 }

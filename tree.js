@@ -7,7 +7,7 @@ class Tree extends Phaser.GameObjects.GameObject {
         this.col = col;
         this.row = row;
 
-        const pos = gridToWorld(col, row);
+        const pos = helper.gridToWorld(col, row);
         this.pixelX = pos.x;
         this.pixelY = pos.y;
 
@@ -23,7 +23,7 @@ class Tree extends Phaser.GameObjects.GameObject {
         this.#draw();
 
         // Register in the shared structure map (pass `this` as the owner ref)
-        placeInMap(col, row, this);
+        structureStorage.place(col, row, this);
     }
 
     #draw() {

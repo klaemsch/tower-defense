@@ -2,6 +2,7 @@ class WoodShop extends Structure {
     #lastHarvest;
     #harvestRateMs;
     #radius;
+    #treesInRadius;
 
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
@@ -10,33 +11,30 @@ class WoodShop extends Structure {
 
         this.#lastHarvest = 0;
         this.#harvestRateMs = structureConfig.harvestRateMs;
-    }
 
-    // ── Public API ────────────────────────────────────────────────────────────
+        this.#treesInRadius = this.#countTreesInRadius();
+    }
 
     // returns the number of trees in radius
     #countTreesInRadius() {
-        let treeCount = 0;
-        structureMap.forEach((entry) => {
-            if (entry.type !== 'tree') return;
-            //console.log('found tree at', entry.pixelX, entry.pixelY);
-            const dist = Math.max(
-                Math.abs(entry.col - this.col),
-                Math.abs(entry.row - this.row),
-            );
-            if (dist <= this.#radius) treeCount++;
-        });
-        //console.log('found', count, 'trees in radius')
-        return treeCount;
+        const adjacentTrees = structureStorage.getStructuresInRange(
+            this.col, this.row, this.#radius, s => s.type === 'tree'
+        );
+        //console.log('found', adjacentTrees.length, 'trees in radius');
+        return adjacentTrees.length;
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
+    moveTo(col, row) {
+        super.moveTo(col, row);
+        this.#treesInRadius = this.#countTreesInRadius();
+    }
+
     preUpdate(time, delta) {
         if (time > this.#lastHarvest + this.#harvestRateMs) {
             this.#lastHarvest = time;
-            const treeCount = this.#countTreesInRadius();
-            this.produce(config.resources.wood.registryKey, config.resources.wood.label, treeCount);
+            this.produce(config.resources.wood.registryKey, config.resources.wood.label, this.#treesInRadius);
         }
     }
 

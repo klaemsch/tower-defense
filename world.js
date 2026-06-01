@@ -25,7 +25,7 @@ function placeTrees(scene) {
         attempts++;
         const col = Phaser.Math.Between(0, numCols - 1);
         const row = Phaser.Math.Between(0, numRows - 1);
-        if (isCellOccupied(col, row)) continue;
+        if (structureStorage.isOccupied(col, row)) continue;
 
         scene.add.tree(col, row);
         placed++;

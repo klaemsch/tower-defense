@@ -1,5 +1,3 @@
-const helper = {};
-
 // returns array of (col, row)-pairs that are adjacent to the given (col, row)-pair
 helper.adjacentCells = (iCol, iRow) => {
     return [
@@ -11,10 +9,16 @@ helper.adjacentCells = (iCol, iRow) => {
 }
 
 helper.findPath = (startCol, startRow, goalCol, goalRow) => {
+
+    // TODO: temp fix
+    const gridKey = (col, row) => {
+        return `${col},${row}`;
+    }
+
     const { numCols, numRows } = config.world;
     const walkableAdjacent = helper.adjacentCells(goalCol, goalRow).filter(({ col, row }) => {
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return false;
-        const entry = structureMap.get(gridKey(col, row));
+        const entry = structureStorage.getByCell(col, row);
         return !entry || (col === startCol && row === startRow);
     });
     if (walkableAdjacent.length === 0) return null;
@@ -38,7 +42,7 @@ helper.findPath = (startCol, startRow, goalCol, goalRow) => {
             const k = gridKey(nc, nr);
             if (nc < 0 || nc >= numCols || nr < 0 || nr >= numRows) continue;
             if (visited.has(k)) continue;
-            const entry = structureMap.get(k);
+            const entry = structureStorage.getByCell(nc, nr);
             if (entry && !goalSet.has(k)) continue;
             visited.add(k);
             queue.push({ col: nc, row: nr, path: [...path, { col: nc, row: nr }] });
