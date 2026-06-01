@@ -17,7 +17,7 @@ const config = {
         structuresAvailableAtStart: [
             'woodShop',
             'tower',
-            'hammer',
+            'sniper',
         ]
     },
     texts: {
@@ -158,7 +158,7 @@ const config = {
     },
     flow: [
         { type: 'peace', lengthInSeconds: 2 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30, reward: 5 },
+        { type: 'wave', lengthInSeconds: 10, spawnRate: 100, enemyHealth: 30, reward: 5 },
         { type: 'peace', lengthInSeconds: 10 },
         { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 40, reward: 10 },
         { type: 'peace', lengthInSeconds: 10 },

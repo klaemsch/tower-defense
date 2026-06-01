@@ -1,18 +1,22 @@
 class Tower extends Structure {
-    #attackTimer = 0;
     #radius;
     #radiusInPixel;
     #radiusType;
-    #findClosestEnemyFunc
+    #fireRateMs;
     #bulletDamage;
     #bulletSpeed;
+
+    #attackAccumulator = 0;
+
+    #findClosestEnemyFunc
+
 
     #enemyManager;
 
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
 
-        this.fireRateMs = structureConfig.fireRateMs;
+        this.#fireRateMs = structureConfig.fireRateMs;
 
         this.#radius = structureConfig.radiusInTiles;
         this.#radiusInPixel = this.#radius * config.world.tileSize;
@@ -28,14 +32,19 @@ class Tower extends Structure {
     }
 
     preUpdate(time, delta) {
-        // TODO: check if im right: delta is the time in milliseconds since the last preUpdate call, right?
-        this.#attackTimer += delta;
-        if (this.#attackTimer >= this.fireRateMs) {
-            this.#attackTimer -= this.fireRateMs;
+        // TODO: currently the tower only looks for enemies every fireRateMs
+        // TODO: tower kills the last enemy in range, tower looks for new enemy -> no in range
+        // enemy comes into range, tower only fires after fireRateMs, even if the last shot was way before that
+        // TODO: it might be an idea to look for enemies every preUpdate
+        this.#attackAccumulator += delta;
+        if (this.#attackAccumulator >= this.#fireRateMs) {
+            this.#attackAccumulator -= this.#fireRateMs;
             // TODO: maybe use the function here:
             // const target = this.#enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
             const target = this.#findClosestEnemyFunc();
-            if (target) this.scene.add.bullet(this, target, this.#bulletSpeed, this.#bulletDamage);
+            if (target) {
+                this.scene.add.bullet(this, target, this.#bulletSpeed, this.#bulletDamage);
+            }
         }
     }
 

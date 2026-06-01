@@ -1,5 +1,5 @@
 class WoodShop extends Structure {
-    #lastHarvest;
+    #harvestAccumulator;
     #harvestRateMs;
     #radius;
     #treesInRadius;
@@ -9,7 +9,9 @@ class WoodShop extends Structure {
 
         this.#radius = structureConfig.radiusInTiles;
 
-        this.#lastHarvest = 0;
+        // every preUpdate call the delta since the last update gets added to harvestAccumulator
+        // if it falls below the harvestRateMs threshold -> harvest 
+        this.#harvestAccumulator = 0;
         this.#harvestRateMs = structureConfig.harvestRateMs;
 
         this.#treesInRadius = this.#countTreesInRadius();
@@ -32,8 +34,9 @@ class WoodShop extends Structure {
     }
 
     preUpdate(time, delta) {
-        if (time > this.#lastHarvest + this.#harvestRateMs) {
-            this.#lastHarvest = time;
+        this.#harvestAccumulator += delta;
+        if (this.#harvestAccumulator >= this.#harvestRateMs) {
+            this.#harvestAccumulator -= this.#harvestRateMs;
             this.produce(config.resources.wood.registryKey, config.resources.wood.label, this.#treesInRadius);
         }
     }

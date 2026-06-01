@@ -21,7 +21,7 @@ class StructureStorage {
     }
 
     remove(col, row) {
-        if (this.isOccupied(col, row)) {
+        if (!this.isOccupied(col, row)) {
             return false;
         }
 
