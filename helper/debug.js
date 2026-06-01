@@ -13,3 +13,5 @@ function unlockStrucutre(structureName) {
 function unlockSniper() {
     unlockStrucutre('sniper');
 }
+
+startGame();

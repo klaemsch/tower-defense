@@ -3,6 +3,7 @@ const RadiusType = {
     Rectangular: 'rectangular',
 }
 
+// TODO: rename to globalConfig, or gameConfig to not confuse with local specific configs
 const config = {
     debug: true,
     world: {
@@ -132,15 +133,6 @@ const config = {
     bullet: {
         color: 0xf1faee,
         size: 4,
-    },
-    enemy: {
-        speed: 0.5,         // cells per second
-        spawnRate: 2000,    // ms between spawns
-        damage: 10,         // damage per hit to a structure
-        attackRate: 1000,   // ms between attacks while adjacent
-        color: 0xe63946,
-        sizeRatio: 0.5,   // size relative to tileSize, evaluated at draw time
-        health: 30,
     },
     resources: {
         token: {
