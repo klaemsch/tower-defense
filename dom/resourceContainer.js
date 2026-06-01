@@ -13,7 +13,7 @@ class ResourceContainer extends Phaser.GameObjects.Container {
         super(scene, cx, cy);
         this.#hudScene = scene;
 
-        const resources = Object.values(config.resources);
+        const resources = Object.values(globalConfig.resources);
 
         resources.forEach((resource, i) => {
             const { registryKey, label } = resource;
@@ -36,7 +36,7 @@ class ResourceContainer extends Phaser.GameObjects.Container {
             fontStyle: 'bold',
             backgroundColor: '#00000066',
             padding: { x: 6, y: 3 },
-        }).setDepth(config.depthMap.resourceLabel);
+        }).setDepth(globalConfig.depthMap.resourceLabel);
 
         this.add(textElement);
 

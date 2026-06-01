@@ -37,7 +37,7 @@ class WoodShop extends Structure {
         this.#harvestAccumulator += delta;
         if (this.#harvestAccumulator >= this.#harvestRateMs) {
             this.#harvestAccumulator -= this.#harvestRateMs;
-            this.produce(config.resources.wood.registryKey, config.resources.wood.label, this.#treesInRadius);
+            this.produce(globalConfig.resources.wood.registryKey, globalConfig.resources.wood.label, this.#treesInRadius);
         }
     }
 
@@ -49,6 +49,6 @@ class WoodShop extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'woodShop',
     function (col, row) {
-        return Structure.create(this.scene, col, row, config.structures.woodShop, WoodShop);
+        return Structure.create(this.scene, col, row, globalConfig.structures.woodShop, WoodShop);
     }
 );

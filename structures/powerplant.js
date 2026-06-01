@@ -12,6 +12,6 @@ class PowerPlant extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'powerPlant',
     function (col, row) {
-        return Structure.create(this.scene, col, row, config.structures.powerPlant, PowerPlant);
+        return Structure.create(this.scene, col, row, globalConfig.structures.powerPlant, PowerPlant);
     }
 );

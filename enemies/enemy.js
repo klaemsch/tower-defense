@@ -32,7 +32,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#attackTimer = 0;
 
         this.#gfx = scene.add.graphics();
-        this.#pathGfx = scene.add.graphics().setDepth(config.depthMap.enemyPath);
+        this.#pathGfx = scene.add.graphics().setDepth(globalConfig.depthMap.enemyPath);
 
         scene.sys.updateList.add(this);
 
@@ -42,7 +42,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         // trigger destroy event for other scenes to check status
         this.once('destroy', () => {
             //console.log('enemy destroy event');
-            this.scene.game.events.emit(config.eventKeys.enemyDestroyed);
+            this.scene.game.events.emit(globalConfig.eventKeys.enemyDestroyed);
         });
     }
 
@@ -57,7 +57,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
             this.#tickMove(step);
         }
 
-        const tileSize = config.world.tileSize;
+        const tileSize = globalConfig.world.tileSize;
         this.pixelX = this.gridX * tileSize + tileSize / 2;
         this.pixelY = this.gridY * tileSize + tileSize / 2;
 

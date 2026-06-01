@@ -1,13 +1,13 @@
 // TODO: maybe use a NineSlice here: https://docs.phaser.io/phaser/concepts/gameobjects/nine-slice
 class ShopScene extends Phaser.Scene {
-    #cardWidth = config.shop.layout.cardWidth;
-    #cardHeight = config.shop.layout.cardHeight;
-    #cardGap = config.shop.layout.cardGap;
+    #cardWidth = globalConfig.shop.layout.cardWidth;
+    #cardHeight = globalConfig.shop.layout.cardHeight;
+    #cardGap = globalConfig.shop.layout.cardGap;
 
     #progressManager;
 
     constructor() {
-        super(config.sceneKeys.shop);
+        super(globalConfig.sceneKeys.shop);
     }
 
     preload() { }
@@ -15,28 +15,28 @@ class ShopScene extends Phaser.Scene {
     create() {
         this.#registerEventListeners();
 
-        this.#progressManager = this.registry.get(config.registryKeys.progressManager);
+        this.#progressManager = this.registry.get(globalConfig.registryKeys.progressManager);
 
         const W = this.scale.width;
         const H = this.scale.height;
 
         // ── Overlay with opacity to "blur" the game in the background ────────
-        this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(config.depthMap.shopBackgroundBlur);
+        this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(globalConfig.depthMap.shopBackgroundBlur);
 
         // ── Title ────────────────────────────────────────────────────────────
-        this.add.text(W / 2, 72, config.shop.title, {
+        this.add.text(W / 2, 72, globalConfig.shop.title, {
             fontSize: '32px',
             color: '#ffffff',
             fontStyle: 'bold',
             stroke: '#000000',
             strokeThickness: 3,
-        }).setOrigin(0.5).setDepth(config.depthMap.shopText);
+        }).setOrigin(0.5).setDepth(globalConfig.depthMap.shopText);
 
         // ── Subtitle ──────────────────────────────────────────────────────────
-        this.add.text(W / 2, 116, config.shop.subtitle, {
+        this.add.text(W / 2, 116, globalConfig.shop.subtitle, {
             fontSize: '16px',
             color: '#7ecfc2',
-        }).setOrigin(0.5).setDepth(config.depthMap.shopText);
+        }).setOrigin(0.5).setDepth(globalConfig.depthMap.shopText);
 
         // ── Cards ─────────────────────────────────────────────────────────────
         const totalWidth = cards.length * this.#cardWidth + (cards.length - 1) * this.#cardGap;
@@ -52,7 +52,7 @@ class ShopScene extends Phaser.Scene {
             }
 
             // create card and attach the resulting container element to the config for later usage
-            card.cardElement = new Card(this, cx, cardY, card).setDepth(config.depthMap.shopText);
+            card.cardElement = new Card(this, cx, cardY, card).setDepth(globalConfig.depthMap.shopText);
         });
 
         // ── Continue button ───────────────────────────────────────────────────
@@ -61,7 +61,7 @@ class ShopScene extends Phaser.Scene {
             radius: 10,
             fontSize: '18px',
         })
-            .setDepth(config.depthMap.shopText)
+            .setDepth(globalConfig.depthMap.shopText)
             .on('pointerdown', () => {
                 this.#closeShop();
             });
@@ -86,17 +86,17 @@ class ShopScene extends Phaser.Scene {
 
     #closeShop() {
         // send shop to sleep and wake game
-        this.game.events.emit(config.eventKeys.shopClose);
-        this.game.events.emit(config.eventKeys.gameResume);
+        this.game.events.emit(globalConfig.eventKeys.shopClose);
+        this.game.events.emit(globalConfig.eventKeys.gameResume);
     }
 
     #registerEventListeners() {
-        this.game.events.on(config.eventKeys.shopOpen, () => this.scene.wake());
-        this.game.events.on(config.eventKeys.shopClose, () => this.scene.sleep());
+        this.game.events.on(globalConfig.eventKeys.shopOpen, () => this.scene.wake());
+        this.game.events.on(globalConfig.eventKeys.shopClose, () => this.scene.sleep());
     }
 
     #destroyEventListeners() {
-        this.game.events.off(config.eventKeys.shopOpen);
-        this.game.events.off(config.eventKeys.shopClose);
+        this.game.events.off(globalConfig.eventKeys.shopOpen);
+        this.game.events.off(globalConfig.eventKeys.shopClose);
     }
 }

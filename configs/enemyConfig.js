@@ -8,7 +8,7 @@ const enemyConfig = {
         sizeRatio: 0.5,   // size relative to tileSize, evaluated at draw time
         health: 30,
         draw: (gfx, px, py, eConfig, attacking) => {
-            const s = (config.world.tileSize * eConfig.sizeRatio) / 2;
+            const s = (globalConfig.world.tileSize * eConfig.sizeRatio) / 2;
 
             gfx.fillStyle(attacking ? 0xff8800 : eConfig.color, 1);
             gfx.fillTriangle(px, py - s, px - s, py, px + s, py); // top half
@@ -25,7 +25,7 @@ const enemyConfig = {
         sizeRatio: 0.9,   // size relative to tileSize, evaluated at draw time
         health: 30,
         draw: (gfx, px, py, eConfig, attacking) => {
-            const s = (config.world.tileSize * eConfig.sizeRatio) / 2;
+            const s = (globalConfig.world.tileSize * eConfig.sizeRatio) / 2;
 
             // outer square, rotated 45°
             gfx.fillStyle(attacking ? 0xff8800 : eConfig.color, 1);

@@ -7,7 +7,7 @@ function createWorld(scene) {
 }
 
 function drawGrid(scene) {
-    const { tileSize, numCols, numRows } = config.world;
+    const { tileSize, numCols, numRows } = globalConfig.world;
 
     const gfx = scene.add.graphics();
     gfx.lineStyle(1, 0xffffff, 0.07);
@@ -18,10 +18,10 @@ function drawGrid(scene) {
 }
 
 function placeTrees(scene) {
-    const { numCols, numRows } = config.world;
+    const { numCols, numRows } = globalConfig.world;
 
     let placed = 0, attempts = 0;
-    while (placed < config.world.generation.numTrees && attempts < 500) {
+    while (placed < globalConfig.world.generation.numTrees && attempts < 500) {
         attempts++;
         const col = Phaser.Math.Between(0, numCols - 1);
         const row = Phaser.Math.Between(0, numRows - 1);

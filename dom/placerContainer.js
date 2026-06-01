@@ -120,20 +120,20 @@ class PlacerContainer extends Phaser.GameObjects.Container {
      */
     constructor(scene, cx, cy) {
         super(scene, cx, cy);
-        this.#placer = scene.registry.get(config.registryKeys.placer);
-        this.#progressManager = scene.registry.get(config.registryKeys.progressManager);
+        this.#placer = scene.registry.get(globalConfig.registryKeys.placer);
+        this.#progressManager = scene.registry.get(globalConfig.registryKeys.progressManager);
 
         this.#createButtons();
 
         // listen for change in active structure
         scene.registry.events.on(
-            `changedata-${config.registryKeys.placerActiveStructure}`,
+            `changedata-${globalConfig.registryKeys.placerActiveStructure}`,
             (_parent, value) => { if (value === null) this.#deactivateAll(); }
         );
 
         // listen for change in progress
         scene.registry.events.on(
-            `changedata-${config.registryKeys.progress}`,
+            `changedata-${globalConfig.registryKeys.progress}`,
             (_parent, _state) => {
                 this.#destroyButtons();
                 this.#createButtons();
@@ -146,7 +146,7 @@ class PlacerContainer extends Phaser.GameObjects.Container {
     // ── Private helpers ───────────────────────────────────────────────
 
     #createButtons() {
-        Object.values(config.structures)
+        Object.values(globalConfig.structures)
             .filter(s => s.placerLabel !== undefined)
             .filter(s => this.#progressManager.isUnlocked(s.internalType))
             .forEach((s, i) => this.#addButton(s, i));

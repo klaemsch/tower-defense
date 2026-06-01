@@ -15,7 +15,7 @@ helper.findPath = (startCol, startRow, goalCol, goalRow) => {
         return `${col},${row}`;
     }
 
-    const { numCols, numRows } = config.world;
+    const { numCols, numRows } = globalConfig.world;
     const walkableAdjacent = helper.adjacentCells(goalCol, goalRow).filter(({ col, row }) => {
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return false;
         const entry = structureStorage.getByCell(col, row);

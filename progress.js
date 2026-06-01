@@ -1,7 +1,7 @@
 class ProgressManager {
 
     static #DEFAULT_STATE = {
-        unlockedStructures: config.world.structuresAvailableAtStart,
+        unlockedStructures: globalConfig.world.structuresAvailableAtStart,
     };
 
     #gameScene;
@@ -43,7 +43,7 @@ class ProgressManager {
 
     #initResources() {
         //console.debug('initResources');
-        for (const resource of Object.values(config.resources)) {
+        for (const resource of Object.values(globalConfig.resources)) {
             const { registryKey, label, initialValue } = resource;
             //console.debug(`Setting ${registryKey} to ${initialValue}`);
             this.#gameScene.registry.set(registryKey, initialValue);
@@ -57,7 +57,7 @@ class ProgressManager {
      */
     #commit() {
         this.#gameScene.registry.set(
-            config.registryKeys.progress,
+            globalConfig.registryKeys.progress,
             { ...this.#state }
         );
     }

@@ -8,9 +8,9 @@ const placerPreviewMap = {
 
 const placerFactoryMap = {
     woodShop: (scene, col, row) => scene.add.woodShop(col, row),
-    tower: (scene, col, row) => scene.add.tower(col, row, config.structures.tower),
-    hammer: (scene, col, row) => scene.add.tower(col, row, config.structures.hammer),
-    sniper: (scene, col, row) => scene.add.tower(col, row, config.structures.sniper),
+    tower: (scene, col, row) => scene.add.tower(col, row, globalConfig.structures.tower),
+    hammer: (scene, col, row) => scene.add.tower(col, row, globalConfig.structures.hammer),
+    sniper: (scene, col, row) => scene.add.tower(col, row, globalConfig.structures.sniper),
     powerPlant: (scene, col, row) => scene.add.powerPlant(col, row),
 };
 
@@ -35,7 +35,7 @@ class Placer {
     select(structureType) {
         this.deselect();
         this.#activeStructure = structureType;
-        this.#scene.registry.set(config.registryKeys.placerActiveStructure, structureType);
+        this.#scene.registry.set(globalConfig.registryKeys.placerActiveStructure, structureType);
         this.#spawnPreview(structureType);
     }
 
@@ -44,14 +44,14 @@ class Placer {
         this.deselect();
         this.#movingStructure = structureInstance;
         this.#activeStructure = structureInstance.type;
-        this.#scene.registry.set(config.registryKeys.placerActiveStructure, structureInstance.type);
+        this.#scene.registry.set(globalConfig.registryKeys.placerActiveStructure, structureInstance.type);
         this.#spawnPreview(structureInstance.type);
     }
 
     deselect() {
         this.#activeStructure = null;
         this.#movingStructure = null;
-        this.#scene.registry.set(config.registryKeys.placerActiveStructure, null);
+        this.#scene.registry.set(globalConfig.registryKeys.placerActiveStructure, null);
         this.#destroyPreview();
     }
 
@@ -59,7 +59,7 @@ class Placer {
 
     #spawnPreview(structureType) {
         this.#destroyPreview();
-        const structureConfig = config.structures[structureType];
+        const structureConfig = globalConfig.structures[structureType];
         const previewFactory = placerPreviewMap[structureType];
         if (!previewFactory || !structureConfig) return;
         this.#preview = previewFactory(this.#scene, structureConfig);
@@ -73,7 +73,7 @@ class Placer {
     #place(col, row) {
         if (!this.#activeStructure) return;
 
-        const { numCols, numRows } = config.world;
+        const { numCols, numRows } = globalConfig.world;
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
 
         if (this.#movingStructure) {
@@ -98,7 +98,7 @@ class Placer {
 
         // check if new position (get through pointer pos) is out of world bounds
         const { col, row } = helper.worldToGrid(pointer.x, pointer.y);
-        const { numCols, numRows } = config.world;
+        const { numCols, numRows } = globalConfig.world;
 
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
 

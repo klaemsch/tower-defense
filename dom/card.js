@@ -18,9 +18,9 @@ class Card extends Phaser.GameObjects.Container {
 
         this.#buttonCallback = data.buttonCallback ?? function () { console.log('default card button callback') };
 
-        const CW = config.shop.layout.cardWidth;
-        const CH = config.shop.layout.cardHeight;
-        const IS = config.shop.layout.imgSize;
+        const CW = globalConfig.shop.layout.cardWidth;
+        const CH = globalConfig.shop.layout.cardHeight;
+        const IS = globalConfig.shop.layout.imgSize;
         const RADIUS = 12;
 
         // Local top-left (container origin is center)
@@ -85,7 +85,7 @@ class Card extends Phaser.GameObjects.Container {
 
         // ── Buy button ────────────────────────────────────────────────────────
         this.add(
-            new RoundedButton(scene, 0, top + CH - 22, CW - 24, 28, `${data.cost} ${config.resources.token.label}`, {
+            new RoundedButton(scene, 0, top + CH - 22, CW - 24, 28, `${data.cost} ${globalConfig.resources.token.label}`, {
                 fontSize: '13px',
                 textColor: '#a8dadc',
             }).on('pointerdown', () => {

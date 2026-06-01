@@ -7,19 +7,19 @@ class GameFlowManager {
 
     constructor(gameScene) {
         this.#gameScene = gameScene; // TODO: undestand the difference between this.#scene and this.#scene.scene
-        this.#enemyManager = this.#gameScene.registry.get(config.registryKeys.enemyManager);
+        this.#enemyManager = this.#gameScene.registry.get(globalConfig.registryKeys.enemyManager);
 
         this.#flowIndex = 0;
-        this.#flowData = config.flow;
+        this.#flowData = globalConfig.flow;
 
         // init pauseResumeState
-        this.#gameScene.registry.set(config.registryKeys.pauseResumeState, false);
+        this.#gameScene.registry.set(globalConfig.registryKeys.pauseResumeState, false);
 
         // subscribe to event that fires when an enemy is destroyed -> check if wave is completed
-        this.#gameScene.game.events.on(config.eventKeys.enemyDestroyed, this.#checkWaveCompleted, this);
+        this.#gameScene.game.events.on(globalConfig.eventKeys.enemyDestroyed, this.#checkWaveCompleted, this);
 
         // subscribe to event that fires when shop is closed -> start peace period timer
-        this.#gameScene.game.events.on(config.eventKeys.shopClose, this.#startNextStep, this);
+        this.#gameScene.game.events.on(globalConfig.eventKeys.shopClose, this.#startNextStep, this);
 
         this.#startNextStep();
     }
@@ -35,19 +35,19 @@ class GameFlowManager {
         console.log('pauseWave called');
         this.#gameScene.scene.pause();
         this.#enemyManager.pauseSpawning();
-        this.#gameScene.registry.set(config.registryKeys.pauseResumeState, true);
+        this.#gameScene.registry.set(globalConfig.registryKeys.pauseResumeState, true);
     }
 
     resumeWave() {
         console.log('resumeWave called');
         this.#gameScene.scene.resume();
         this.#enemyManager.resumeSpawning();
-        this.#gameScene.registry.set(config.registryKeys.pauseResumeState, false);
+        this.#gameScene.registry.set(globalConfig.registryKeys.pauseResumeState, false);
     }
 
     togglePauseWave() {
         console.log('togglePauseWave called');
-        if (this.#gameScene.scene.isPaused() != this.#gameScene.registry.get(config.registryKeys.pauseResumeState)) console.error('scene state and registry state mismatch!');
+        if (this.#gameScene.scene.isPaused() != this.#gameScene.registry.get(globalConfig.registryKeys.pauseResumeState)) console.error('scene state and registry state mismatch!');
         if (this.#gameScene.scene.isPaused()) {
             this.resumeWave();
         } else {
@@ -56,7 +56,7 @@ class GameFlowManager {
     }
 
     isPaused() {
-        return this.#gameScene.registry.get(config.registryKeys.pauseResumeState);
+        return this.#gameScene.registry.get(globalConfig.registryKeys.pauseResumeState);
     }
 
     getOverallProgressOfCurrentTimer() {
@@ -98,7 +98,7 @@ class GameFlowManager {
         if (timerProgress == 1 && enemiesLeft <= 0) {
 
             const currentStep = this.getCurrentStep()
-            this.#gameScene.registry.inc(config.resources.token.registryKey, currentStep.reward);
+            this.#gameScene.registry.inc(globalConfig.resources.token.registryKey, currentStep.reward);
 
             console.log(`wave completed, reward: ${currentStep.reward}`)
 
@@ -107,11 +107,11 @@ class GameFlowManager {
             this.#flowIndex++;
 
             if (this.hasWon()) {
-                this.#gameScene.game.events.emit(config.eventKeys.gameWon);
+                this.#gameScene.game.events.emit(globalConfig.eventKeys.gameWon);
             } else {
                 // pause game and open shop
-                this.#gameScene.game.events.emit(config.eventKeys.gamePause);
-                this.#gameScene.game.events.emit(config.eventKeys.shopOpen);
+                this.#gameScene.game.events.emit(globalConfig.eventKeys.gamePause);
+                this.#gameScene.game.events.emit(globalConfig.eventKeys.shopOpen);
             }
         }
     }
@@ -122,7 +122,7 @@ class GameFlowManager {
 
         if (this.hasWon()) {
             console.log('last wave survived');
-            this.#gameScene.game.events.emit(config.eventKeys.gameWon);
+            this.#gameScene.game.events.emit(globalConfig.eventKeys.gameWon);
         }
 
         const currentStep = this.getCurrentStep();

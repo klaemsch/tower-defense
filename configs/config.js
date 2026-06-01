@@ -4,7 +4,7 @@ const RadiusType = {
 }
 
 // TODO: rename to globalConfig, or gameConfig to not confuse with local specific configs
-const config = {
+const globalConfig = {
     debug: true,
     world: {
         tileSize: 40,
@@ -220,7 +220,7 @@ const config = {
 
 const phaserConfig = {
     type: Phaser.AUTO,
-    width: config.world.numCols * config.world.tileSize,
-    height: config.world.numRows * config.world.tileSize,
-    backgroundColor: config.world.backgroundColor,
+    width: globalConfig.world.numCols * globalConfig.world.tileSize,
+    height: globalConfig.world.numRows * globalConfig.world.tileSize,
+    backgroundColor: globalConfig.world.backgroundColor,
 }

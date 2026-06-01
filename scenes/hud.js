@@ -7,7 +7,7 @@ class HudScene extends Phaser.Scene {
     #gameFlowManager;
 
     constructor() {
-        super(config.sceneKeys.hud);
+        super(globalConfig.sceneKeys.hud);
         this.#activeButton = null;
     }
 
@@ -16,9 +16,9 @@ class HudScene extends Phaser.Scene {
     create() {
         this.#registerEventListeners();
 
-        this.#enemyManager = this.registry.get(config.registryKeys.enemyManager);
-        this.#placer = this.registry.get(config.registryKeys.placer);
-        this.#gameFlowManager = this.registry.get(config.registryKeys.gameFlowManager);
+        this.#enemyManager = this.registry.get(globalConfig.registryKeys.enemyManager);
+        this.#placer = this.registry.get(globalConfig.registryKeys.placer);
+        this.#gameFlowManager = this.registry.get(globalConfig.registryKeys.gameFlowManager);
 
         // ── Resources ──────────────────────────────────────────────────────
         new ResourceContainer(this, 0, 0);
@@ -33,7 +33,7 @@ class HudScene extends Phaser.Scene {
         this.#progressBar = new ProgressBar(this, {
             leftIcon: '▶',
             rightIcon: '⚑',
-        }).setDepth(config.depthMap.progressBar);
+        }).setDepth(globalConfig.depthMap.progressBar);
     }
 
     update(time, delta) {
@@ -48,17 +48,17 @@ class HudScene extends Phaser.Scene {
     }
 
     #registerEventListeners() {
-        this.game.events.on(config.eventKeys.gameOver, () => this.#showGameOver(config.texts.gameOverTitle, config.texts.gameOverSubtitle));
-        this.game.events.on(config.eventKeys.gameWon, () => this.#showGameOver(config.texts.gameWonTitle, config.texts.gameWonSubtitle));
+        this.game.events.on(globalConfig.eventKeys.gameOver, () => this.#showGameOver(globalConfig.texts.gameOverTitle, globalConfig.texts.gameOverSubtitle));
+        this.game.events.on(globalConfig.eventKeys.gameWon, () => this.#showGameOver(globalConfig.texts.gameWonTitle, globalConfig.texts.gameWonSubtitle));
     }
 
     #destroyEventListeners() {
-        this.game.events.off(config.eventKeys.gameOver);
-        this.game.events.off(config.eventKeys.gameWon);
+        this.game.events.off(globalConfig.eventKeys.gameOver);
+        this.game.events.off(globalConfig.eventKeys.gameWon);
     }
 
     /*#createPlacerButtons() {
-        const placeableStructures = Object.values(config.structures)
+        const placeableStructures = Object.values(globalConfig.structures)
             .filter(s => s.placerLabel !== undefined);
 
         placeableStructures.forEach((structure, i) => {
@@ -70,7 +70,7 @@ class HudScene extends Phaser.Scene {
 
         // Listen for deselect from placer (e.g. after placing or pressing Escape)
         // so the button highlight clears automatically
-        this.registry.events.on(`changedata-${config.registryKeys.placerActiveStructure}`, (parent, value) => {
+        this.registry.events.on(`changedata-${globalConfig.registryKeys.placerActiveStructure}`, (parent, value) => {
             if (value === null) this.#clearButtonStates();
         });
     }*/
@@ -93,14 +93,14 @@ class HudScene extends Phaser.Scene {
                 this.#gameFlowManager.togglePauseWave();
             });
 
-        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, this.registry.get(config.registryKeys.pauseResumeState) ? resumeLabel : pauseLabel, {
+        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, this.registry.get(globalConfig.registryKeys.pauseResumeState) ? resumeLabel : pauseLabel, {
             fontSize: '11px',
             color: '#a8dadc',
             fontStyle: 'bold',
         }).setOrigin(0.5).setDepth(12);
 
         // listen for game state change
-        this.registry.events.on(`changedata-${config.registryKeys.pauseResumeState}`, (parent, isPaused) => {
+        this.registry.events.on(`changedata-${globalConfig.registryKeys.pauseResumeState}`, (parent, isPaused) => {
             if (isPaused) {
                 textElement.text = resumeLabel;
             } else {
@@ -110,22 +110,22 @@ class HudScene extends Phaser.Scene {
     }
 
     #showGameOver(titleText, subtitleText) {
-        const { tileSize, numCols, numRows } = config.world;
+        const { tileSize, numCols, numRows } = globalConfig.world;
         const cx = (numCols * tileSize) / 2;
         const cy = (numRows * tileSize) / 2;
 
         console.log('game over triggered');
 
-        this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(config.depthMap.gameOverRect);
+        this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(globalConfig.depthMap.gameOverRect);
 
         this.add.text(cx, cy - 30, titleText, {
             fontSize: '48px', color: '#e63946', fontStyle: 'bold',
             stroke: '#000000', strokeThickness: 6,
-        }).setOrigin(0.5).setDepth(config.depthMap.gameOverText);
+        }).setOrigin(0.5).setDepth(globalConfig.depthMap.gameOverText);
 
         this.add.text(cx, cy + 24, subtitleText, {
             fontSize: '18px', color: '#ffffff',
-        }).setOrigin(0.5).setDepth(config.depthMap.gameOverText);
+        }).setOrigin(0.5).setDepth(globalConfig.depthMap.gameOverText);
 
         // pause scene so buttons arent clickable anymore
         this.scene.pause();

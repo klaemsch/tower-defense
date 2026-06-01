@@ -42,7 +42,7 @@ class StructureStorage {
     }
 
     getBorderCells() {
-        const { numCols, numRows } = config.world;
+        const { numCols, numRows } = globalConfig.world;
         const cells = [];
         for (let c = 0; c < numCols; c++) {
             cells.push({ col: c, row: 0 });
@@ -68,12 +68,12 @@ class StructureStorage {
 }
 
 helper.worldToGrid = (x, y) => {
-    const { tileSize } = config.world;
+    const { tileSize } = globalConfig.world;
     return { col: Math.floor(x / tileSize), row: Math.floor(y / tileSize) };
 }
 
 helper.gridToWorld = (col, row) => {
-    const { tileSize } = config.world;
+    const { tileSize } = globalConfig.world;
     return { x: col * tileSize + tileSize / 2, y: row * tileSize + tileSize / 2 };
 }
 

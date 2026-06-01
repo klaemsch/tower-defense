@@ -18,14 +18,14 @@ class Bullet extends Phaser.GameObjects.GameObject {
         this.#speed = speed;
         this.#damage = damage;
 
-        this.#color = config.bullet.color;
-        this.#radius = config.bullet.size;
+        this.#color = globalConfig.bullet.color;
+        this.#radius = globalConfig.bullet.size;
 
         // Trail history (ring buffer of last N positions)
         this.#trailPositions = [{ x: this.x, y: this.y }];
 
         // Graphics — one shared object per bullet
-        this.#gfx = scene.add.graphics().setDepth(config.depthMap.bullet);
+        this.#gfx = scene.add.graphics().setDepth(globalConfig.depthMap.bullet);
 
         scene.sys.updateList.add(this);
         this.#draw();

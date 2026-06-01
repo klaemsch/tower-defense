@@ -19,12 +19,12 @@ class Tower extends Structure {
         this.#fireRateMs = structureConfig.fireRateMs;
 
         this.#radius = structureConfig.radiusInTiles;
-        this.#radiusInPixel = this.#radius * config.world.tileSize;
+        this.#radiusInPixel = this.#radius * globalConfig.world.tileSize;
         this.#radiusType = structureConfig.radiusType;
         this.#bulletDamage = structureConfig.bulletDamage;
         this.#bulletSpeed = structureConfig.bulletSpeed;
 
-        this.#enemyManager = this.scene.registry.get(config.registryKeys.enemyManager);
+        this.#enemyManager = this.scene.registry.get(globalConfig.registryKeys.enemyManager);
 
         this.#findClosestEnemyFunc = this.#radiusType === RadiusType.Circular
             ? this.#findClosestEnemyInCircRadius
