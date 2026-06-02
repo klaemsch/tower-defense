@@ -1,24 +1,8 @@
-const placerPreviewMap = {
-    woodShop: (scene, cfg) => WoodShop.createPreview(scene, cfg),
-    tower: (scene, cfg) => Tower.createPreview(scene, cfg),
-    hammer: (scene, cfg) => Tower.createPreview(scene, cfg),
-    sniper: (scene, cfg) => Tower.createPreview(scene, cfg),
-    powerPlant: (scene, cfg) => Structure.createPreview(scene, cfg),
-};
-
-const placerFactoryMap = {
-    woodShop: (scene, col, row) => scene.add.woodShop(col, row),
-    tower: (scene, col, row) => scene.add.tower(col, row, globalConfig.structures.tower),
-    hammer: (scene, col, row) => scene.add.tower(col, row, globalConfig.structures.hammer),
-    sniper: (scene, col, row) => scene.add.tower(col, row, globalConfig.structures.sniper),
-    powerPlant: (scene, col, row) => scene.add.powerPlant(col, row),
-};
-
 class Placer {
     #scene;
-    #activeStructure = null;    // internalType string
-    #movingStructure = null;    // real Structure instance being moved
-    #preview = null;            // { moveTo, destroy }
+    #selectedItemConfig = null;     // config of selected item
+    #movingItem = null;             // real instance being moved
+    #preview = null;                // preview instance with { moveTo, destroy }
 
     constructor(scene) {
         this.#scene = scene;
@@ -32,37 +16,38 @@ class Placer {
 
     // ── Public ────────────────────────────────────────────────────────
 
-    select(structureType) {
+    select(itemConfig) {
+        //console.log('select', itemConfig);
         this.deselect();
-        this.#activeStructure = structureType;
-        this.#scene.registry.set(globalConfig.registryKeys.placerActiveStructure, structureType);
-        this.#spawnPreview(structureType);
+        this.#selectedItemConfig = itemConfig;
+        this.#scene.registry.set(globalConfig.registryKeys.selectedItem, itemConfig);
+        this.#spawnPreview();
     }
 
-    // Call this when the player clicks an already-placed structure to move it
-    selectExistingForMove(structureInstance) {
+    // Call this when the player clicks an already-placed item to move it
+    selectExistingForMove(itemInstance) {
+        if (this.#selectedItemConfig || this.#movingItem) return; // TODO: check if this is right
+        //console.log('move')
         this.deselect();
-        this.#movingStructure = structureInstance;
-        this.#activeStructure = structureInstance.type;
-        this.#scene.registry.set(globalConfig.registryKeys.placerActiveStructure, structureInstance.type);
-        this.#spawnPreview(structureInstance.type);
+        this.#movingItem = itemInstance;
+        this.#selectedItemConfig = itemInstance.config;
+        this.#scene.registry.set(globalConfig.registryKeys.selectedItem, itemInstance.type);
+        this.#spawnPreview(itemInstance.config);
     }
 
     deselect() {
-        this.#activeStructure = null;
-        this.#movingStructure = null;
-        this.#scene.registry.set(globalConfig.registryKeys.placerActiveStructure, null);
+        this.#selectedItemConfig = null;
+        this.#movingItem = null;
+        this.#scene.registry.set(globalConfig.registryKeys.selectedItem, null);
         this.#destroyPreview();
     }
 
     // ── Private ───────────────────────────────────────────────────────
 
-    #spawnPreview(structureType) {
+    #spawnPreview() {
+        const itemConfig = this.#selectedItemConfig
         this.#destroyPreview();
-        const structureConfig = globalConfig.structures[structureType];
-        const previewFactory = placerPreviewMap[structureType];
-        if (!previewFactory || !structureConfig) return;
-        this.#preview = previewFactory(this.#scene, structureConfig);
+        if (itemConfig.createPreview) this.#preview = itemConfig.createPreview(this.#scene, itemConfig);
     }
 
     #destroyPreview() {
@@ -71,30 +56,58 @@ class Placer {
     }
 
     #place(col, row) {
-        if (!this.#activeStructure) return;
+        //console.log('#place called')
+        if (!this.#selectedItemConfig) return;
 
         const { numCols, numRows } = globalConfig.world;
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
 
-        if (this.#movingStructure) {
-            // Move the existing structure, no cost re-applied
-            this.#movingStructure.moveTo(col, row);
+        if (this.#selectedItemConfig.itemType === ItemType.Structure) {
+            this.#placeStructure(col, row);
+        } else if (this.#selectedItemConfig.itemType === ItemType.Upgrade) {
+            this.#placeUpgrade(col, row);
+        } else {
+            console.error('unknown item type');
+        }
+
+        this.deselect();
+    }
+
+    // gets called by #place if the item is of type Structure
+    #placeStructure(col, row) {
+        //console.log('#placeStructure called');
+
+        if (this.#movingItem) {
+            // Move the existing item, no cost re-applied
+            this.#movingItem.moveTo(col, row);
         } else {
             // Place new — factory handles cost check
             if (structureStorage.isOccupied(col, row)) return;
-            const factory = placerFactoryMap[this.#activeStructure];
-            if (!factory) { console.warn(`Unknown structure type: ${this.#activeStructure}`); return; }
+
             this.#destroyPreview();
-            factory(this.#scene, col, row);
+            if (this.#selectedItemConfig.create) this.#selectedItemConfig.create(this.#scene, col, row);
 
         }
-        this.deselect();
+    }
+
+    // gets called by #place if the item is of type Upgrade
+    #placeUpgrade(col, row) {
+        //console.log('#placeUpgrade called');
+
+        // get structure in the cell
+        const structure = structureStorage.getByCell(col, row);
+        if (!structure) return;
+
+        //this.#destroyPreview();
+        //console.log('#placeUpgrade called 2');
+        structure.addUpgrade(this.#selectedItemConfig);
     }
 
     // event fired everytime the pointer moves
     #onPointerMove(pointer) {
-        // check if a structure is selected and a preview exist
-        if (!this.#activeStructure || !this.#preview) return;
+        //console.log(this.#selectedItemConfig, this.#preview)
+        // check if an item is selected and a preview exist
+        if (!this.#selectedItemConfig || !this.#preview) return;
 
         // check if new position (get through pointer pos) is out of world bounds
         const { col, row } = helper.worldToGrid(pointer.x, pointer.y);
@@ -115,7 +128,8 @@ class Placer {
 
     // event fired everytime the pointer is clicked
     #onPointerDown(pointer) {
-        if (!this.#activeStructure) return;
+        //console.log('placer pointer down');
+        if (!this.#selectedItemConfig) return;
         const { col, row } = helper.worldToGrid(pointer.x, pointer.y);
         this.#place(col, row);
     }

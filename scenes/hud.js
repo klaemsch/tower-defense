@@ -24,8 +24,8 @@ class HudScene extends Phaser.Scene {
         new ResourceContainer(this, 0, 0);
         //this.#newHUDText(8, 8 + 4 * 22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
-        // ── Placement buttons ──────────────────────────────────────────────
-        new PlacerContainer(this, this.scale.width - 120, 0);
+        // ── Inventory with buttons ──────────────────────────────────────────────
+        new InventoryContainer(this, this.scale.width - 120, 0);
 
         // ── Control Buttons ──────────────────────────────────────────────────────
         this.#createPauseToggle();
@@ -56,24 +56,6 @@ class HudScene extends Phaser.Scene {
         this.game.events.off(globalConfig.eventKeys.gameOver);
         this.game.events.off(globalConfig.eventKeys.gameWon);
     }
-
-    /*#createPlacerButtons() {
-        const placeableStructures = Object.values(globalConfig.structures)
-            .filter(s => s.placerLabel !== undefined);
-
-        placeableStructures.forEach((structure, i) => {
-            const { internalType, placerLabel } = structure;
-            const x = this.scale.width - 110;
-            const y = 8 + i * 42;
-            this.#newPlacerButton(x, y, internalType, placerLabel);
-        });
-
-        // Listen for deselect from placer (e.g. after placing or pressing Escape)
-        // so the button highlight clears automatically
-        this.registry.events.on(`changedata-${globalConfig.registryKeys.placerActiveStructure}`, (parent, value) => {
-            if (value === null) this.#clearButtonStates();
-        });
-    }*/
 
     #createPauseToggle() {
         const pauseLabel = '⏸️ Pause';

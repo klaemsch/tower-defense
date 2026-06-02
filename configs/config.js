@@ -3,6 +3,11 @@ const RadiusType = {
     Rectangular: 'rectangular',
 }
 
+const ItemType = {
+    Structure: 'structure',
+    Upgrade: 'upgrade',
+}
+
 const globalConfig = {
     debug: true,
     world: {
@@ -13,11 +18,12 @@ const globalConfig = {
             numTrees: 15,
         },
         backgroundColor: '#1a1a2e',
-        structuresAvailableAtStart: [
+        itemsAtStart: [  // TODO: delete
             'woodShop',
             'tower',
             'powerPlant',
-        ]
+            'productionMultiplier',
+        ],
     },
     texts: {
         gameOverTitle: 'GAME OVER',
@@ -25,26 +31,29 @@ const globalConfig = {
         gameWonTitle: 'YOU WON',
         gameWonSubtitle: 'You survived every wave!',
     },
-    structures: {
+    items: {
         /**
-         * A valid structure config needs:
-         * - internalType: Phaser uses this internally to name the GameObjects
+         * A valid item config needs:
+         * - itemType:      type to distinguish structures, upgrades ...
+         * - internalType:  Phaser uses this internally to name the GameObjects
          * - health
          * - color:         visual color of the underlying rectangle
          * - label:         visual label that gets printed on the rectangle
-         * - sizeInTiles:   size of structure in tiles
+         * - sizeInTiles:   size of item in tiles
          * 
-         * If the structure costs resources, set these:
-         * - costResourceRegistryKey: key of the resource that is needed to build this structure
-         * - cost: amount of the resource that is needed to build this structure
+         * If the item costs resources, set these:
+         * - costResourceRegistryKey: key of the resource that is needed to build this item
+         * - cost: amount of the resource that is needed to build this item
          * 
-         * If the structure can be placed, set this:
-         * - placerLabel: visual label for the placer
+         * If the item can be placed, set this:
+         * - inventoryLabel:    visual label for the inventory
+         * - inventoryQuantity: number of times the item can be placed
          * 
-         * If the structure is moveable, set this:
+         * If the item is moveable, set this:
          * - moveable: true
          */
         hq: {
+            itemType: ItemType.Structure,
             internalType: 'hq',
             health: 200,
             color: 0x888888,
@@ -52,6 +61,7 @@ const globalConfig = {
             sizeInTiles: 1,
         },
         woodShop: {
+            itemType: ItemType.Structure,
             internalType: 'woodShop',
             health: 60,
             color: '#1a1a2e',
@@ -59,14 +69,19 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 5,
-            placerLabel: '🏪 Wood Shop',
+            inventoryLabel: '🏪 Wood Shop',
+            inventoryQuantity: Infinity,
             moveable: true,
 
             radiusInTiles: 1,
             radiusType: RadiusType.Rectangular,
             harvestRateMs: 1000,
+
+            createPreview: (scene, cfg) => WoodShop.createPreview(scene, cfg),
+            create: (scene, col, row) => scene.add.woodShop(col, row),
         },
         tower: {
+            itemType: ItemType.Structure,
             internalType: 'tower',
             health: 100,
             color: 0xFF0000,
@@ -74,7 +89,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
-            placerLabel: '🗼 Tower',
+            inventoryLabel: '🗼 Tower',
+            inventoryQuantity: Infinity,
             moveable: true,
 
             fireRateMs: 1000,
@@ -82,8 +98,12 @@ const globalConfig = {
             radiusType: RadiusType.Circular,
             bulletSpeed: 400,
             bulletDamage: 10,
+
+            createPreview: (scene, cfg) => Tower.createPreview(scene, cfg),
+            create: (scene, col, row) => scene.add.tower(col, row, globalConfig.items.tower),
         },
         hammer: {
+            itemType: ItemType.Structure,
             internalType: 'hammer',
             health: 100,
             color: 0xFF0000,
@@ -91,7 +111,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
-            placerLabel: '🔨 Hammer',
+            inventoryLabel: '🔨 Hammer',
+            inventoryQuantity: Infinity,
             moveable: true,
 
             fireRateMs: 1000,
@@ -99,8 +120,12 @@ const globalConfig = {
             radiusType: RadiusType.Rectangular,
             bulletSpeed: 400,
             bulletDamage: 20,
+
+            createPreview: (scene, cfg) => Tower.createPreview(scene, cfg),
+            create: (scene, col, row) => scene.add.tower(col, row, globalConfig.items.hammer),
         },
         sniper: {
+            itemType: ItemType.Structure,
             internalType: 'sniper',
             health: 100,
             color: 0xFF0000,
@@ -108,7 +133,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
-            placerLabel: '🗼 Sniper',
+            inventoryLabel: '🗼 Sniper',
+            inventoryQuantity: Infinity,
             moveable: true,
 
             fireRateMs: 3000,
@@ -116,8 +142,12 @@ const globalConfig = {
             radiusType: RadiusType.Circular,
             bulletSpeed: 800,
             bulletDamage: 20,
+
+            createPreview: (scene, cfg) => Tower.createPreview(scene, cfg),
+            create: (scene, col, row) => scene.add.tower(col, row, globalConfig.items.sniper),
         },
         powerPlant: {
+            itemType: ItemType.Structure,
             internalType: 'powerPlant',
             health: 60,
             color: '#1a1a2e',
@@ -125,10 +155,25 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 5,
-            placerLabel: '🏭 Power Plant',
+            inventoryLabel: '🏭 Power Plant',
+            inventoryQuantity: Infinity,
             moveable: true,
 
             harvestRateMs: 1000,
+            productionCostResourceRegistryKey: 'wood',
+            baseCostPerRate: 1,
+            productionResourceRegistryKey: 'energy',
+            baseProductionPerRate: 1,
+
+            createPreview: (scene, cfg) => Structure.createPreview(scene, cfg),
+            create: (scene, col, row) => scene.add.powerPlant(col, row),
+        },
+        productionMultiplier: {
+            itemType: ItemType.Upgrade,
+            internalType: 'productionMultiplier',
+            muliplier: 2,
+            inventoryLabel: 'Prod. Mult. x2',
+            inventoryQuantity: 1,
         },
     },
     bullet: {
@@ -144,7 +189,7 @@ const globalConfig = {
         wood: {
             registryKey: 'wood',
             label: '🪵',
-            initialValue: 5,
+            initialValue: 100,// TOOD: original 5,
         },
         villager: {
             registryKey: 'villager',
@@ -159,7 +204,7 @@ const globalConfig = {
     },
     flow: [
         { type: 'peace', lengthInSeconds: 2 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30, reward: 5 },
+        { type: 'wave', lengthInSeconds: 1, spawnRate: 1000, enemyHealth: 30, reward: 5 },
         { type: 'peace', lengthInSeconds: 10 },
         { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 40, reward: 10 },
         { type: 'peace', lengthInSeconds: 10 },
@@ -174,12 +219,11 @@ const globalConfig = {
     },
     registryKeys: {
         pauseResumeState: 'isPaused',
-        placerActiveStructure: 'placer-activeStructure',
+        selectedItem: 'selectedItem',
         enemyManager: 'enemyManager',
         placer: 'placer',
         gameFlowManager: 'gameFlowManager',
-        progressManager: 'progressManager',
-        progress: 'progress',
+        inventoryManager: 'inventoryManager',
     },
     eventKeys: {
         gamePause: 'game:pause',            // emitted when the game is paused
@@ -189,6 +233,8 @@ const globalConfig = {
         shopOpen: 'shop:open',              // emitted when the shop is opened
         shopClose: 'shop:close',            // emitted when the shop is closed
         enemyDestroyed: 'enemy:destroyed',  // emitted after an enemy was destroyed
+        inventoryButtonPressed: 'inventory:button:pressed', // emitted when an inventory button is pressed
+        inventoryChanged: 'inventory:changed'               // emitted when the inventory changes because of unlock/upgrade
     },
     shop: {
         title: 'Wave Complete!',

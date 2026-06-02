@@ -49,6 +49,6 @@ class WoodShop extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'woodShop',
     function (col, row) {
-        return Structure.create(this.scene, col, row, globalConfig.structures.woodShop, WoodShop);
+        return Structure.create(this.scene, col, row, globalConfig.items.woodShop, WoodShop);
     }
 );

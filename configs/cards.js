@@ -5,7 +5,7 @@ const cards = [
         color: 0xfacc15,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
-        configEntry: globalConfig.structures.sniper,
+        itemConfig: globalConfig.items.sniper,
     },
     {
         title: 'Power Plant',
@@ -14,7 +14,7 @@ const cards = [
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
         popular: true,
-        configEntry: globalConfig.structures.powerPlant,
+        itemConfig: globalConfig.items.powerPlant,
     },
     {
         title: 'Hammer',
@@ -22,6 +22,14 @@ const cards = [
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
-        configEntry: globalConfig.structures.hammer,
+        itemConfig: globalConfig.items.hammer,
+    },
+    {
+        title: '+Production',
+        description: 'Production\nMultiplier\nx2',
+        color: 0x818cf8,
+        costResourceRegistryKey: globalConfig.resources.token.registryKey,
+        cost: 5,
+        itemConfig: globalConfig.items.productionMultiplier,
     },
 ];

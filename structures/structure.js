@@ -1,5 +1,6 @@
 class Structure extends Phaser.GameObjects.GameObject {
     config;
+    upgrades = new Set();
 
     #container;
     #bgRect;
@@ -42,8 +43,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         if (structureConfig.moveable) {
             this.#bgRect.setInteractive();
             this.#bgRect.on('pointerdown', (_pointer, _localX, _localY, event) => {
-                event.stopPropagation();
-                this.pickup();
+                this.pickup(event);
             });
         }
 
@@ -83,6 +83,7 @@ class Structure extends Phaser.GameObjects.GameObject {
     // returns true if destroyed (and destroys itself)
     // returns false if not destroyed but damaged
     doDamage(amount) {
+        // TODO: IMPROVEMENT: maybe subtract armour from damage?
         this.config.health -= amount;
         if (this.config.health <= 0) {
             this.destroy();
@@ -101,9 +102,25 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.#spawnProduceFx(label, amount);
     }
 
-    pickup() {
+    pickup(event) {
         const placer = this.scene.registry.get(globalConfig.registryKeys.placer);
-        placer.selectExistingForMove(this);
+        const placerSelectedItem = this.scene.registry.get(globalConfig.registryKeys.selectedItem);
+        //console.log('placerSelectedItem', placerSelectedItem)
+        if (!placerSelectedItem) {
+            // stop propagation, so the placer's pointer down event isnt called aswell
+            event.stopPropagation();
+            //console.log('placer has no item selected, select this for move')
+            placer.selectExistingForMove(this);
+        }
+    }
+
+    addUpgrade(upgrade) {
+        console.log('upgrade', upgrade);
+        this.upgrades.add(upgrade);
+    }
+
+    removeUpgrade(upgrade) {
+        return this.upgrades.delete(upgrade);
     }
 
     moveTo(col, row) {

@@ -11,13 +11,26 @@ class PowerPlant extends Structure {
         this.#harvestRateMs = structureConfig.harvestRateMs;
     }
 
+    calculateProductionAmount() {
+        if (this.upgrades.size > 0) {
+            let multiplier = 0;
+            this.upgrades.forEach((upgrade) => {
+                if (upgrade.muliplier) {
+                    multiplier += upgrade.muliplier;
+                }
+            });
+            if (multiplier != 0) return this.config.baseProductionPerRate * multiplier;
+        }
+        return this.config.baseProductionPerRate;
+    }
+
     preUpdate(time, delta) {
         this.#harvestAccumulator += delta;
         if (this.#harvestAccumulator >= this.#harvestRateMs) {
             this.#harvestAccumulator -= this.#harvestRateMs;
-            if (this.scene.registry.get(globalConfig.resources.wood.registryKey) > 0) {
-                this.scene.registry.inc(globalConfig.resources.wood.registryKey, -1);
-                this.produce(globalConfig.resources.energy.registryKey, globalConfig.resources.energy.label, 1);
+            if (this.scene.registry.get(this.config.productionCostResourceRegistryKey) >= this.config.baseCostPerRate) {
+                this.scene.registry.inc(this.config.productionCostResourceRegistryKey, -this.config.baseCostPerRate);
+                this.produce(globalConfig.resources.energy.registryKey, globalConfig.resources.energy.label, this.calculateProductionAmount());
             }
         }
     }
@@ -30,6 +43,6 @@ class PowerPlant extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'powerPlant',
     function (col, row) {
-        return Structure.create(this.scene, col, row, globalConfig.structures.powerPlant, PowerPlant);
+        return Structure.create(this.scene, col, row, globalConfig.items.powerPlant, PowerPlant);
     }
 );

@@ -4,7 +4,7 @@ class ShopScene extends Phaser.Scene {
     #cardHeight = globalConfig.shop.layout.cardHeight;
     #cardGap = globalConfig.shop.layout.cardGap;
 
-    #progressManager;
+    #inventoryManager;
 
     constructor() {
         super(globalConfig.sceneKeys.shop);
@@ -15,7 +15,7 @@ class ShopScene extends Phaser.Scene {
     create() {
         this.#registerEventListeners();
 
-        this.#progressManager = this.registry.get(globalConfig.registryKeys.progressManager);
+        this.#inventoryManager = this.registry.get(globalConfig.registryKeys.inventoryManager);
 
         const W = this.scale.width;
         const H = this.scale.height;
@@ -39,11 +39,16 @@ class ShopScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(globalConfig.depthMap.shopText);
 
         // ── Cards ─────────────────────────────────────────────────────────────
-        const totalWidth = cards.length * this.#cardWidth + (cards.length - 1) * this.#cardGap;
+        const numCardsInShop = 3;  // TODO
+        //const totalWidth = cards.length * this.#cardWidth + (cards.length - 1) * this.#cardGap;
+        const totalWidth = numCardsInShop * this.#cardWidth + (numCardsInShop - 1) * this.#cardGap;
         const startX = (W - totalWidth) / 2;
         const cardY = H / 2 - 20;
 
-        cards.forEach((card, i) => {
+        const shuffledCards = Phaser.Utils.Array.Shuffle(cards);
+
+        for (let i = 0; i < 3; i++) {
+            const card = shuffledCards[i];
             const cx = startX + i * (this.#cardWidth + this.#cardGap) + this.#cardWidth / 2;
 
             // attach a callback to the cards config that is fired in the Card when the button is pressed
@@ -53,7 +58,7 @@ class ShopScene extends Phaser.Scene {
 
             // create card and attach the resulting container element to the config for later usage
             card.cardElement = new Card(this, cx, cardY, card).setDepth(globalConfig.depthMap.shopText);
-        });
+        };
 
         // ── Continue button ───────────────────────────────────────────────────
         const btnY = cardY + this.#cardHeight / 2 + 40;
@@ -74,7 +79,7 @@ class ShopScene extends Phaser.Scene {
     #buyCard(card) {
         if (this.registry.get(card.costResourceRegistryKey) - card.cost >= 0) {
             this.registry.inc(card.costResourceRegistryKey, -card.cost);
-            this.#progressManager.unlock(card.configEntry.internalType);
+            this.#inventoryManager.addItem(card.itemConfig);
             card.cardElement.destroy();
             return true;
         } else {

@@ -10,9 +10,9 @@ class GameScene extends Phaser.Scene {
         // register event listeners
         this.#registerEventListeners();
 
-        // Initialize progress manager and move it to registry
-        const progressManager = new ProgressManager(this);
-        this.registry.set(globalConfig.registryKeys.progressManager, progressManager);
+        // Initialize inventory manager and move it to registry
+        const inventoryManager = new InventoryManager(this);
+        this.registry.set(globalConfig.registryKeys.inventoryManager, inventoryManager);
 
         // launch the HUD scene
         this.scene.launch(globalConfig.sceneKeys.hud);

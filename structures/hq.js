@@ -17,6 +17,6 @@ class HQ extends Structure {
 Phaser.GameObjects.GameObjectFactory.register(
     'hq',
     function () {
-        return Structure.create(this.scene, 0, 0, globalConfig.structures.hq, HQ);
+        return Structure.create(this.scene, 0, 0, globalConfig.items.hq, HQ);
     }
 );
