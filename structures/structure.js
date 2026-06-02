@@ -233,12 +233,14 @@ class Structure extends Phaser.GameObjects.GameObject {
     }
 
     static create(scene, col, row, structureConfig, SubClass) {
-        if (structureConfig.costResourceRegistryKey && structureConfig.cost) {
-            const currentResourceCount = scene.registry.get(structureConfig.costResourceRegistryKey);
-            if (currentResourceCount < structureConfig.cost) return null;
+        // clone structure config
+        const clonedConfig = { ...structureConfig};
+        if (clonedConfig.costResourceRegistryKey && clonedConfig.cost) {
+            const currentResourceCount = scene.registry.get(clonedConfig.costResourceRegistryKey);
+            if (currentResourceCount < clonedConfig.cost) return null;
 
-            scene.registry.inc(structureConfig.costResourceRegistryKey, -structureConfig.cost);
+            scene.registry.inc(clonedConfig.costResourceRegistryKey, -clonedConfig.cost);
         }
-        return new SubClass(scene, col, row, structureConfig);
+        return new SubClass(scene, col, row, clonedConfig);
     }
 }

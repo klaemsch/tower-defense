@@ -74,6 +74,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
             this.destroy();
             return true;
         }
+        console.log('did', amount, 'damage, new health', this.#config.health);
         return false;
     }
 
@@ -226,7 +227,9 @@ class Enemy extends Phaser.GameObjects.GameObject {
 Phaser.GameObjects.GameObjectFactory.register(
     'enemy',
     function (col, row, path, target, eConfig) {
-        const enemy = new Enemy(this.scene, col, row, path, target, eConfig);
+        // clone incoming enemy config
+        const clonedConfig = { ...eConfig};
+        const enemy = new Enemy(this.scene, col, row, path, target, clonedConfig);
         return enemy;
     },
 );
