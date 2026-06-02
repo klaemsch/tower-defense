@@ -5,7 +5,7 @@
  */
 class InventoryButton extends Phaser.GameObjects.Container {
     // ── Layout / theme (shared across all instances) ──────────────────
-    static #WIDTH = 100;
+    static #WIDTH = 120;
     static #HEIGHT = 36;
     static #FILL_IDLE = 0x16213e;
     static #FILL_HOVER = 0x1a3a5c;
@@ -38,10 +38,23 @@ class InventoryButton extends Phaser.GameObjects.Container {
         this.#borderGfx = scene.add.graphics();
         this.#drawBorder();
 
+        let labelText = '';
+        if (itemConfig.inventoryQuantity === Infinity) {
+            labelText += '∞';
+        } else {
+            labelText += itemConfig.inventoryQuantity;
+        }
+
+        if (itemConfig.inventoryIcon) {
+            labelText += ` ${itemConfig.inventoryIcon}`;
+        } 
+
+        labelText += ` ${itemConfig.inventoryLabel}`;
+
         this.#label = scene.add.text(
             InventoryButton.#WIDTH / 2,
             InventoryButton.#HEIGHT / 2,
-            itemConfig.inventoryLabel,
+            labelText,
             { fontSize: '11px', color: InventoryButton.#TEXT_IDLE, fontStyle: 'bold' }
         ).setOrigin(0.5);
 

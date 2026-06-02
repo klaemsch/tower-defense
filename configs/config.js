@@ -69,7 +69,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 5,
-            inventoryLabel: '🏪 Wood Shop',
+            inventoryIcon: '🏪',
+            inventoryLabel: 'Wood Shop',
             inventoryQuantity: Infinity,
             moveable: true,
 
@@ -89,7 +90,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
-            inventoryLabel: '🗼 Tower',
+            inventoryIcon: '🗼',
+            inventoryLabel: 'Tower',
             inventoryQuantity: Infinity,
             moveable: true,
 
@@ -111,7 +113,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
-            inventoryLabel: '🔨 Hammer',
+            inventoryIcon: '🔨',
+            inventoryLabel: 'Hammer',
             inventoryQuantity: Infinity,
             moveable: true,
 
@@ -133,7 +136,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 10,
-            inventoryLabel: '🗼 Sniper',
+            inventoryIcon: '🗼',
+            inventoryLabel: 'Sniper',
             inventoryQuantity: Infinity,
             moveable: true,
 
@@ -155,7 +159,8 @@ const globalConfig = {
             sizeInTiles: 1,
             costResourceRegistryKey: 'wood',
             cost: 5,
-            inventoryLabel: '🏭 Power Plant',
+            inventoryIcon: '🏭',
+            inventoryLabel: 'Power Plant',
             inventoryQuantity: Infinity,
             moveable: true,
 

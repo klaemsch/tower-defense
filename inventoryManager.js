@@ -11,42 +11,8 @@ class InventoryManager {
         this.#gameScene = gameScene;
         this.reset();
         this.#initResources();
-        console.log('init inventory manager');
+        //console.log('init inventory manager');
     }
-
-    /*isStructureUnlocked(structureType) {
-        return this.#state.unlockedStructures.includes(structureType);
-    }
-
-    unlockThroughInternalType(cardInternalType) {
-        console.warn('dont do this in regular game', "unlock", cardInternalType);
-        Object.values(cards).forEach((card) => {
-            if (card.configEntry.internalType == cardInternalType) {
-                this.unlockThroughCard(card);
-            }
-        })
-    }
-
-    unlockThroughCard(cardConfig) {
-        if (cardConfig.type === CardType.Structure) {
-            this.unlockStructure(cardConfig);
-        } else if (cardConfig.type === CardType.Upgrade) {
-            this.addUpgrade(cardConfig);
-        }
-    }
-
-    unlockStructure(cardConfig) {
-        const internalType = cardConfig.configEntry.internalType;
-        if (this.isStructureUnlocked(internalType)) return;
-        this.#state.unlockedStructures.push(internalType);
-        this.#commit();
-    }
-
-    addUpgrade(cardConfig) {
-        const internalType = cardConfig.configEntry.internalType;
-        this.#state.upgradeInventory.push(internalType);
-        this.#commit();
-    }*/
 
     addItem(itemConfig) {
         this.#state.items.push(itemConfig);
@@ -63,8 +29,31 @@ class InventoryManager {
         return this.#state.items.indexOf(itemConfig) != -1;
     }
 
+    getItem(itemConfig) {
+        const index = this.#state.items.indexOf(itemConfig);
+        if (index == -1) return;
+        return this.#state.items[index];
+    }
+
     getItems() {
         return this.#state.items;
+    }
+
+    useItem(itemConfig) {
+        console.log('useItem')
+        const item = this.getItem(itemConfig);
+        if (!item) {
+            console.log('cant use this item, it does not exist in the inventory', itemConfig);
+            return false;
+        }
+        if (item.inventoryQuantity === Infinity || item.inventoryQuantity > 0) {
+            if (item.inventoryQuantity !== Infinity) {
+                item.inventoryQuantity -= 1;
+                if (item.inventoryQuantity === 0) this.removeItem(itemConfig);
+            }
+            return true;
+        }
+        return false;
     }
 
     reset() {

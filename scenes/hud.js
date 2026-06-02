@@ -25,7 +25,7 @@ class HudScene extends Phaser.Scene {
         //this.#newHUDText(8, 8 + 4 * 22, 'enemies', 'Enemies');  // TODO: enemies is not a resource, should not be registry but enemy manager and enemies group
 
         // ── Inventory with buttons ──────────────────────────────────────────────
-        new InventoryContainer(this, this.scale.width - 120, 0);
+        new InventoryContainer(this, this.scale.width - 140, 0);
 
         // ── Control Buttons ──────────────────────────────────────────────────────
         this.#createPauseToggle();

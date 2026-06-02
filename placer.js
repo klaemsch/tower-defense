@@ -1,11 +1,13 @@
 class Placer {
     #scene;
+    #inventoryManager;
     #selectedItemConfig = null;     // config of selected item
     #movingItem = null;             // real instance being moved
     #preview = null;                // preview instance with { moveTo, destroy }
 
     constructor(scene) {
         this.#scene = scene;
+        this.#inventoryManager = this.#scene.game.registry.get(globalConfig.registryKeys.inventoryManager);
 
         scene.input.on('pointermove', this.#onPointerMove, this);
         scene.input.on('pointerdown', this.#onPointerDown, this);
@@ -62,12 +64,19 @@ class Placer {
         const { numCols, numRows } = globalConfig.world;
         if (col < 0 || col >= numCols || row < 0 || row >= numRows) return;
 
-        if (this.#selectedItemConfig.itemType === ItemType.Structure) {
-            this.#placeStructure(col, row);
-        } else if (this.#selectedItemConfig.itemType === ItemType.Upgrade) {
-            this.#placeUpgrade(col, row);
-        } else {
-            console.error('unknown item type');
+        if (this.#movingItem) {
+            // moving, currently only structures // TODO
+            // Move the existing item, no cost re-applied
+            this.#movingItem.moveTo(col, row);
+        } else if (this.#inventoryManager.useItem(this.#selectedItemConfig)) {
+            // placing, if inventory manager says its ok
+            if (this.#selectedItemConfig.itemType === ItemType.Structure) {
+                this.#placeStructure(col, row);
+            } else if (this.#selectedItemConfig.itemType === ItemType.Upgrade) {
+                this.#placeUpgrade(col, row);
+            } else {
+                console.error('unknown item type');
+            }
         }
 
         this.deselect();
@@ -77,17 +86,14 @@ class Placer {
     #placeStructure(col, row) {
         //console.log('#placeStructure called');
 
-        if (this.#movingItem) {
-            // Move the existing item, no cost re-applied
-            this.#movingItem.moveTo(col, row);
-        } else {
-            // Place new — factory handles cost check
-            if (structureStorage.isOccupied(col, row)) return;
+        // Place new — factory handles cost check
+        if (structureStorage.isOccupied(col, row)) return;
 
-            this.#destroyPreview();
-            if (this.#selectedItemConfig.create) this.#selectedItemConfig.create(this.#scene, col, row);
-
+        this.#destroyPreview();
+        if (this.#selectedItemConfig.create) {
+            this.#selectedItemConfig.create(this.#scene, col, row);
         }
+
     }
 
     // gets called by #place if the item is of type Upgrade

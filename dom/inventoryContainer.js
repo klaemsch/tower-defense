@@ -44,7 +44,6 @@ class InventoryContainer extends Phaser.GameObjects.Container {
 
     #createButtons() {
         Object.values(globalConfig.items)
-            //.filter(s => s.inventoryLabel !== undefined)
             .filter(config => this.#inventoryManager.hasItem(config))  // filter for only unlocked
             .forEach((config, i) => this.#addItemButton(config, i));
     }
