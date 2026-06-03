@@ -51,6 +51,9 @@ const globalConfig = {
          * 
          * If the item is moveable, set this:
          * - moveable: true
+         * 
+         * If the item produces resources, set this:
+         * - productionRateMs: delay between resource production in ms
          */
         hq: {
             itemType: ItemType.Structure,
@@ -76,7 +79,7 @@ const globalConfig = {
 
             radiusInTiles: 1,
             radiusType: RadiusType.Rectangular,
-            harvestRateMs: 1000,
+            productionRateMs: 1000,
 
             createPreview: (scene, cfg) => WoodShop.createPreview(scene, cfg),
             create: (scene, col, row) => scene.add.woodShop(col, row),
@@ -164,7 +167,7 @@ const globalConfig = {
             inventoryQuantity: Infinity,
             moveable: true,
 
-            harvestRateMs: 1000,
+            productionRateMs: 1000,
             productionCostResourceRegistryKey: 'wood',
             baseCostPerRate: 1,
             productionResourceRegistryKey: 'energy',
@@ -176,7 +179,7 @@ const globalConfig = {
         productionMultiplier: {
             itemType: ItemType.Upgrade,
             internalType: 'productionMultiplier',
-            muliplier: 2,
+            multiplier: 2,
             inventoryLabel: 'Prod. Mult. x2',
             inventoryQuantity: 1,
         },

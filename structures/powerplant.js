@@ -1,6 +1,5 @@
 class PowerPlant extends Structure {
     #harvestAccumulator;
-    #harvestRateMs;
 
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
@@ -8,15 +7,15 @@ class PowerPlant extends Structure {
         // every preUpdate call the delta since the last update gets added to harvestAccumulator
         // if it falls below the harvestRateMs threshold -> harvest 
         this.#harvestAccumulator = 0;
-        this.#harvestRateMs = structureConfig.harvestRateMs;
     }
 
+    // TODO: move this to base class?
     calculateProductionAmount() {
         if (this.upgrades.size > 0) {
             let multiplier = 0;
             this.upgrades.forEach((upgrade) => {
-                if (upgrade.muliplier) {
-                    multiplier += upgrade.muliplier;
+                if (upgrade.multiplier) {
+                    multiplier += upgrade.multiplier;
                 }
             });
             if (multiplier != 0) return this.config.baseProductionPerRate * multiplier;
@@ -24,15 +23,15 @@ class PowerPlant extends Structure {
         return this.config.baseProductionPerRate;
     }
 
-    preUpdate(time, delta) {
-        this.#harvestAccumulator += delta;
-        if (this.#harvestAccumulator >= this.#harvestRateMs) {
-            this.#harvestAccumulator -= this.#harvestRateMs;
-            if (this.scene.registry.get(this.config.productionCostResourceRegistryKey) >= this.config.baseCostPerRate) {
-                this.scene.registry.inc(this.config.productionCostResourceRegistryKey, -this.config.baseCostPerRate);
-                this.produce(globalConfig.resources.energy.registryKey, globalConfig.resources.energy.label, this.calculateProductionAmount());
-            }
-        }
+    produceHook(time, delta) {
+        const cfg = this.config;
+        this.convert(
+            cfg.productionCostResourceRegistryKey,
+            cfg.baseCostPerRate,
+            globalConfig.resources.energy.registryKey,
+            this.calculateProductionAmount(),
+            globalConfig.resources.energy.label
+        )
     }
 
     destroy(fromScene) {

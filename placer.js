@@ -68,7 +68,7 @@ class Placer {
             // moving, currently only structures // TODO
             // Move the existing item, no cost re-applied
             this.#movingItem.moveTo(col, row);
-        } else if (this.#inventoryManager.useItem(this.#selectedItemConfig)) {
+        } else if (this.#inventoryManager.canUseItem(this.#selectedItemConfig)) {
             // placing, if inventory manager says its ok
             if (this.#selectedItemConfig.itemType === ItemType.Structure) {
                 this.#placeStructure(col, row);
@@ -89,6 +89,8 @@ class Placer {
         // Place new — factory handles cost check
         if (structureStorage.isOccupied(col, row)) return;
 
+        this.#inventoryManager.useItem(this.#selectedItemConfig);
+
         this.#destroyPreview();
         if (this.#selectedItemConfig.create) {
             this.#selectedItemConfig.create(this.#scene, col, row);
@@ -103,6 +105,8 @@ class Placer {
         // get structure in the cell
         const structure = structureStorage.getByCell(col, row);
         if (!structure) return;
+
+        this.#inventoryManager.useItem(this.#selectedItemConfig);
 
         //this.#destroyPreview();
         //console.log('#placeUpgrade called 2');

@@ -1,5 +1,6 @@
 class Structure extends Phaser.GameObjects.GameObject {
     config;
+    prodTimeAccumulator = 0;  // keeps track of next production
     upgrades = new Set();
 
     #container;
@@ -53,7 +54,17 @@ class Structure extends Phaser.GameObjects.GameObject {
         scene.sys.updateList.add(this);
     }
 
-    preUpdate() { }
+    // hook for child functions to add extra logic that is called
+    // when production should happen
+    produceHook() { }
+
+    preUpdate(time, delta) {
+        this.prodTimeAccumulator += delta;
+        if (this.prodTimeAccumulator >= this.config.productionRateMs) {
+            this.prodTimeAccumulator -= this.config.productionRateMs;
+            this.produceHook();
+        }
+    }
 
     #spawnProduceFx(label, amount) {
         const tileSize = globalConfig.world.tileSize;
@@ -102,6 +113,18 @@ class Structure extends Phaser.GameObjects.GameObject {
         this.#spawnProduceFx(label, amount);
     }
 
+    // public function that converts x amounts of product given by registryKeyX
+    // into y amounts of product given by registryKeyY
+    // fires animation and sets registry
+    // currently only animation for Y, so only labelY required
+    convert(registryKeyX, amountX, registryKeyY, amountY, labelY) {
+        if (amountX <= 0 || amountY <= 0) return;
+        if (this.scene.registry.get(registryKeyX) >= amountX) {
+            this.scene.registry.inc(registryKeyX, -amountX);
+            this.produce(registryKeyY, labelY, amountY);
+        }
+    }
+
     pickup(event) {
         const placer = this.scene.registry.get(globalConfig.registryKeys.placer);
         const placerSelectedItem = this.scene.registry.get(globalConfig.registryKeys.selectedItem);
@@ -114,12 +137,18 @@ class Structure extends Phaser.GameObjects.GameObject {
         }
     }
 
+    // can be overwritten by derived classes
+    // is called everytime an upgrade is added/removed/changed
+    onUpgradeChange() { }
+
     addUpgrade(upgrade) {
         console.log('upgrade', upgrade);
         this.upgrades.add(upgrade);
+        this.onUpgradeChange();
     }
 
     removeUpgrade(upgrade) {
+        this.onUpgradeChange();
         return this.upgrades.delete(upgrade);
     }
 
@@ -234,7 +263,7 @@ class Structure extends Phaser.GameObjects.GameObject {
 
     static create(scene, col, row, structureConfig, SubClass) {
         // clone structure config
-        const clonedConfig = { ...structureConfig};
+        const clonedConfig = { ...structureConfig };
         if (clonedConfig.costResourceRegistryKey && clonedConfig.cost) {
             const currentResourceCount = scene.registry.get(clonedConfig.costResourceRegistryKey);
             if (currentResourceCount < clonedConfig.cost) return null;

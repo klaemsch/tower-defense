@@ -1,8 +1,6 @@
 class WoodShop extends Structure {
-    #harvestAccumulator;
-    #harvestRateMs;
     #radius;
-    #treesInRadius;
+    #productionAmount = 0;
 
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
@@ -11,10 +9,7 @@ class WoodShop extends Structure {
 
         // every preUpdate call the delta since the last update gets added to harvestAccumulator
         // if it falls below the harvestRateMs threshold -> harvest 
-        this.#harvestAccumulator = 0;
-        this.#harvestRateMs = structureConfig.harvestRateMs;
-
-        this.#treesInRadius = this.#countTreesInRadius();
+        this.#recalculateProductionAmount();
     }
 
     // returns the number of trees in radius
@@ -26,19 +21,40 @@ class WoodShop extends Structure {
         return adjacentTrees.length;
     }
 
+    // check structures multipliers and return multiplier value
+    // if no multiplier found, return 1
+    #calculateUpgradeMultiplier() {
+        let multiplier = 0;
+        console.log(this.upgrades)
+        this.upgrades.forEach((upgrade) => {
+            if (upgrade.multiplier) {
+                multiplier += upgrade.multiplier;
+            }
+        });
+        return multiplier > 0 ? multiplier : 1;
+    }
+
+    #recalculateProductionAmount() {
+        const treeCount = this.#countTreesInRadius();
+        const multiplier = this.#calculateUpgradeMultiplier();
+        console.log('recalculateProductionAmount', treeCount, multiplier);
+        this.#productionAmount = treeCount * multiplier;
+    }
+
+    onUpgradeChange() {
+        console.log('onUpgradeChange')
+        this.#recalculateProductionAmount();
+    }
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     moveTo(col, row) {
         super.moveTo(col, row);
-        this.#treesInRadius = this.#countTreesInRadius();
+        this.#recalculateProductionAmount();
     }
 
-    preUpdate(time, delta) {
-        this.#harvestAccumulator += delta;
-        if (this.#harvestAccumulator >= this.#harvestRateMs) {
-            this.#harvestAccumulator -= this.#harvestRateMs;
-            this.produce(globalConfig.resources.wood.registryKey, globalConfig.resources.wood.label, this.#treesInRadius);
-        }
+    produceHook(time, delta) {
+        this.produce(globalConfig.resources.wood.registryKey, globalConfig.resources.wood.label, this.#productionAmount);
     }
 
     destroy(fromScene) {

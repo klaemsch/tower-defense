@@ -39,21 +39,25 @@ class InventoryManager {
         return this.#state.items;
     }
 
-    useItem(itemConfig) {
-        console.log('useItem')
+    canUseItem(itemConfig) {
+        console.log('canUseItem')
         const item = this.getItem(itemConfig);
-        if (!item) {
-            console.log('cant use this item, it does not exist in the inventory', itemConfig);
+        if (!item || item.inventoryQuantity <= 0) {
+            console.log('cant use this item, it does not exist in the inventory ', itemConfig);
             return false;
         }
-        if (item.inventoryQuantity === Infinity || item.inventoryQuantity > 0) {
-            if (item.inventoryQuantity !== Infinity) {
-                item.inventoryQuantity -= 1;
-                if (item.inventoryQuantity === 0) this.removeItem(itemConfig);
-            }
-            return true;
+        return true;
+    }
+
+    useItem(itemConfig) {
+        console.log('useItem')
+        if (!this.canUseItem(itemConfig)) return false;
+        const item = this.getItem(itemConfig);
+        if (item.inventoryQuantity !== Infinity) {
+            item.inventoryQuantity -= 1;
+            if (item.inventoryQuantity === 0) this.removeItem(itemConfig);
         }
-        return false;
+        return true;
     }
 
     reset() {
