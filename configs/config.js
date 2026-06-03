@@ -199,7 +199,7 @@ const globalConfig = {
             registryKey: 'wood',
             label: '🪵',
             initialValue: 5,
-            enemyDropChance: 0.5,
+            enemyDropChance: 0.6,
         },
         villager: {
             registryKey: 'villager',
@@ -213,8 +213,9 @@ const globalConfig = {
             initialValue: 0,
             enemyDropChance: 0.2,
         },
+        // TODO: maybe move this to the enemyConfig, to make different drop distributions per enemy type
         getRandomDrop: () => {
-            const pool = Object.values(globalConfig.resources);
+            const pool = Object.values(globalConfig.resources).filter((resource) => resource.enemyDropChance);
             const roll = Math.random();
             let cumulative = 0;
 
