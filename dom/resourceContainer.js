@@ -16,6 +16,7 @@ class ResourceContainer extends Phaser.GameObjects.Container {
         const resources = Object.values(globalConfig.resources);
 
         resources.forEach((resource, i) => {
+            if (typeof resource === 'function') return;
             const { registryKey, label } = resource;
             const x = this.#paddingLeft;
             const y = this.#paddingTop + i * this.#betweenGap;

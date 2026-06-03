@@ -71,10 +71,20 @@ class InventoryManager {
     #initResources() {
         //console.debug('initResources');
         for (const resource of Object.values(globalConfig.resources)) {
+            if (typeof resource === 'function') continue;
             const { registryKey, label, initialValue } = resource;
             //console.debug(`Setting ${registryKey} to ${initialValue}`);
             this.#gameScene.registry.set(registryKey, initialValue);
         }
+
+        // TODO: maybe move resource stuff into its own resourceManager / resourceInventoryManager
+        // TODO: move this into its own function #initOnEnemyDestroyedHandler() or something
+        
+        // on enemy destroy, choose a random drop from config and add it to resources
+        this.#gameScene.game.events.on(globalConfig.eventKeys.enemyDestroyed, (drop) => {
+            console.log('enemyDestroyed event recieved drop', drop.amount, drop.resource.label);
+            this.#gameScene.registry.inc(drop.resource.registryKey, 1);
+        });
     }
 
     /**

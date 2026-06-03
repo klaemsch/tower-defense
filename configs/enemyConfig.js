@@ -7,6 +7,7 @@ const enemyConfig = {
         color: 0xe63946,
         sizeRatio: 0.5,   // size relative to tileSize, evaluated at draw time
         health: 30,
+        dropFxDuration: 2000,
         draw: (gfx, px, py, eConfig, attacking) => {
             const s = (globalConfig.world.tileSize * eConfig.sizeRatio) / 2;
 

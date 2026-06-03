@@ -42,7 +42,16 @@ class Enemy extends Phaser.GameObjects.GameObject {
         // trigger destroy event for other scenes to check status
         this.once('destroy', () => {
             //console.log('enemy destroy event');
-            this.scene.game.events.emit(globalConfig.eventKeys.enemyDestroyed);
+
+            // get drop
+            const drop = globalConfig.resources.getRandomDrop();
+            console.log('an enemy died and randomly dropped', drop.amount, drop.resource.label);
+
+            // do FX
+            this.#spawnDropFx(drop.resource.label, drop.amount);
+
+            // emit death event and hand over drop
+            this.scene.game.events.emit(globalConfig.eventKeys.enemyDestroyed, drop);
         });
     }
 
@@ -221,6 +230,31 @@ class Enemy extends Phaser.GameObjects.GameObject {
         });
 
         this.#pathGfx.strokePath();
+    }
+
+    // TODO: this is used in structure.js as well for produce fx, maybe put into common helper function?
+    #spawnDropFx(label, amount) {
+        const tileSize = globalConfig.world.tileSize;
+        const x = this.gridX * tileSize + tileSize / 2;
+        const y = this.gridY * tileSize;
+        const labelText = `${label} +${amount}`;
+
+        const labelElement = this.scene.add.text(x, y, labelText, {
+            fontSize: '14px',
+            fontStyle: 'bold',
+            color: '#a8dadc',
+            //stroke: '#000000',
+            //strokeThickness: 3,
+        }).setOrigin(0.5, 1).setDepth(globalConfig.depthMap.structureProductionFx).setAlpha(1);
+
+        this.scene.tweens.add({
+            targets: labelElement,
+            y: y - 40,
+            alpha: 0,
+            duration: this.#config.dropFxDuration,
+            ease: 'Cubic.Out',
+            onComplete: () => labelElement.destroy(),
+        });
     }
 }
 

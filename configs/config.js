@@ -193,21 +193,43 @@ const globalConfig = {
             registryKey: 'token',
             label: '🪙',
             initialValue: 5,
+            enemyDropChance: 0.1,
         },
         wood: {
             registryKey: 'wood',
             label: '🪵',
             initialValue: 5,
+            enemyDropChance: 0.5,
         },
         villager: {
             registryKey: 'villager',
             label: '🧑‍🤝‍🧑',
             initialValue: 5,
+            enemyDropChance: 0.1,
         },
         energy: {
             registryKey: 'energy',
             label: '⚡',
             initialValue: 0,
+            enemyDropChance: 0.2,
+        },
+        getRandomDrop: () => {
+            const pool = Object.values(globalConfig.resources);
+            const roll = Math.random();
+            let cumulative = 0;
+
+            // TODO: drop amount currently fixed at 1, maybe roll this later as well?
+            const amount = 1;
+
+            for (const resource of pool) {
+                cumulative += resource.enemyDropChance;
+                if (roll < cumulative) return { resource, amount };
+            }
+
+            // Fallback in case chances don't sum to exactly 1 due to floating point
+            console.warn("resource config drop chances don't sum up to 1");
+            const resource = pool[pool.length - 1];
+            return { resource, amount };
         }
     },
     flow: [

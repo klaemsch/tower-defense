@@ -66,6 +66,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         }
     }
 
+    // TODO: this is used in enemy.js as well for drop fx, maybe put into common helper function?
     #spawnProduceFx(label, amount) {
         const tileSize = globalConfig.world.tileSize;
         const x = this.col * tileSize + tileSize / 2;
