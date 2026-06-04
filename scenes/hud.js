@@ -48,6 +48,7 @@ class HudScene extends Phaser.Scene {
     }
 
     #registerEventListeners() {
+        console.log('hud register event listeners');
         this.game.events.on(globalConfig.eventKeys.gameOver, () => this.#showGameOver(globalConfig.texts.gameOverTitle, globalConfig.texts.gameOverSubtitle));
         this.game.events.on(globalConfig.eventKeys.gameWon, () => this.#showGameOver(globalConfig.texts.gameWonTitle, globalConfig.texts.gameWonSubtitle));
     }
@@ -109,8 +110,22 @@ class HudScene extends Phaser.Scene {
             fontSize: '18px', color: '#ffffff',
         }).setOrigin(0.5).setDepth(globalConfig.depthMap.gameOverText);
 
+        const button = new RoundedButton(this, cx, cy + 70, 100, 38, 'Restart Game', {
+            fontSize: '13px',
+            textColor: '#a8dadc',
+        })
+            .setDepth(globalConfig.depthMap.gameOverText)
+            .on('pointerdown', () => {
+                console.log('restart button pressed');
+                location.reload();
+            })
+
         // pause scene so buttons arent clickable anymore
-        this.scene.pause();
+        // TODO: at the moment the placer buttons are working in the background
+        // pausing the scene solves this, but then the restart button also does not work anymore
+        // solution 1: create new 'gameOverScene', so we can pause the hudScene
+        // solution 2: on gameOver event, set a flag to disable or destroy the buttons
+        //this.scene.pause();
     }
 
     // ── HUD text ──────────────────────────────────────────────────────────────
