@@ -140,7 +140,6 @@ class GameFlowManager {
             switch (currentStep.type) {
                 case 'wave':
                     // Start spawning enemies via enemyManager
-                    this.#gameScene.game.events.emit(globalConfig.eventKeys.gameOver);
                     console.log('GameFlowManager starts spawning enemies');
                     this.#enemyManager.startSpawning(currentStep.spawnRate, currentStep.lengthInSeconds / (currentStep.spawnRate / 1000));
                     break;

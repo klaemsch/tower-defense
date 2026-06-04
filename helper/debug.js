@@ -34,4 +34,13 @@ function addProductionMultiplier() {
     addToInventory('productionMultiplier');
 }
 
+function kill() {
+    console.log('killing all enemies');
+    const game = window.__game;
+    const enemyManager = game.registry.get(globalConfig.registryKeys.enemyManager);
+    enemyManager.enemies.getChildren().forEach((enemy) => {
+        enemy.destroy();
+    })
+}
+
 startGame();

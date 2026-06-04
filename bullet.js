@@ -7,7 +7,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
     #trailPositions;
     #gfx;
 
-    constructor(scene, origin, target, speed, damage) {
+    constructor(scene, origin, target, speed, damage, onArrive = (target) => { }) {
         super(scene, 'bullet');
 
         this.x = origin.pixelX;
@@ -29,6 +29,8 @@ class Bullet extends Phaser.GameObjects.GameObject {
 
         scene.sys.updateList.add(this);
         this.#draw();
+
+        this.onArrive = onArrive;
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -104,6 +106,8 @@ class Bullet extends Phaser.GameObjects.GameObject {
     // ── Arrival ───────────────────────────────────────────────────────────────
 
     #arrive() {
+        //console.log('#arrive()', this.onArrive);
+        this.onArrive(this.#target);
         //console.log('bullet arrived, health:', this.#target.health)
         const destroyed = this.#target.doDamage(this.#damage);
         //console.log('bullet arrived, health:', this.#target.health, destroyed)
@@ -112,14 +116,10 @@ class Bullet extends Phaser.GameObjects.GameObject {
     }
 }
 
-function registerBulletFactory() {
-    Phaser.GameObjects.GameObjectFactory.register(
-        'bullet',
-        function (origin, target, speed, damage) {
-            const bullet = new Bullet(this.scene, origin, target, speed, damage);
-            return bullet;
-        },
-    );
-}
-
-registerBulletFactory();
+Phaser.GameObjects.GameObjectFactory.register(
+    'bullet',
+    function (origin, target, speed, damage, onArrive) {
+        const bullet = new Bullet(this.scene, origin, target, speed, damage, onArrive);
+        return bullet;
+    },
+);

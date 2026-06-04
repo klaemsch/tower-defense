@@ -32,4 +32,12 @@ const cards = [
         cost: 5,
         itemConfig: globalConfig.items.productionMultiplier,
     },
+    {
+        title: '+Freeze',
+        description: 'Tower has a\nchance to freeze\nenemies',
+        color: 0x818cf8,
+        costResourceRegistryKey: globalConfig.resources.token.registryKey,
+        cost: 5,
+        itemConfig: globalConfig.items.freeze,
+    },
 ];

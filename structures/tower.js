@@ -3,6 +3,8 @@ class Tower extends Structure {
     #findClosestEnemyFunc
     #enemyManager;
 
+    #onBulletArriveFunc;
+
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
 
@@ -25,8 +27,31 @@ class Tower extends Structure {
             // const target = this.#enemyManager.getClosestEnemy(this.pixelX, this.pixelX, this.#radiusInPixel);
             const target = this.#findClosestEnemyFunc();
             if (target) {
-                this.scene.add.bullet(this, target, this.config.bulletSpeed, this.config.bulletDamage);
+
+                // create a bullet with target, speed, damage and onArrive
+                this.scene.add.bullet(
+                    this, target,
+                    this.config.bulletSpeed,
+                    this.config.bulletDamage,
+                    this.#onBulletArriveFunc
+                );
             }
+        }
+    }
+
+    onUpgradeChange() {
+        console.log('tower onUpgradeChange');
+
+        // check if there is a freeze upgrade
+        const freezeUpgrade = [...this.upgrades].find(
+            u => u.internalType === 'freeze' && u.effectTimeInMs > 0
+        );
+
+        // if there is, change the onArrive to stun
+        if (freezeUpgrade) {
+            this.#onBulletArriveFunc = (t) => t.stun(freezeUpgrade.effectTimeInMs);
+        } else {
+            this.#onBulletArriveFunc = undefined;
         }
     }
 

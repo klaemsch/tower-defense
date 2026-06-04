@@ -183,6 +183,13 @@ const globalConfig = {
             inventoryLabel: 'Prod. Mult. x2',
             inventoryQuantity: 1,
         },
+        freeze: {
+            itemType: ItemType.Upgrade,
+            internalType: 'freeze',
+            inventoryLabel: 'Freeze',
+            inventoryQuantity: 1,
+            effectTimeInMs: 1000,
+        },
     },
     bullet: {
         color: 0xf1faee,

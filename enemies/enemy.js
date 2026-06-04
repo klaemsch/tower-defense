@@ -7,6 +7,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     #attacking;
     #attackTimer;
+    #isStunned;
 
     #gfx;
     #pathGfx;
@@ -30,6 +31,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
         this.#attacking = false;
         this.#attackTimer = 0;
+        this.#isStunned = false; // target can move and attack
 
         this.#gfx = scene.add.graphics();
         this.#pathGfx = scene.add.graphics().setDepth(globalConfig.depthMap.enemyPath);
@@ -58,6 +60,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     // ── Phaser lifecycle ──────────────────────────────────────────────────────
 
     preUpdate(_time, delta) {
+        if (this.#isStunned) return;
         const step = this.#config.speed * (delta / 1000);
 
         if (this.#attacking) {
@@ -85,6 +88,20 @@ class Enemy extends Phaser.GameObjects.GameObject {
         }
         console.log('did', amount, 'damage, new health', this.#config.health);
         return false;
+    }
+
+    // stun/freeze this enemy, it cant move or attack for 'timeInMs'
+    stun(timeInMs) {
+        //console.log('enemy stunned for', timeInMs, 'ms');
+        this.#isStunned = true;
+
+        this.scene.time.addEvent({
+            delay: timeInMs,
+            callback: () => {
+                this.#isStunned = false;
+                //console.log('enemy unstunned after', timeInMs, 'ms');
+            }
+        });
     }
 
     destroy(fromScene) {
@@ -262,7 +279,7 @@ Phaser.GameObjects.GameObjectFactory.register(
     'enemy',
     function (col, row, path, target, eConfig) {
         // clone incoming enemy config
-        const clonedConfig = { ...eConfig};
+        const clonedConfig = { ...eConfig };
         const enemy = new Enemy(this.scene, col, row, path, target, clonedConfig);
         return enemy;
     },
