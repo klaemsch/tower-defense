@@ -40,4 +40,37 @@ const cards = [
         cost: 5,
         itemConfig: globalConfig.items.freeze,
     },
+    // TODO: below are dummies, remove
+    {
+        title: 'A',
+        description: 'Tower has a\nchance to freeze\nenemies',
+        color: 0x818cf8,
+        costResourceRegistryKey: globalConfig.resources.token.registryKey,
+        cost: 5,
+        itemConfig: globalConfig.items.freeze,
+    },
+    {
+        title: 'B',
+        description: 'Tower has a\nchance to freeze\nenemies',
+        color: 0x818cf8,
+        costResourceRegistryKey: globalConfig.resources.token.registryKey,
+        cost: 5,
+        itemConfig: globalConfig.items.freeze,
+    },
+    {
+        title: 'C',
+        description: 'Tower has a\nchance to freeze\nenemies',
+        color: 0x818cf8,
+        costResourceRegistryKey: globalConfig.resources.token.registryKey,
+        cost: 5,
+        itemConfig: globalConfig.items.freeze,
+    },
+    {
+        title: 'D',
+        description: 'Tower has a\nchance to freeze\nenemies',
+        color: 0x818cf8,
+        costResourceRegistryKey: globalConfig.resources.token.registryKey,
+        cost: 5,
+        itemConfig: globalConfig.items.freeze,
+    },
 ];

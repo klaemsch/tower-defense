@@ -3,6 +3,11 @@ function addWood(amount = 100) {
     return `Added ${amount} wood to resources`;
 }
 
+function addToken(amount = 100) {
+    window.__game.registry.inc(globalConfig.resources.token.registryKey, amount);
+    return `Added ${amount} token to resources`;
+}
+
 function getConfigFromItemName(itemName) {
     let config;
     // TODO: combining them here seems unnecessary, maybe combine them in config?

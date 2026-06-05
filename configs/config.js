@@ -282,7 +282,11 @@ const globalConfig = {
             cardHeight: 280,
             cardGap: 24,
             imgSize: 72,
-        }
+        },
+        reroll: {
+            cost: 5,
+            costResourceRegistryKey: 'token',
+        },
     },
     depthMap: {
         // 1. Normal Game

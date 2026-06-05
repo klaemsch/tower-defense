@@ -87,7 +87,7 @@ class InventoryContainer extends Phaser.GameObjects.Container {
     }
 
     #destroyButtons() {
-        console.log('destroying buttons');
+        console.log('destroying inventory buttons');
         this.#deactivateAll();
         this.#buttons.forEach(btn => btn.destroy());
         this.#buttons = [];
