@@ -289,6 +289,8 @@ const globalConfig = {
         },
     },
     depthMap: {
+        // TODO: apparently depth is dependent on scenes, so not comparable between scenes
+        // scenes that are launched later, are put on top of the previous
         // 1. Normal Game
         structureRadius: 0,
         enemyPath: 1,
@@ -296,8 +298,7 @@ const globalConfig = {
         bullet: 8,
         structureProductionFx: 10,
         // 2. HUD
-        resourceContainer: 11,
-        resourceLabel: 11,
+        resourceContainer: 111,
         progressBar: 15,
         // 3. Shop and Game Over (MutEx)
         gameOverRect: 50,

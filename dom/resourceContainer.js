@@ -25,6 +25,9 @@ class ResourceContainer extends Phaser.GameObjects.Container {
             this.#newResourceDisplay(x, y, registryKey, label);
         });
 
+        // set depth of container
+        this.setDepth(globalConfig.depthMap.resourceContainer);
+
         scene.add.existing(this);
     }
 
@@ -37,7 +40,7 @@ class ResourceContainer extends Phaser.GameObjects.Container {
             fontStyle: 'bold',
             backgroundColor: '#00000066',
             padding: { x: 6, y: 3 },
-        }).setDepth(globalConfig.depthMap.resourceLabel);
+        })
 
         this.add(textElement);
 

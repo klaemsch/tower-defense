@@ -74,6 +74,9 @@ class ShopScene extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.#closeShop();
             });
+
+        // create resource container, so the player sees its resources while shopping
+        new ResourceContainer(this, 0, 0);
     }
 
     destroy() {
