@@ -23,6 +23,7 @@ const globalConfig = {
             'tower',
             'powerPlant',
             'productionMultiplier',
+            'freeze',
         ],
     },
     texts: {

@@ -8,6 +8,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     #attacking;
     #attackTimer;
     #isStunned;
+    #stunTimer = null;
 
     #gfx;
     #pathGfx;
@@ -95,10 +96,18 @@ class Enemy extends Phaser.GameObjects.GameObject {
         //console.log('enemy stunned for', timeInMs, 'ms');
         this.#isStunned = true;
 
-        this.scene.time.addEvent({
+        // cancel existing stun timer if already stunned
+        if (this.#stunTimer) {
+            this.#stunTimer.remove();
+            this.#stunTimer = null;
+        }
+
+        // after timeInMS unstunn and set stunTimer to null
+        this.#stunTimer = this.scene.time.addEvent({
             delay: timeInMs,
             callback: () => {
                 this.#isStunned = false;
+                this.#stunTimer = null;
                 //console.log('enemy unstunned after', timeInMs, 'ms');
             }
         });
