@@ -106,11 +106,10 @@ class Placer {
         const structure = structureStorage.getByCell(col, row);
         if (!structure) return;
 
-        this.#inventoryManager.useItem(this.#selectedItemConfig);
+        const canAddUpgrade = structure.addUpgrade(this.#selectedItemConfig);
 
-        //this.#destroyPreview();
-        //console.log('#placeUpgrade called 2');
-        structure.addUpgrade(this.#selectedItemConfig);
+        if (canAddUpgrade) this.#inventoryManager.useItem(this.#selectedItemConfig);
+        else console.log('cant use this upgrade');
     }
 
     // event fired everytime the pointer moves

@@ -182,7 +182,7 @@ const globalConfig = {
             internalType: 'productionMultiplier',
             multiplier: 2,
             inventoryLabel: 'Prod. Mult. x2',
-            initInventoryQuantity: 1,
+            initInventoryQuantity: 2,
         },
         freeze: {
             itemType: ItemType.Upgrade,

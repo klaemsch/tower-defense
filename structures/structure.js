@@ -91,6 +91,27 @@ class Structure extends Phaser.GameObjects.GameObject {
         });
     }
 
+    // starts a wiggle animation and changes color
+    #spawnActionDeniedFx() {
+        // set color to deny
+        this.#bgRect.setFillStyle(0xff6666);
+
+        // start wiggle animation and at the end set color back to normal
+        const originalX = this.#container.x;
+        this.scene.tweens.add({
+            targets: this.#container,
+            x: { from: originalX - 6, to: originalX + 6 },
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+                this.#container.x = originalX;
+                this.#bgRect.setFillStyle(this.config.color);
+            }
+        });
+    }
+
     // applies the damage (amount) to this structure
     // returns true if destroyed (and destroys itself)
     // returns false if not destroyed but damaged
@@ -142,10 +163,20 @@ class Structure extends Phaser.GameObjects.GameObject {
     // is called everytime an upgrade is added/removed/changed
     onUpgradeChange() { }
 
+    // returns true if upgrade was added, false if not
     addUpgrade(upgrade) {
-        console.log('upgrade', upgrade);
+        // if upgrade already applied spawn Fx, return false
+        if (this.upgrades.has(upgrade)) {
+            this.#spawnActionDeniedFx();
+            return false;
+        }
+
+        //console.log('upgrade', upgrade);
         this.upgrades.add(upgrade);
         this.onUpgradeChange();
+
+        // upgrade added -> return true
+        return true;
     }
 
     removeUpgrade(upgrade) {
