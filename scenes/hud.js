@@ -61,38 +61,38 @@ class HudScene extends Phaser.Scene {
         const resumeLabel = '▶️ Resume';
 
         const x = 8;
-        const y = 140;
+        const y = 3 * globalConfig.world.tileSize;
         const WIDTH = 100;
         const HEIGHT = 36;
-        const COLOR_IDLE = 0x16213e;
 
-        this.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
-            .setOrigin(0, 0)
-            .setDepth(10)
-            .setInteractive({ useHandCursor: true })
+        const pauseResumeState = this.registry.get(globalConfig.registryKeys.pauseResumeState);
+
+        const btn = new RoundedButton(this, x + WIDTH / 2, y, pauseResumeState ? resumeLabel : pauseLabel, {
+            width: WIDTH,
+            height: HEIGHT,
+            fontSize: '13px',
+            textColor: '#a8dadc',
+        })
             .on('pointerdown', () => {
                 this.#gameFlowManager.togglePauseWave();
-            });
-        
-        const pauseResumeState = this.registry.get(globalConfig.registryKeys.pauseResumeState);
-        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, pauseResumeState ? resumeLabel : pauseLabel, {
-            fontSize: '11px',
-            color: '#a8dadc',
-            fontStyle: 'bold',
-        }).setOrigin(0.5).setDepth(12);
+            })
 
         // listen for game state change
         this.registry.events.on(`changedata-${globalConfig.registryKeys.pauseResumeState}`, (parent, isPaused) => {
             if (isPaused) {
-                textElement.text = resumeLabel;
+                btn.setText(resumeLabel);
             } else {
-                textElement.text = pauseLabel;
+                btn.setText(pauseLabel);
             }
         });
     }
 
     #createTimeScaleToggle() {
-        const btn = new RoundedButton(this, 8 + 50, 140 + 70, 100, 36, '1x', {
+        const x = 8;
+        const WIDTH = 100;
+        const y = 4 * globalConfig.world.tileSize;
+
+        const btn = new RoundedButton(this, x + WIDTH / 2, y, '1x', {
             fontSize: '13px',
             textColor: '#a8dadc',
         })
@@ -128,7 +128,7 @@ class HudScene extends Phaser.Scene {
             fontSize: '18px', color: '#ffffff',
         }).setOrigin(0.5).setDepth(globalConfig.depthMap.gameOverText);
 
-        const button = new RoundedButton(this, cx, cy + 70, 100, 38, 'Restart Game', {
+        new RoundedButton(this, cx, cy + 70, 'Restart Game', {
             fontSize: '13px',
             textColor: '#a8dadc',
         })
@@ -147,6 +147,7 @@ class HudScene extends Phaser.Scene {
     }
 
     #setTimeScale(multiplier = 1) {
+        console.log('Set time scale to', multiplier);
         this.game.scene.scenes.forEach((scene) => {
             scene.time.timeScale = multiplier;
             scene.tweens.timeScale = 1 / multiplier;  // cancel out the time scale for tweens

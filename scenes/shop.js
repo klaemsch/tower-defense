@@ -51,7 +51,9 @@ class ShopScene extends Phaser.Scene {
         const rerollResourceConfig = globalConfig.resources[globalConfig.shop.reroll.costResourceRegistryKey];
         const rerollButtonText = `🎲 Reroll (${globalConfig.shop.reroll.cost} ${rerollResourceConfig.label})`;
 
-        new RoundedButton(this, W / 2 - 100, btnY, buttonWidth, buttonHeight, rerollButtonText, {
+        new RoundedButton(this, W / 2 - 100, btnY, rerollButtonText, {
+            width: buttonWidth, 
+            height: buttonHeight,
             radius: 10,
             fontSize: '18px',
         })
@@ -66,7 +68,9 @@ class ShopScene extends Phaser.Scene {
                 }
             });
 
-        new RoundedButton(this, W / 2 + 100, btnY, buttonWidth, buttonHeight, 'Continue  →', {
+        new RoundedButton(this, W / 2 + 100, btnY, 'Continue  →', {
+            width: buttonWidth, 
+            height: buttonHeight,
             radius: 10,
             fontSize: '18px',
         })

@@ -21,6 +21,8 @@ class RoundedButton extends Phaser.GameObjects.Container {
      * @param {number}       height
      * @param {string}       text
      * @param {object}       [options]
+     * @param {number}       [options.width=100]
+     * @param {number}       [options.height=36]
      * @param {number}       [options.radius=8]            - Corner radius
      * @param {number}       [options.fillColor=0x1d3557]
      * @param {number}       [options.fillHover=0x2a4a7a]
@@ -30,11 +32,11 @@ class RoundedButton extends Phaser.GameObjects.Container {
      * @param {string}       [options.fontSize='14px']
      * @param {string}       [options.fontStyle='bold']
      */
-    constructor(scene, x, y, width, height, text, options = {}) {
+    constructor(scene, x, y, text, options = {}) {
         super(scene, x, y);
 
-        this.#width = width;
-        this.#height = height;
+        this.#width = options.width ?? 100;
+        this.#height = options.height ?? 36;
         this.#radius = options.radius ?? 8;
         this.#fillColor = options.fillColor ?? 0x1d3557;
         this.#fillHover = options.fillHover ?? 0x2a4a7a;
@@ -58,7 +60,7 @@ class RoundedButton extends Phaser.GameObjects.Container {
         this.add(this.#label);
 
         // Hit area centered on the container origin
-        this.setSize(width, height);
+        this.setSize(this.#width, this.#height);
         this.setInteractive({ useHandCursor: true });
 
         this.on('pointerover', () => this.#drawBg(this.#fillHover));
