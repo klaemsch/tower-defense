@@ -1,14 +1,11 @@
 class HudScene extends Phaser.Scene {
-    #activeButton;
     #progressBar;
 
     #enemyManager;
-    #placer;
     #gameFlowManager;
 
     constructor() {
         super(globalConfig.sceneKeys.hud);
-        this.#activeButton = null;
     }
 
     preload() { }
@@ -17,7 +14,6 @@ class HudScene extends Phaser.Scene {
         this.#registerEventListeners();
 
         this.#enemyManager = this.registry.get(globalConfig.registryKeys.enemyManager);
-        this.#placer = this.registry.get(globalConfig.registryKeys.placer);
         this.#gameFlowManager = this.registry.get(globalConfig.registryKeys.gameFlowManager);
 
         // ── Resources ──────────────────────────────────────────────────────
@@ -38,7 +34,7 @@ class HudScene extends Phaser.Scene {
 
     update(time, delta) {
         const progress = this.#gameFlowManager.getOverallProgressOfCurrentTimer();
-        this.#progressBar.setProgress(progress);
+        this.#progressBar.setProgress(progress); // TODO: doing this every loop is a bit unnecessary
 
         this.registry.set('enemies', this.#enemyManager.enemies.getLength()); // TODO: doing this every loop is a bit unnecessary
     }
@@ -126,63 +122,5 @@ class HudScene extends Phaser.Scene {
         // solution 1: create new 'gameOverScene', so we can pause the hudScene
         // solution 2: on gameOver event, set a flag to disable or destroy the buttons
         //this.scene.pause();
-    }
-
-    // ── HUD text ──────────────────────────────────────────────────────────────
-
-    /*#newHUDText(x, y, registryKey, label) {
-        const initValue = this.registry.get(registryKey);
-        const textElement = this.add.text(x, y, `${label} ${initValue}`, {
-            fontSize: '13px',
-            color: '#a8dadc',
-            fontStyle: 'bold',
-            backgroundColor: '#00000066',
-            padding: { x: 6, y: 3 },
-        }).setDepth(10);
-
-        this.registry.events.on(`changedata-${registryKey}`, (parent, value) => {
-            textElement.setText(`${label} ${value}`);
-        });
-    }*/
-
-    #newControlButton(x, y, action, label) {
-        const WIDTH = 100;
-        const HEIGHT = 36;
-        const COLOR_IDLE = 0x16213e;
-        const COLOR_ACTIVE = 0x1d3557;
-
-        const button = this.add.rectangle(x, y, WIDTH, HEIGHT, COLOR_IDLE)
-            .setOrigin(0, 0)
-            .setDepth(10)
-            .setInteractive({ useHandCursor: true });
-
-        const text = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, label, {
-            fontSize: '11px',
-            color: '#a8dadc',
-            fontStyle: 'bold',
-        }).setOrigin(0.5).setDepth(12);
-
-        const event = button.on('pointerdown', () => {
-            switch (action) {
-                case 'play':
-                    this.#gameFlowManager.startWave();
-                    break;
-                case 'toggle':
-                    if (this.#gameFlowManager.isPaused()) {
-                        text.text = '▶️ Resume';
-                    } else {
-                        text.text = '⏸️ Pause';
-                    }
-                    this.#gameFlowManager.togglePauseWave();
-                    break;
-            }
-        });
-
-        // Optional: update button state based on game flow
-        this.events.on('wave-start', () => {
-            //this.#updateButtonState(button, text, 'play', '▶️ Start');
-        });
-
-        return { button, text, event };
     }
 }

@@ -8,6 +8,11 @@ const ItemType = {
     Upgrade: 'upgrade',
 }
 
+const FlowType = {
+    Peace: 'peace',
+    Wave: 'wave',
+}
+
 const globalConfig = {
     debug: true,
     world: {
@@ -240,14 +245,14 @@ const globalConfig = {
         }
     },
     flow: [
-        { type: 'peace', lengthInSeconds: 2 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30, reward: 5 },
-        { type: 'peace', lengthInSeconds: 10 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 40, reward: 10 },
-        { type: 'peace', lengthInSeconds: 10 },
-        { type: 'wave', lengthInSeconds: 10, spawnRate: 500, enemyHealth: 50, reward: 15 },
-        { type: 'peace', lengthInSeconds: 10 },
-        { type: 'wave', lengthInSeconds: 15, spawnRate: 500, enemyHealth: 50, reward: 20 },
+        { type: FlowType.Peace, lengthInSeconds: 10 },
+        { type: FlowType.Wave, lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 30, reward: 5 },
+        { type: FlowType.Peace, lengthInSeconds: 10 },
+        { type: FlowType.Wave, lengthInSeconds: 10, spawnRate: 1000, enemyHealth: 40, reward: 10 },
+        { type: FlowType.Peace, lengthInSeconds: 10 },
+        { type: FlowType.Wave, lengthInSeconds: 10, spawnRate: 500, enemyHealth: 50, reward: 15 },
+        { type: FlowType.Peace, lengthInSeconds: 10 },
+        { type: FlowType.Wave, lengthInSeconds: 15, spawnRate: 500, enemyHealth: 50, reward: 20 },
     ],
     sceneKeys: {
         game: 'gameScene',

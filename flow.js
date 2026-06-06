@@ -83,6 +83,14 @@ class GameFlowManager {
         return this.#flowIndex >= this.#flowData.length;
     }
 
+    isCurrentlyPeace() {
+        return this.getCurrentStep().type === FlowType.Peace;
+    }
+
+    isCurrentlyWave() {
+        return this.getCurrentStep().type === FlowType.Wave;
+    }
+
 
     // ── Wave Management ──────────────────────────────────────────────────────
 

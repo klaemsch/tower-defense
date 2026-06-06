@@ -20,7 +20,7 @@ class InventoryManager {
     }
 
     addItem(itemConfig) {
-        console.log('addItem in InventoryManager', itemConfig);
+        //console.log('addItem in InventoryManager', itemConfig);
 
         // copy itemConfig
         const itemConfigCopy = { ...itemConfig };
@@ -53,7 +53,7 @@ class InventoryManager {
     }
 
     canUseItem(itemConfig) {
-        console.log('canUseItem')
+        //console.log('canUseItem')
         const item = this.getItem(itemConfig);
         if (!item || item.quantity <= 0) {
             console.log('cant use this item, it does not exist in the inventory ', itemConfig);
@@ -63,7 +63,7 @@ class InventoryManager {
     }
 
     useItem(itemConfig) {
-        console.log('useItem')
+        //console.log('useItem')
         if (!this.canUseItem(itemConfig)) return false;
         const item = this.getItem(itemConfig);
         if (item.quantity !== Infinity) {

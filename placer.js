@@ -28,7 +28,8 @@ class Placer {
 
     // Call this when the player clicks an already-placed item to move it
     selectExistingForMove(itemInstance) {
-        if (this.#selectedItemConfig || this.#movingItem) return; // TODO: check if this is right
+        const gameFlowManager = this.#scene.game.registry.get(globalConfig.registryKeys.gameFlowManager);
+        if (this.#selectedItemConfig || this.#movingItem || gameFlowManager.isCurrentlyWave()) return; // TODO: check if this is right
         //console.log('move')
         this.deselect();
         this.#movingItem = itemInstance;
