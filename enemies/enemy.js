@@ -63,6 +63,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     // ── Phaser lifecycle ──────────────────────────────────────────────────────
 
     preUpdate(_time, delta) {
+        delta = delta * this.scene.time.timeScale;  // TODO check if this works
         if (this.#isStunned) return;
         const step = this.#config.speed * (delta / 1000);
 

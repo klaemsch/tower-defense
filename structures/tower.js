@@ -16,6 +16,7 @@ class Tower extends Structure {
     }
 
     preUpdate(time, delta) {
+        delta = delta * this.scene.time.timeScale;  // TODO check if this works
         // TODO: currently the tower only looks for enemies every fireRateMs
         // TODO: tower kills the last enemy in range, tower looks for new enemy -> no in range
         // enemy comes into range, tower only fires after fireRateMs, even if the last shot was way before that

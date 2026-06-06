@@ -25,6 +25,7 @@ class HudScene extends Phaser.Scene {
 
         // ── Control Buttons ──────────────────────────────────────────────────────
         this.#createPauseToggle();
+        this.#createTimeScaleToggle();
 
         this.#progressBar = new ProgressBar(this, {
             leftIcon: '▶',
@@ -33,6 +34,7 @@ class HudScene extends Phaser.Scene {
     }
 
     update(time, delta) {
+        delta = delta * this.time.timeScale;  // TODO check if this works
         const progress = this.#gameFlowManager.getOverallProgressOfCurrentTimer();
         this.#progressBar.setProgress(progress); // TODO: doing this every loop is a bit unnecessary
 
@@ -71,8 +73,9 @@ class HudScene extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.#gameFlowManager.togglePauseWave();
             });
-
-        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, this.registry.get(globalConfig.registryKeys.pauseResumeState) ? resumeLabel : pauseLabel, {
+        
+        const pauseResumeState = this.registry.get(globalConfig.registryKeys.pauseResumeState);
+        const textElement = this.add.text(x + WIDTH / 2, y + HEIGHT / 2, pauseResumeState ? resumeLabel : pauseLabel, {
             fontSize: '11px',
             color: '#a8dadc',
             fontStyle: 'bold',
@@ -86,6 +89,25 @@ class HudScene extends Phaser.Scene {
                 textElement.text = pauseLabel;
             }
         });
+    }
+
+    #createTimeScaleToggle() {
+        const btn = new RoundedButton(this, 8 + 50, 140 + 70, 100, 36, '1x', {
+            fontSize: '13px',
+            textColor: '#a8dadc',
+        })
+            .on('pointerdown', () => {
+                if (this.#getTimeScale() === 1) {
+                    this.#setTimeScale(2);
+                    btn.setText('2x');
+                } else if (this.#getTimeScale() === 2) {
+                    this.#setTimeScale(3);
+                    btn.setText('3x');
+                } else if (this.#getTimeScale() === 3) {
+                    this.#setTimeScale(1);
+                    btn.setText('1x');
+                }
+            })
     }
 
     #showGameOver(titleText, subtitleText) {
@@ -122,5 +144,16 @@ class HudScene extends Phaser.Scene {
         // solution 1: create new 'gameOverScene', so we can pause the hudScene
         // solution 2: on gameOver event, set a flag to disable or destroy the buttons
         //this.scene.pause();
+    }
+
+    #setTimeScale(multiplier = 1) {
+        this.game.scene.scenes.forEach((scene) => {
+            scene.time.timeScale = multiplier;
+            scene.tweens.timeScale = 1 / multiplier;  // cancel out the time scale for tweens
+        });
+    }
+
+    #getTimeScale() {
+        return this.time.timeScale;
     }
 }

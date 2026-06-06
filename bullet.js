@@ -37,6 +37,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
 
     preUpdate(time, delta) {
         //if (!this.active) return;
+        delta = delta * this.scene.time.timeScale;  // TODO check if this works
 
         const targetX = this.#target.pixelX;
         const targetY = this.#target.pixelY;

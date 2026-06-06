@@ -59,6 +59,7 @@ class Structure extends Phaser.GameObjects.GameObject {
     produceHook() { }
 
     preUpdate(time, delta) {
+        delta = delta * this.scene.time.timeScale;  // TODO check if this works
         this.prodTimeAccumulator += delta;
         if (this.prodTimeAccumulator >= this.config.productionRateMs) {
             this.prodTimeAccumulator -= this.config.productionRateMs;

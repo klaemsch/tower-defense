@@ -24,6 +24,7 @@ class PowerPlant extends Structure {
     }
 
     produceHook(time, delta) {
+        delta = delta * this.scene.time.timeScale;  // TODO check if this works
         const cfg = this.config;
         this.convert(
             cfg.productionCostResourceRegistryKey,

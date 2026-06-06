@@ -54,6 +54,7 @@ class WoodShop extends Structure {
     }
 
     produceHook(time, delta) {
+        delta = delta * this.scene.time.timeScale;  // TODO check if this works
         this.produce(globalConfig.resources.wood.registryKey, globalConfig.resources.wood.label, this.#productionAmount);
     }
 

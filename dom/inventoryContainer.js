@@ -48,7 +48,6 @@ class InventoryContainer extends Phaser.GameObjects.Container {
     }
 
     #addItemButton(item, index) {
-        console.log(item)
         const itemConfig = item.config;
         const itemQuantity = item.quantity;
 

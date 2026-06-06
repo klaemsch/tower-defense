@@ -46,6 +46,7 @@ function addProductionMultiplier() {
     addToInventory('productionMultiplier');
 }
 
+// TODO: why does this sometmies not work for all enemies, but only for some?
 function kill() {
     console.log('killing all enemies');
     const game = window.__game;
