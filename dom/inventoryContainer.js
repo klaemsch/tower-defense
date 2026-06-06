@@ -43,19 +43,21 @@ class InventoryContainer extends Phaser.GameObjects.Container {
     // ── Private helpers ───────────────────────────────────────────────
 
     #createButtons() {
-        Object.values(globalConfig.items)
-            .filter(config => this.#inventoryManager.hasItem(config))  // filter for only unlocked
-            .forEach((config, i) => this.#addItemButton(config, i));
+        this.#inventoryManager.getItems()
+            .forEach((item, i) => this.#addItemButton(item, i));
     }
 
-    #addItemButton(itemConfig, index) {
+    #addItemButton(item, index) {
+        console.log(item)
+        const itemConfig = item.config;
+        const itemQuantity = item.quantity;
 
         // calculate button coordinates (x,y)
         const x = InventoryContainer.#PADDING_X;
         const y = InventoryContainer.#PADDING_Y
             + index * (InventoryContainer.#BUTTON_HEIGHT + InventoryContainer.#BUTTON_GAP);
 
-        const btn = new InventoryButton(this.scene, x, y, itemConfig);
+        const btn = new InventoryButton(this.scene, x, y, itemConfig, itemQuantity);
 
         // if the button is pressed it sends an event -> handle this event
         btn.on(globalConfig.eventKeys.inventoryButtonPressed, (itemConfig, sender) =>

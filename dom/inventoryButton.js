@@ -26,8 +26,9 @@ class InventoryButton extends Phaser.GameObjects.Container {
      * @param {number}       x        - Top-left x (container-local)
      * @param {number}       y        - Top-left y (container-local)
      * @param {string}       itemConfig
+     * @param {number}       itemQuantity
      */
-    constructor(scene, x, y, itemConfig) {
+    constructor(scene, x, y, itemConfig, itemQuantity) {
         super(scene, x, y);
 
         this.#rect = scene.add
@@ -39,10 +40,10 @@ class InventoryButton extends Phaser.GameObjects.Container {
         this.#drawBorder();
 
         let labelText = '';
-        if (itemConfig.inventoryQuantity === Infinity) {
+        if (itemQuantity === Infinity) {
             labelText += '∞';
         } else {
-            labelText += itemConfig.inventoryQuantity;
+            labelText += itemQuantity;
         }
 
         if (itemConfig.inventoryIcon) {

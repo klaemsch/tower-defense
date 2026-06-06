@@ -48,10 +48,12 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
             // get drop
             const drop = globalConfig.resources.getRandomDrop();
-            console.log('an enemy died and randomly dropped', drop.amount, drop.resource.label);
+            if (drop) {
+                console.log('an enemy died and randomly dropped', drop.amount, drop.resource.label);
 
-            // do FX
-            this.#spawnDropFx(drop.resource.label, drop.amount);
+                // do FX
+                this.#spawnDropFx(drop.resource.label, drop.amount);
+            }
 
             // emit death event and hand over drop
             this.scene.game.events.emit(globalConfig.eventKeys.enemyDestroyed, drop);

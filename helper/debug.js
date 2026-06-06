@@ -21,6 +21,13 @@ function getConfigFromItemName(itemName) {
     return config;
 }
 
+function printInventory() {
+    const game = window.__game;
+    const inventoryManager = game.registry.get(globalConfig.registryKeys.inventoryManager);
+
+    return inventoryManager.getItems();
+}
+
 function addToInventory(itemName) {
     const game = window.__game;
     const inventoryManager = game.registry.get(globalConfig.registryKeys.inventoryManager);

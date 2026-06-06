@@ -47,8 +47,8 @@ const globalConfig = {
          * - cost: amount of the resource that is needed to build this item
          * 
          * If the item can be placed, set this:
-         * - inventoryLabel:    visual label for the inventory
-         * - inventoryQuantity: number of times the item can be placed
+         * - inventoryLabel:            visual label for the inventory
+         * - initInventoryQuantity:     initial quantity of this item in inventory
          * 
          * If the item is moveable, set this:
          * - moveable: true
@@ -75,7 +75,7 @@ const globalConfig = {
             cost: 5,
             inventoryIcon: '🏪',
             inventoryLabel: 'Wood Shop',
-            inventoryQuantity: Infinity,
+            initInventoryQuantity: Infinity,
             moveable: true,
 
             radiusInTiles: 1,
@@ -96,7 +96,7 @@ const globalConfig = {
             cost: 10,
             inventoryIcon: '🗼',
             inventoryLabel: 'Tower',
-            inventoryQuantity: Infinity,
+            initInventoryQuantity: Infinity,
             moveable: true,
 
             fireRateMs: 1000,
@@ -119,7 +119,7 @@ const globalConfig = {
             cost: 10,
             inventoryIcon: '🔨',
             inventoryLabel: 'Hammer',
-            inventoryQuantity: Infinity,
+            initInventoryQuantity: Infinity,
             moveable: true,
 
             fireRateMs: 1000,
@@ -142,7 +142,7 @@ const globalConfig = {
             cost: 10,
             inventoryIcon: '🗼',
             inventoryLabel: 'Sniper',
-            inventoryQuantity: Infinity,
+            initInventoryQuantity: Infinity,
             moveable: true,
 
             fireRateMs: 3000,
@@ -165,7 +165,7 @@ const globalConfig = {
             cost: 5,
             inventoryIcon: '🏭',
             inventoryLabel: 'Power Plant',
-            inventoryQuantity: Infinity,
+            initInventoryQuantity: Infinity,
             moveable: true,
 
             productionRateMs: 1000,
@@ -182,13 +182,13 @@ const globalConfig = {
             internalType: 'productionMultiplier',
             multiplier: 2,
             inventoryLabel: 'Prod. Mult. x2',
-            inventoryQuantity: 1,
+            initInventoryQuantity: 1,
         },
         freeze: {
             itemType: ItemType.Upgrade,
             internalType: 'freeze',
             inventoryLabel: 'Freeze',
-            inventoryQuantity: 1,
+            initInventoryQuantity: 1,
             effectTimeInMs: 1000,
         },
     },
@@ -201,25 +201,25 @@ const globalConfig = {
             registryKey: 'token',
             label: '🪙',
             initialValue: 5,
-            enemyDropChance: 0.1,
+            enemyDropChance: 0.01,
         },
         wood: {
             registryKey: 'wood',
             label: '🪵',
             initialValue: 5,
-            enemyDropChance: 0.6,
+            enemyDropChance: 0.06,
         },
         villager: {
             registryKey: 'villager',
             label: '🧑‍🤝‍🧑',
             initialValue: 5,
-            enemyDropChance: 0.1,
+            enemyDropChance: 0.01,
         },
         energy: {
             registryKey: 'energy',
             label: '⚡',
             initialValue: 0,
-            enemyDropChance: 0.2,
+            enemyDropChance: 0.02,
         },
         // TODO: maybe move this to the enemyConfig, to make different drop distributions per enemy type
         getRandomDrop: () => {
@@ -235,10 +235,8 @@ const globalConfig = {
                 if (roll < cumulative) return { resource, amount };
             }
 
-            // Fallback in case chances don't sum to exactly 1 due to floating point
-            console.warn("resource config drop chances don't sum up to 1");
-            const resource = pool[pool.length - 1];
-            return { resource, amount };
+            // in case roll is higher than cumulative drop chances, drop nothing
+            return null;
         }
     },
     flow: [

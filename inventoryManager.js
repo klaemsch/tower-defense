@@ -1,7 +1,12 @@
 class InventoryManager {
 
     static #DEFAULT_STATE = {
-        items: globalConfig.world.itemsAtStart.map((itemString) => globalConfig.items[itemString]),
+        items: new Map(
+            globalConfig.world.itemsAtStart.map((itemString) => {
+                const config = globalConfig.items[itemString];
+                return [config.internalType, { config, quantity: config.initInventoryQuantity ?? 0 }];
+            })
+        )
     };
 
     #gameScene;
@@ -15,34 +20,42 @@ class InventoryManager {
     }
 
     addItem(itemConfig) {
-        this.#state.items.push(itemConfig);
+        console.log('addItem in InventoryManager', itemConfig);
+
+        // copy itemConfig
+        const itemConfigCopy = { ...itemConfig };
+
+        // check if item already exists
+        const item = this.getItem(itemConfig);
+
+        if (!item) this.#setItemMap(itemConfigCopy);    // new Item -> set item with quantity 1
+        else item.quantity += 1;                        // existing Item -> increment quantity by 1
+
         this.#commit();
     }
 
     removeItem(itemConfig) {
         if (!this.hasItem(itemConfig)) return;
-        this.#state.items = this.#state.items.filter((i) => i != itemConfig);
+        this.#state.items.delete(itemConfig.internalType);
         this.#commit();
     }
 
     hasItem(itemConfig) {
-        return this.#state.items.indexOf(itemConfig) != -1;
+        return this.#state.items.has(itemConfig.internalType);
     }
 
     getItem(itemConfig) {
-        const index = this.#state.items.indexOf(itemConfig);
-        if (index == -1) return;
-        return this.#state.items[index];
+        return this.#state.items.get(itemConfig.internalType);
     }
 
     getItems() {
-        return this.#state.items;
+        return [...this.#state.items.values()];
     }
 
     canUseItem(itemConfig) {
         console.log('canUseItem')
         const item = this.getItem(itemConfig);
-        if (!item || item.inventoryQuantity <= 0) {
+        if (!item || item.quantity <= 0) {
             console.log('cant use this item, it does not exist in the inventory ', itemConfig);
             return false;
         }
@@ -53,17 +66,20 @@ class InventoryManager {
         console.log('useItem')
         if (!this.canUseItem(itemConfig)) return false;
         const item = this.getItem(itemConfig);
-        if (item.inventoryQuantity !== Infinity) {
-            item.inventoryQuantity -= 1;
-            if (item.inventoryQuantity === 0) this.removeItem(itemConfig);
+        if (item.quantity !== Infinity) {
+            item.quantity -= 1;
+            if (item.quantity === 0) this.removeItem(itemConfig);
+            this.#commit();  // commit only in case of non infinity
         }
         return true;
     }
 
     reset() {
+        // TODO: structuredClone would be better, but does not work with functions
         //this.#state = structuredClone(InventoryManager.#DEFAULT_STATE);
         this.#state = InventoryManager.#DEFAULT_STATE;
         this.#commit();
+        //console.log('state', this.#state);
     }
 
     // ── Private ───────────────────────────────────────────────────────
@@ -79,9 +95,10 @@ class InventoryManager {
 
         // TODO: maybe move resource stuff into its own resourceManager / resourceInventoryManager
         // TODO: move this into its own function #initOnEnemyDestroyedHandler() or something
-        
+
         // on enemy destroy, choose a random drop from config and add it to resources
         this.#gameScene.game.events.on(globalConfig.eventKeys.enemyDestroyed, (drop) => {
+            if (!drop) return;
             console.log('enemyDestroyed event recieved drop', drop.amount, drop.resource.label);
             this.#gameScene.registry.inc(drop.resource.registryKey, 1);
         });
@@ -94,5 +111,13 @@ class InventoryManager {
      */
     #commit() {
         this.#gameScene.game.events.emit(globalConfig.eventKeys.inventoryChanged);
+    }
+
+    // helper, that always sets the item map in the same way / keeps the structure
+    #setItemMap(config, quantity = 1) {
+        this.#state.items.set(config.internalType, {
+            config: config,
+            quantity: quantity,
+        })
     }
 }
