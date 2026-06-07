@@ -7,8 +7,6 @@ class WoodShop extends Structure {
 
         this.#radius = structureConfig.radiusInTiles;
 
-        // every preUpdate call the delta since the last update gets added to harvestAccumulator
-        // if it falls below the harvestRateMs threshold -> harvest 
         this.#recalculateProductionAmount();
     }
 
@@ -53,8 +51,7 @@ class WoodShop extends Structure {
         this.#recalculateProductionAmount();
     }
 
-    produceHook(time, delta) {
-        delta = delta * this.scene.time.timeScale;  // TODO check if this works
+    produceHook(_time, _delta) {
         this.produce(globalConfig.resources.wood.registryKey, globalConfig.resources.wood.label, this.#productionAmount);
     }
 

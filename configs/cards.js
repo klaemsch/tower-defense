@@ -25,6 +25,14 @@ const cards = [
         itemConfig: globalConfig.items.hammer,
     },
     {
+        title: 'Habitat',
+        description: 'Produces Villagers',
+        color: 0x818cf8,
+        costResourceRegistryKey: globalConfig.resources.token.registryKey,
+        cost: 5,
+        itemConfig: globalConfig.items.habitat,
+    },
+    {
         title: '+Production',
         description: 'Production\nMultiplier\nx2',
         color: 0x818cf8,

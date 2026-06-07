@@ -1,4 +1,4 @@
-class PowerPlant extends Structure {
+class Habitat extends Structure {
 
     constructor(scene, col, row, structureConfig) {
         super(scene, col, row, structureConfig);
@@ -19,14 +19,7 @@ class PowerPlant extends Structure {
     }
 
     produceHook(_time, _delta) {
-        const cfg = this.config;
-        this.convert(
-            cfg.productionCostResourceRegistryKey,
-            cfg.baseCostPerRate,
-            globalConfig.resources.energy.registryKey,
-            this.calculateProductionAmount(),
-            globalConfig.resources.energy.label
-        )
+        this.produce(globalConfig.resources.villager.registryKey, globalConfig.resources.villager.label, 1);
     }
 
     destroy(fromScene) {
@@ -35,8 +28,8 @@ class PowerPlant extends Structure {
 }
 
 Phaser.GameObjects.GameObjectFactory.register(
-    'powerPlant',
+    'habitat',
     function (col, row) {
-        return Structure.create(this.scene, col, row, globalConfig.items.powerPlant, PowerPlant);
+        return Structure.create(this.scene, col, row, globalConfig.items.habitat, Habitat);
     }
 );

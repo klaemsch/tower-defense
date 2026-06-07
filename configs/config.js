@@ -29,6 +29,7 @@ const globalConfig = {
             'powerPlant',
             'productionMultiplier',
             'freeze',
+            'habitat',
         ],
     },
     texts: {
@@ -181,6 +182,25 @@ const globalConfig = {
 
             createPreview: (scene, cfg) => Structure.createPreview(scene, cfg),
             create: (scene, col, row) => scene.add.powerPlant(col, row),
+        },
+        habitat: {
+            itemType: ItemType.Structure,
+            internalType: 'habitat',
+            health: 60,
+            color: '#1a1a2e',
+            label: '🏠',
+            sizeInTiles: 1,
+            costResourceRegistryKey: 'wood',
+            cost: 5,
+            inventoryIcon: '🏠',
+            inventoryLabel: 'Habitat',
+            initInventoryQuantity: Infinity,
+            moveable: true,
+
+            productionRateMs: 1000,
+
+            createPreview: (scene, cfg) => Structure.createPreview(scene, cfg),
+            create: (scene, col, row) => scene.add.habitat(col, row),
         },
         productionMultiplier: {
             itemType: ItemType.Upgrade,
