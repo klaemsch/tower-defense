@@ -67,29 +67,9 @@ class Structure extends Phaser.GameObjects.GameObject {
         }
     }
 
-    // TODO: this is used in enemy.js as well for drop fx, maybe put into common helper function?
     #spawnProduceFx(label, amount) {
-        const tileSize = globalConfig.world.tileSize;
-        const x = this.col * tileSize + tileSize / 2;
-        const y = this.row * tileSize;
         const labelText = `${label} +${amount}`;
-
-        const labelElement = this.scene.add.text(x, y, labelText, {
-            fontSize: globalStyles.text.sizes.medium,
-            fontStyle: 'bold',
-            color: globalStyles.text.colors.base,
-            //stroke: '#000000',
-            //strokeThickness: 3,
-        }).setOrigin(0.5, 1).setDepth(globalStyles.depthMap.structureProductionFx).setAlpha(1);
-
-        this.scene.tweens.add({
-            targets: labelElement,
-            y: y - 40,
-            alpha: 0,
-            duration: 1200,
-            ease: 'Cubic.Out',
-            onComplete: () => labelElement.destroy(),
-        });
+        helper.spawnRisingFxAtGrid(this.scene, this.col, this.row, labelText, globalStyles.animations.produceFxDuration);
     }
 
     // starts a wiggle animation and changes color

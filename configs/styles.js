@@ -45,5 +45,8 @@ const globalStyles = {
         gameOverText: 51,
         shopBackgroundBlur: 50,
         shopText: 51,
+    },
+    animations: {
+        produceFxDuration: 1200,
     }
 }
