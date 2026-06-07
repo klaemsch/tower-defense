@@ -5,15 +5,15 @@
  */
 class InventoryButton extends Phaser.GameObjects.Container {
     // ── Layout / theme (shared across all instances) ──────────────────
-    static #WIDTH = 120;
-    static #HEIGHT = 36;
+    static #WIDTH = globalStyles.buttons.small.width + 20;  // TODO: maybe create a new config styles entry for this?
+    static #HEIGHT = globalStyles.buttons.small.height;
     static #FILL_IDLE = 0x16213e;
     static #FILL_HOVER = 0x1a3a5c;
     static #FILL_ACTIVE = 0x1d3557;
     static #BORDER_IDLE = 0x457b9d;
     static #BORDER_ACTIVE = 0xa8dadc;
-    static #TEXT_IDLE = '#a8dadc';
-    static #TEXT_ACTIVE = '#ffffff';
+    static #TEXT_IDLE = globalStyles.text.colors.base;
+    static #TEXT_ACTIVE = globalStyles.text.colors.highlight;
 
     // ── Instance fields ───────────────────────────────────────────────
     #rect;
@@ -56,7 +56,7 @@ class InventoryButton extends Phaser.GameObjects.Container {
             InventoryButton.#WIDTH / 2,
             InventoryButton.#HEIGHT / 2,
             labelText,
-            { fontSize: '11px', color: InventoryButton.#TEXT_IDLE, fontStyle: 'bold' }
+            { fontSize: globalStyles.text.sizes.small, color: InventoryButton.#TEXT_IDLE, fontStyle: 'bold' }
         ).setOrigin(0.5);
 
         this.add([this.#rect, this.#borderGfx, this.#label]);

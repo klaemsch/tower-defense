@@ -25,39 +25,38 @@ class ShopScene extends Phaser.Scene {
         const cardY = H / 2 - 20;
 
         // ── Overlay with opacity to "blur" the game in the background ────────
-        this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(globalConfig.depthMap.shopBackgroundBlur);
+        this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.75).setDepth(globalStyles.depthMap.shopBackgroundBlur);
 
         // ── Title ────────────────────────────────────────────────────────────
-        this.add.text(W / 2, 72, globalConfig.shop.title, {
-            fontSize: '32px',
-            color: '#ffffff',
+        this.add.text(W / 2, 90, globalConfig.shop.title, {
+            fontSize: globalStyles.text.sizes.title,
+            color: globalStyles.text.colors.highlight,
             fontStyle: 'bold',
-            stroke: '#000000',
-            strokeThickness: 3,
-        }).setOrigin(0.5).setDepth(globalConfig.depthMap.shopText);
+            //stroke: '#000000',
+            //strokeThickness: 3,
+        }).setOrigin(0.5).setDepth(globalStyles.depthMap.shopText);
 
         // ── Subtitle ──────────────────────────────────────────────────────────
-        this.add.text(W / 2, 116, globalConfig.shop.subtitle, {
-            fontSize: '16px',
-            color: '#7ecfc2',
-        }).setOrigin(0.5).setDepth(globalConfig.depthMap.shopText);
+        this.add.text(W / 2, 144, globalConfig.shop.subtitle, {
+            fontSize: globalStyles.text.sizes.large,
+            color: globalStyles.colors.cardDescription,
+            fontStyle: 'bold',
+        }).setOrigin(0.5).setDepth(globalStyles.depthMap.shopText);
 
         this.#createCards();
 
-        const buttonWidth = 160;
-        const buttonHeight = 44;
         const btnY = cardY + this.#cardHeight / 2 + 40;
 
         const rerollResourceConfig = globalConfig.resources[globalConfig.shop.reroll.costResourceRegistryKey];
         const rerollButtonText = `🎲 Reroll (${globalConfig.shop.reroll.cost} ${rerollResourceConfig.label})`;
 
         new RoundedButton(this, W / 2 - 100, btnY, rerollButtonText, {
-            width: buttonWidth, 
-            height: buttonHeight,
+            width: globalStyles.buttons.medium.width,
+            height: globalStyles.buttons.medium.height,
             radius: 10,
-            fontSize: '18px',
+            fontSize: globalStyles.text.sizes.medium,
         })
-            .setDepth(globalConfig.depthMap.shopText)
+            .setDepth(globalStyles.depthMap.shopText)
             .on('pointerdown', () => {
                 console.log('reroll');
                 if (this.registry.get(globalConfig.shop.reroll.costResourceRegistryKey) >= globalConfig.shop.reroll.cost) {
@@ -69,12 +68,12 @@ class ShopScene extends Phaser.Scene {
             });
 
         new RoundedButton(this, W / 2 + 100, btnY, 'Continue  →', {
-            width: buttonWidth, 
-            height: buttonHeight,
+            width: globalStyles.buttons.medium.width,
+            height: globalStyles.buttons.medium.height,
             radius: 10,
-            fontSize: '18px',
+            fontSize: globalStyles.text.sizes.medium,
         })
-            .setDepth(globalConfig.depthMap.shopText)
+            .setDepth(globalStyles.depthMap.shopText)
             .on('pointerdown', () => {
                 this.#closeShop();
             });
@@ -118,7 +117,7 @@ class ShopScene extends Phaser.Scene {
             }
 
             // create card and attach the resulting container element to the config for later usage
-            const cardElement = new Card(this, cx, cardY, cardConfig).setDepth(globalConfig.depthMap.shopText);
+            const cardElement = new Card(this, cx, cardY, cardConfig).setDepth(globalStyles.depthMap.shopText);
 
             this.#cardMap.set(cardConfig, cardElement);
         };

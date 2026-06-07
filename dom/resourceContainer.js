@@ -26,7 +26,7 @@ class ResourceContainer extends Phaser.GameObjects.Container {
         });
 
         // set depth of container
-        this.setDepth(globalConfig.depthMap.resourceContainer);
+        this.setDepth(globalStyles.depthMap.resourceContainer);
 
         scene.add.existing(this);
     }
@@ -35,10 +35,10 @@ class ResourceContainer extends Phaser.GameObjects.Container {
         const initValue = this.#hudScene.registry.get(registryKey);
 
         const textElement = this.#hudScene.add.text(x, y, `${label} ${initValue}`, {
-            fontSize: '13px',
-            color: '#a8dadc',
+            fontSize: globalStyles.text.sizes.medium,
+            color: globalStyles.text.colors.base,
             fontStyle: 'bold',
-            backgroundColor: '#00000066',
+            backgroundColor: globalStyles.colors.resourceBackground,
             padding: { x: 6, y: 3 },
         })
 

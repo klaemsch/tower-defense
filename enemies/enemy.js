@@ -35,7 +35,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#isStunned = false; // target can move and attack
 
         this.#gfx = scene.add.graphics();
-        this.#pathGfx = scene.add.graphics().setDepth(globalConfig.depthMap.enemyPath);
+        this.#pathGfx = scene.add.graphics().setDepth(globalStyles.depthMap.enemyPath);
 
         scene.sys.updateList.add(this);
 
@@ -269,12 +269,12 @@ class Enemy extends Phaser.GameObjects.GameObject {
         const labelText = `${label} +${amount}`;
 
         const labelElement = this.scene.add.text(x, y, labelText, {
-            fontSize: '14px',
+            fontSize: globalStyles.text.sizes.medium,
             fontStyle: 'bold',
-            color: '#a8dadc',
+            color: globalStyles.text.colors.base,
             //stroke: '#000000',
             //strokeThickness: 3,
-        }).setOrigin(0.5, 1).setDepth(globalConfig.depthMap.structureProductionFx).setAlpha(1);
+        }).setOrigin(0.5, 1).setDepth(globalStyles.depthMap.structureProductionFx).setAlpha(1);
 
         this.scene.tweens.add({
             targets: labelElement,

@@ -57,8 +57,8 @@ class ProgressBar extends Phaser.GameObjects.Container {
         this.add(leftCircle);
 
         this.add(scene.add.text(circleRadius, cy, leftIcon, {
-            fontSize: '14px',
-            color: '#a8dadc',
+            fontSize: globalStyles.text.sizes.medium,
+            color: globalStyles.text.colors.base,
         }).setOrigin(0.5));
 
         // ── Right circle ──────────────────────────────────────────────────────
@@ -67,8 +67,8 @@ class ProgressBar extends Phaser.GameObjects.Container {
         this.add(rightCircle);
 
         this.add(scene.add.text(W - circleRadius, cy, rightIcon, {
-            fontSize: '14px',
-            color: '#a8dadc',
+            fontSize: globalStyles.text.sizes.medium,
+            color: globalStyles.text.colors.base,
         }).setOrigin(0.5));
 
         this._drawFill(progress);

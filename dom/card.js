@@ -46,8 +46,8 @@ class Card extends Phaser.GameObjects.Container {
 
             this.add(
                 scene.add.text(0, top, 'Popular', {
-                    fontSize: '11px',
-                    color: '#e6f4fb',
+                    fontSize: globalStyles.text.sizes.small,
+                    color: globalStyles.colors.popularBadge,
                 }).setOrigin(0.5, 0.5)
             );
         }
@@ -55,8 +55,8 @@ class Card extends Phaser.GameObjects.Container {
         // ── Card title ────────────────────────────────────────────────────────
         this.add(
             scene.add.text(0, top + 28, data.title, {
-                fontSize: '15px',
-                color: '#ffffff',
+                fontSize: globalStyles.text.sizes.medium,
+                color: globalStyles.text.colors.highlight,
                 fontStyle: 'bold',
             }).setOrigin(0.5)
         );
@@ -76,8 +76,8 @@ class Card extends Phaser.GameObjects.Container {
         // ── Description ───────────────────────────────────────────────────────
         this.add(
             scene.add.text(0, top + CH - 62, data.description, {
-                fontSize: '12px',
-                color: '#8fa8c4',
+                fontSize: '12px',  // TODO: replace via styles.js
+                color: globalStyles.colors.cardDescription,
                 align: 'center',
                 lineSpacing: 4,
             }).setOrigin(0.5)
@@ -89,8 +89,8 @@ class Card extends Phaser.GameObjects.Container {
             new RoundedButton(scene, 0, top + CH - 22, btnText, {
                 width: CW - 24,
                 height: 28, 
-                fontSize: '13px',
-                textColor: '#a8dadc',
+                fontSize: '13px', // TODO: replace via styles.js
+                textColor: globalStyles.text.colors.base,
             }).on('pointerdown', () => {
                 this.#buttonCallback();
             })

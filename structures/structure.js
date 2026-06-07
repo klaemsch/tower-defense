@@ -75,12 +75,12 @@ class Structure extends Phaser.GameObjects.GameObject {
         const labelText = `${label} +${amount}`;
 
         const labelElement = this.scene.add.text(x, y, labelText, {
-            fontSize: '14px',
+            fontSize: globalStyles.text.sizes.medium,
             fontStyle: 'bold',
-            color: '#a8dadc',
+            color: globalStyles.text.colors.base,
             //stroke: '#000000',
             //strokeThickness: 3,
-        }).setOrigin(0.5, 1).setDepth(globalConfig.depthMap.structureProductionFx).setAlpha(1);
+        }).setOrigin(0.5, 1).setDepth(globalStyles.depthMap.structureProductionFx).setAlpha(1);
 
         this.scene.tweens.add({
             targets: labelElement,
@@ -221,12 +221,16 @@ class Structure extends Phaser.GameObjects.GameObject {
 
         // label
         const labelElement = scene.add.text(0, -10, structureConfig.label, {
-            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
+            fontSize: globalStyles.text.sizes.small,
+            color: globalStyles.text.colors.highlight,
+            fontStyle: 'bold'
         }).setOrigin(0.5);
 
         // health
         const healthElement = scene.add.text(0, 10, structureConfig.health, {
-            fontSize: '11px', color: '#ffffff', fontStyle: 'bold'
+            fontSize: globalStyles.text.sizes.small,
+            color: globalStyles.text.colors.highlight,
+            fontStyle: 'bold'
         }).setOrigin(0.5);
 
         return { bgRect, labelElement, healthElement };
@@ -237,7 +241,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         const tileSize = globalConfig.world.tileSize;
         const radius = structureConfig.radiusInTiles;
 
-        const radiusGfx = scene.add.graphics().setDepth(globalConfig.depthMap.structureRadius);
+        const radiusGfx = scene.add.graphics().setDepth(globalStyles.depthMap.structureRadius);
 
         if (structureConfig.radiusType == RadiusType.Rectangular) {
             radiusGfx.lineStyle(1, 0xa8dadc, 0.25);
@@ -270,7 +274,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         radiusGfx.setVisible(true);
 
         const container = scene.add.container(0, 0, [bgRect, labelElement, healthElement, radiusGfx])
-            .setDepth(globalConfig.depthMap.hoverGrid)
+            .setDepth(globalStyles.depthMap.hoverGrid)
             .setAlpha(0.45);
 
         // move this preview to another cell

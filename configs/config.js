@@ -312,24 +312,6 @@ const globalConfig = {
             costResourceRegistryKey: 'token',
         },
     },
-    depthMap: {
-        // TODO: apparently depth is dependent on scenes, so not comparable between scenes
-        // scenes that are launched later, are put on top of the previous
-        // 1. Normal Game
-        structureRadius: 0,
-        enemyPath: 1,
-        hoverGrid: 5,
-        bullet: 8,
-        structureProductionFx: 10,
-        // 2. HUD
-        resourceContainer: 111,
-        progressBar: 15,
-        // 3. Shop and Game Over (MutEx)
-        gameOverRect: 50,
-        gameOverText: 51,
-        shopBackgroundBlur: 50,
-        shopText: 51,
-    }
 }
 
 const phaserConfig = {

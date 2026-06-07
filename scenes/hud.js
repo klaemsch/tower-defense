@@ -30,7 +30,7 @@ class HudScene extends Phaser.Scene {
         this.#progressBar = new ProgressBar(this, {
             leftIcon: '▶',
             rightIcon: '⚑',
-        }).setDepth(globalConfig.depthMap.progressBar);
+        }).setDepth(globalStyles.depthMap.progressBar);
     }
 
     update(time, delta) {
@@ -60,18 +60,14 @@ class HudScene extends Phaser.Scene {
         const pauseLabel = '⏸️ Pause';
         const resumeLabel = '▶️ Resume';
 
-        const x = 8;
+        const x = 58;
         const y = 3 * globalConfig.world.tileSize;
-        const WIDTH = 100;
-        const HEIGHT = 36;
 
         const pauseResumeState = this.registry.get(globalConfig.registryKeys.pauseResumeState);
 
-        const btn = new RoundedButton(this, x + WIDTH / 2, y, pauseResumeState ? resumeLabel : pauseLabel, {
-            width: WIDTH,
-            height: HEIGHT,
-            fontSize: '13px',
-            textColor: '#a8dadc',
+        const btn = new RoundedButton(this, x, y, pauseResumeState ? resumeLabel : pauseLabel, {
+            fontSize: globalStyles.text.sizes.medium,
+            textColor: globalStyles.text.colors.base,
         })
             .on('pointerdown', () => {
                 this.#gameFlowManager.togglePauseWave();
@@ -88,13 +84,12 @@ class HudScene extends Phaser.Scene {
     }
 
     #createTimeScaleToggle() {
-        const x = 8;
-        const WIDTH = 100;
+        const x = 58;
         const y = 4 * globalConfig.world.tileSize;
 
-        const btn = new RoundedButton(this, x + WIDTH / 2, y, '1x', {
-            fontSize: '13px',
-            textColor: '#a8dadc',
+        const btn = new RoundedButton(this, x, y, '1x', {
+            fontSize: globalStyles.text.sizes.medium,
+            textColor: globalStyles.text.colors.base,
         })
             .on('pointerdown', () => {
                 if (this.#getTimeScale() === 1) {
@@ -117,22 +112,24 @@ class HudScene extends Phaser.Scene {
 
         console.log('game over triggered');
 
-        this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(globalConfig.depthMap.gameOverRect);
+        this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(globalStyles.depthMap.gameOverRect);
 
         this.add.text(cx, cy - 30, titleText, {
-            fontSize: '48px', color: '#e63946', fontStyle: 'bold',
-            stroke: '#000000', strokeThickness: 6,
-        }).setOrigin(0.5).setDepth(globalConfig.depthMap.gameOverText);
+            fontSize: globalStyles.text.sizes.title, color: globalStyles.text.colors.warning, fontStyle: 'bold',
+            //stroke: '#000000', strokeThickness: 6,
+        }).setOrigin(0.5).setDepth(globalStyles.depthMap.gameOverText);
 
         this.add.text(cx, cy + 24, subtitleText, {
-            fontSize: '18px', color: '#ffffff',
-        }).setOrigin(0.5).setDepth(globalConfig.depthMap.gameOverText);
+            fontSize: globalStyles.text.sizes.large, color: globalStyles.text.colors.highlight,
+        }).setOrigin(0.5).setDepth(globalStyles.depthMap.gameOverText);
 
         new RoundedButton(this, cx, cy + 70, 'Restart Game', {
-            fontSize: '13px',
-            textColor: '#a8dadc',
+            width: globalStyles.buttons.medium.width,
+            height: globalStyles.buttons.medium.height,
+            fontSize: globalStyles.text.sizes.medium,
+            textColor: globalStyles.text.colors.base,
         })
-            .setDepth(globalConfig.depthMap.gameOverText)
+            .setDepth(globalStyles.depthMap.gameOverText)
             .on('pointerdown', () => {
                 console.log('restart button pressed');
                 location.reload();

@@ -5,9 +5,9 @@ class InventoryContainer extends Phaser.GameObjects.Container {
     #buttons = [];
 
     static #PADDING_X = 8;
-    static #PADDING_Y = 8;
+    static #PADDING_Y = 30;
     static #BUTTON_GAP = 6;
-    static #BUTTON_HEIGHT = 36;
+    static #BUTTON_HEIGHT = globalStyles.buttons.small.height;
 
     /**
      * @param {Phaser.Scene} scene
@@ -18,6 +18,8 @@ class InventoryContainer extends Phaser.GameObjects.Container {
         super(scene, cx, cy);
         this.#placer = scene.registry.get(globalConfig.registryKeys.placer);
         this.#inventoryManager = scene.registry.get(globalConfig.registryKeys.inventoryManager);
+
+        this.#createHeadingText();
 
         // create buttons for inventory slots
         this.#createButtons();
@@ -41,6 +43,17 @@ class InventoryContainer extends Phaser.GameObjects.Container {
     }
 
     // ── Private helpers ───────────────────────────────────────────────
+
+    #createHeadingText() {
+        this.add(
+            this.scene.add.text(
+                68,
+                20,
+                'Inventory',
+                { fontSize: globalStyles.text.sizes.small, color: globalStyles.text.colors.base, fontStyle: 'bold' }
+            ).setOrigin(0.5)
+        );
+    }
 
     #createButtons() {
         this.#inventoryManager.getItems()
