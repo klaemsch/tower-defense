@@ -215,6 +215,8 @@ const globalConfig = {
             inventoryLabel: 'Freeze',
             initInventoryQuantity: 1,
             effectTimeInMs: 1000,
+            effectChance: 1,
+            fxLabel: '🧊',
         },
     },
     bullet: {

@@ -7,7 +7,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
     #trailPositions;
     #gfx;
 
-    constructor(scene, origin, target, speed, damage, onArrive = (target) => { }) {
+    constructor(scene, origin, target, speed, damage, onArrive = (target, damage) => { }) {
         super(scene, 'bullet');
 
         this.x = origin.pixelX;
@@ -108,7 +108,7 @@ class Bullet extends Phaser.GameObjects.GameObject {
 
     #arrive() {
         //console.log('#arrive()', this.onArrive);
-        this.onArrive(this.#target);
+        this.onArrive(this.#target, this.#damage);
         //console.log('bullet arrived, health:', this.#target.health)
         const destroyed = this.#target.doDamage(this.#damage);
         //console.log('bullet arrived, health:', this.#target.health, destroyed)

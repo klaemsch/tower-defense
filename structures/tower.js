@@ -50,8 +50,10 @@ class Tower extends Structure {
 
         // if there is, change the onArrive to stun
         if (freezeUpgrade) {
-            this.#onBulletArriveFunc = (t) => {
-                if (t && !t.isDestroyed) t.stun(freezeUpgrade.effectTimeInMs);
+            this.#onBulletArriveFunc = (t, dmg) => {
+                if (t && !t.isDestroyed) {
+                    if (Math.random() < freezeUpgrade.effectChance) t.stun(freezeUpgrade.effectTimeInMs, dmg);
+                }
             }
         } else {
             this.#onBulletArriveFunc = undefined;

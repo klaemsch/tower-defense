@@ -36,6 +36,7 @@ const globalStyles = {
         hoverGrid: 5,
         bullet: 8,
         structureProductionFx: 10,
+        risingFx: 10,
         // 2. HUD
         resourceContainer: 111,
         progressBar: 15,

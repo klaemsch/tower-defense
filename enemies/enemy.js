@@ -94,10 +94,16 @@ class Enemy extends Phaser.GameObjects.GameObject {
         return false;
     }
 
-    // stun/freeze this enemy, it cant move or attack for 'timeInMs'
-    stun(timeInMs) {
+    // stun this enemy, it cant move or attack for 'timeInMs'
+    stun(timeInMs, bulletDamage) {
+        // check if bullet damage would kill this enemy, if so no stun
+        if (this.#config.health - bulletDamage <= 0) {
+            return;
+        }
+
         //console.log('enemy stunned for', timeInMs, 'ms');
         this.#isStunned = true;
+        this.#spawnStunFx();
 
         // cancel existing stun timer if already stunned
         if (this.#stunTimer) {
@@ -263,27 +269,13 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     // TODO: this is used in structure.js as well for produce fx, maybe put into common helper function?
     #spawnDropFx(label, amount) {
-        const tileSize = globalConfig.world.tileSize;
-        const x = this.gridX * tileSize + tileSize / 2;
-        const y = this.gridY * tileSize;
         const labelText = `${label} +${amount}`;
+        helper.spawnRisingFxAtGrid(this.scene, this.gridX, this.gridY, labelText, this.#config.dropFxDuration);
+    }
 
-        const labelElement = this.scene.add.text(x, y, labelText, {
-            fontSize: globalStyles.text.sizes.medium,
-            fontStyle: 'bold',
-            color: globalStyles.text.colors.base,
-            //stroke: '#000000',
-            //strokeThickness: 3,
-        }).setOrigin(0.5, 1).setDepth(globalStyles.depthMap.structureProductionFx).setAlpha(1);
-
-        this.scene.tweens.add({
-            targets: labelElement,
-            y: y - 40,
-            alpha: 0,
-            duration: this.#config.dropFxDuration,
-            ease: 'Cubic.Out',
-            onComplete: () => labelElement.destroy(),
-        });
+    #spawnStunFx() {
+        const labelText = globalConfig.items.freeze.fxLabel;
+        helper.spawnRisingFxAtGrid(this.scene, this.gridX, this.gridY, labelText, this.#config.dropFxDuration);
     }
 }
 
