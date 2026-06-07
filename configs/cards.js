@@ -1,7 +1,7 @@
 const cards = [
     {
         title: 'Sniper',
-        description: 'Tower with increased\nrange and damage\nbut decreased speed.',
+        description: 'Tower with increased range and damage but decreased speed.',
         color: 0xfacc15,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
@@ -18,7 +18,7 @@ const cards = [
     },
     {
         title: 'Hammer',
-        description: 'Melee Tower\nAttacks enemies in\nclose range.',
+        description: 'Melee Tower, attacks enemies in close range.',
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
@@ -34,7 +34,7 @@ const cards = [
     },
     {
         title: '+Production',
-        description: 'Production\nMultiplier\nx2',
+        description: 'Production Multiplier x2',
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
@@ -42,7 +42,7 @@ const cards = [
     },
     {
         title: '+Freeze',
-        description: 'Tower has a\nchance to freeze\nenemies',
+        description: 'Tower has a chance to freeze enemies',
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
@@ -51,7 +51,7 @@ const cards = [
     // TODO: below are dummies, remove
     {
         title: 'A',
-        description: 'Tower has a\nchance to freeze\nenemies',
+        description: 'Tower has a chance to freeze enemies',
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
@@ -59,7 +59,7 @@ const cards = [
     },
     {
         title: 'B',
-        description: 'Tower has a\nchance to freeze\nenemies',
+        description: 'Tower has a chance to freeze enemies',
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
@@ -67,7 +67,7 @@ const cards = [
     },
     {
         title: 'C',
-        description: 'Tower has a\nchance to freeze\nenemies',
+        description: 'Tower has a chance to freeze enemies',
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,
@@ -75,7 +75,7 @@ const cards = [
     },
     {
         title: 'D',
-        description: 'Tower has a\nchance to freeze\nenemies',
+        description: 'Tower has a chance to freeze enemies',
         color: 0x818cf8,
         costResourceRegistryKey: globalConfig.resources.token.registryKey,
         cost: 5,

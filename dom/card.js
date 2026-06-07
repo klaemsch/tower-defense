@@ -80,6 +80,7 @@ class Card extends Phaser.GameObjects.Container {
                 color: globalStyles.colors.cardDescription,
                 align: 'center',
                 lineSpacing: 4,
+                wordWrap: { width: CW }
             }).setOrigin(0.5)
         );
 
