@@ -10,6 +10,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     #isStunned;
     #stunTimer = null;
 
+    #image;
     #gfx;
     #pathGfx;
 
@@ -34,12 +35,16 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#attackTimer = 0;
         this.#isStunned = false; // target can move and attack
 
+        this.#image = scene.add.image(0, 0, eConfig.imageKey);
+        // scale image according to tileSize (image.height should be 48px)
+        this.#image.scale = globalConfig.world.tileSize / this.#image.height;
+
         this.#gfx = scene.add.graphics();
         this.#pathGfx = scene.add.graphics().setDepth(globalStyles.depthMap.enemyPath);
 
         scene.sys.updateList.add(this);
 
-        this.#drawPath();
+        if (globalConfig.debug) this.#drawPath();
         this.#draw();
 
         // trigger destroy event for other scenes to check status
@@ -124,6 +129,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     destroy(fromScene) {
         //console.log(this.scene)
+        this.#image.destroy();
         this.#pathGfx.destroy();
         this.#gfx.destroy();
         super.destroy(fromScene);
@@ -206,7 +212,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         if (newPath) {
             this.#path = newPath;
             this.#pathIdx = 0;
-            this.#drawPath();
+            if (globalConfig.debug) this.#drawPath();
         }
     }
 
@@ -226,7 +232,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#pathIdx = 0;
         this.#attacking = false;
         this.#attackTimer = 0;
-        this.#drawPath();
+        if (globalConfig.debug) this.#drawPath();
     }
 
     // ── Target selection ──────────────────────────────────────────────────────
@@ -245,8 +251,19 @@ class Enemy extends Phaser.GameObjects.GameObject {
     // ── Drawing ───────────────────────────────────────────────────────────────
 
     #draw() {
-        this.#gfx.clear();
-        this.#config.draw(this.#gfx, this.pixelX, this.pixelY, this.#config, this.#attacking);
+        //this.#gfx.clear();
+        //this.#config.draw(this.#gfx, this.pixelX, this.pixelY, this.#config, this.#attacking);
+        this.#image.x = this.pixelX;
+        this.#image.y = this.pixelY;
+
+        // get next waypoint
+        const waypoint = this.#path[this.#pathIdx];
+        if (!waypoint) return;
+
+        const { x, y } = helper.gridToWorld(waypoint.col, waypoint.row);
+
+        const angle = Phaser.Math.Angle.Between(this.pixelX, this.pixelY, x, y);
+        this.#image.setRotation(angle - Math.PI / 2); // +90° since sprite faces "down"
     }
 
     #drawPath() {

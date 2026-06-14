@@ -19,9 +19,8 @@ class EnemyManager {
         // so if we want the event to happen X times we need to set repeat to X-1
         repeat = Math.floor(repeat) - 1
 
-        console.log('start spawning with rate', rate);
-        console.log('start spawning', repeat, 'enemies');
-        this.enemies = this.#scene.add.group();
+        console.log('start spawning', repeat, 'enemies with rate', rate);
+        this.enemies.clear(true, true);
         this.spawnTimer = this.#scene.time.addEvent({
             delay: rate,
             callback: this.#spawn,
@@ -42,7 +41,7 @@ class EnemyManager {
         // TODO: maybe reuse via reset() or something?
         this.spawnTimer.remove();
         this.spawnTimer = null;
-        this.enemies = scene.add.group(); // TODO: i dont know if thats good, the old group will become inaccessable
+        this.enemies.clear(true, true);
     }
 
     /** Returns the closest active enemy within maxRange pixels, or null. */
@@ -57,16 +56,6 @@ class EnemyManager {
             if (dist <= maxRange && dist <= colestDistance) { colestDistance = dist; closestEnemy = enemy; }
         }
 
-        /*this.scene.enemyManager.enemies.forEach((enemy) => {
-            if (enemy.type !== 'enemy') return;
-            const dx = enemy.pixelX - this.pixelX;
-            const dy = enemy.pixelY - this.pixelY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= this.radius && dist < closestDistance) {
-                closestDistance = dist;
-                closestEnemy = enemy;
-            }
-        });*/
         return closestEnemy;
     }
 

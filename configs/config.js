@@ -28,6 +28,10 @@ const imageConfig = {
 
     productionMultiplier: 'assets/upgrades/upgrade_production_48x48.png',
     freeze: 'assets/upgrades/upgrade_freeze_48x48.png',
+
+    fighterEnemy: 'assets/enemies/enemy_fighter_48x48.png',
+    bulkyEnemy: 'assets/enemies/enemy_bulky_48x48.png',
+    hammerheadEnemy: 'assets/enemies/enemy_hammerhead_48x48.png',
 }
 
 const globalConfig = {

@@ -125,8 +125,6 @@ class GameFlowManager {
     }
 
     #startNextStep() {
-        console.log('start next steps');
-        console.log(this.#flowData);
 
         if (this.hasWon()) {
             console.log('last wave survived');
@@ -142,13 +140,14 @@ class GameFlowManager {
             this.#flowIndex++;
             this.#startNextStep();
         } else {
+            console.log('start next steps', this.#flowData);
             // use this step
             currentStep.started = true;
 
             switch (currentStep.type) {
                 case 'wave':
                     // Start spawning enemies via enemyManager
-                    console.log('GameFlowManager starts spawning enemies');
+                    //console.log('GameFlowManager starts spawning enemies');
                     this.#enemyManager.startSpawning(currentStep.spawnRate, currentStep.lengthInSeconds / (currentStep.spawnRate / 1000));
                     break;
                 case 'peace':

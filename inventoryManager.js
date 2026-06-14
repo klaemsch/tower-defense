@@ -15,7 +15,7 @@ class InventoryManager {
             .filter((item) => item.internalType !== 'hq')
             .map((item) => {
                 const config = globalConfig.items[item.internalType];
-                return [config.internalType, { config, quantity: config.initInventoryQuantity ?? 0 }];
+                return [config.internalType, { config, quantity: Infinity }];
             })
         )
     };

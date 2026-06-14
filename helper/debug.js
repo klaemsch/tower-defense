@@ -56,9 +56,13 @@ function kill() {
     console.log('killing all enemies');
     const game = window.__game;
     const enemyManager = game.registry.get(globalConfig.registryKeys.enemyManager);
-    enemyManager.enemies.getChildren().forEach((enemy) => {
-        enemy.destroy();
-    })
+
+    // clear enemy group (destroy and remove from scene)
+    enemyManager.enemies.clear(true, true);
+    
+    // after resetting the enemy group, we need to send out the enemy destroyed event
+    // resetting the group from outside messes with the normal check logic of "enemies remaining"
+    game.events.emit(globalConfig.eventKeys.enemyDestroyed, null);
 }
 
 startGame();
