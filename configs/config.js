@@ -13,6 +13,16 @@ const FlowType = {
     Wave: 'wave',
 }
 
+const imageConfig = {
+    // key: path
+    hammer: 'assets/hammer/hammer_top_48x48.png',
+    hq: 'assets/hq/hq_top_48x48.png',
+    powerPlant: 'assets/powerplant/powerplant_top_48x48.png',
+    sniper: 'assets/sniper/sniper_top_48x48.png',
+    tower: 'assets/tower/tower_futuristic_top_48x48.png',
+    temp: 'assets/temp.png',
+}
+
 const globalConfig = {
     debug: true,
     world: {
@@ -44,6 +54,7 @@ const globalConfig = {
          * - itemType:      type to distinguish structures, upgrades ...
          * - internalType:  Phaser uses this internally to name the GameObjects
          * - health
+         * - imageKey:      key of image defined in imageConfig
          * - color:         visual color of the underlying rectangle
          * - label:         visual label that gets printed on the rectangle
          * - sizeInTiles:   size of item in tiles
@@ -66,6 +77,7 @@ const globalConfig = {
             itemType: ItemType.Structure,
             internalType: 'hq',
             health: 200,
+            imageKey: 'hq',
             color: 0x888888,
             label: 'HQ',
             sizeInTiles: 1,
@@ -95,6 +107,7 @@ const globalConfig = {
             itemType: ItemType.Structure,
             internalType: 'tower',
             health: 100,
+            imageKey: 'tower',
             color: 0xFF0000,
             label: 'T',
             sizeInTiles: 1,
@@ -118,6 +131,7 @@ const globalConfig = {
             itemType: ItemType.Structure,
             internalType: 'hammer',
             health: 100,
+            imageKey: 'hammer',
             color: 0xFF0000,
             label: 'H',
             sizeInTiles: 1,
@@ -141,6 +155,7 @@ const globalConfig = {
             itemType: ItemType.Structure,
             internalType: 'sniper',
             health: 100,
+            imageKey: 'sniper',
             color: 0xFF0000,
             label: 'S',
             sizeInTiles: 1,
@@ -164,6 +179,7 @@ const globalConfig = {
             itemType: ItemType.Structure,
             internalType: 'powerPlant',
             health: 60,
+            imageKey: 'powerPlant',
             color: '#1a1a2e',
             label: '🏭',
             sizeInTiles: 1,

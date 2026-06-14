@@ -5,6 +5,7 @@ class Structure extends Phaser.GameObjects.GameObject {
 
     #container;
     #bgRect;
+    image;
     #labelElement;
     #healthElement;
     #radiusGfx;
@@ -26,10 +27,10 @@ class Structure extends Phaser.GameObjects.GameObject {
 
         // create visuals and if configured the radius visuals
         const visuals = Structure.buildVisuals(this.scene, structureConfig);
-        this.#bgRect = visuals.bgRect, this.#labelElement = visuals.labelElement, this.#healthElement = visuals.healthElement;
+        this.#bgRect = visuals.bgRect, this.image = visuals.image, this.#labelElement = visuals.labelElement, this.#healthElement = visuals.healthElement;
 
         this.#container = this.scene.add.container(this.pixelX, this.pixelY);
-        this.#container.add([this.#bgRect, this.#labelElement, this.#healthElement]);
+        this.#container.add([this.#bgRect, this.image, this.#labelElement, this.#healthElement]);
         if (this.config.radiusInTiles > 0) {
             this.#radiusGfx = Structure.buildRadiusVisuals(this.scene, structureConfig);
             this.#container.add([this.#radiusGfx]);
@@ -196,8 +197,14 @@ class Structure extends Phaser.GameObjects.GameObject {
     // static function that creates structure visuals and returns them
     static buildVisuals(scene, structureConfig) {
         const bgRectSize = structureConfig.sizeInTiles * globalConfig.world.tileSize;
+
         // background graphics
         const bgRect = scene.add.rectangle(0, 0, bgRectSize, bgRectSize, structureConfig.color);
+        bgRect.setVisible(false);  // TODO
+
+        // if imageKey not given in config use temp
+        const imageKey = structureConfig.imageKey ? structureConfig.imageKey : 'temp';
+        const image = scene.add.image(0, 0, imageKey);
 
         // label
         const labelElement = scene.add.text(0, -10, structureConfig.label, {
@@ -205,6 +212,7 @@ class Structure extends Phaser.GameObjects.GameObject {
             color: globalStyles.text.colors.highlight,
             fontStyle: 'bold'
         }).setOrigin(0.5);
+        labelElement.setVisible(false);  // TODO
 
         // health
         const healthElement = scene.add.text(0, 10, structureConfig.health, {
@@ -213,7 +221,7 @@ class Structure extends Phaser.GameObjects.GameObject {
             fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        return { bgRect, labelElement, healthElement };
+        return { bgRect, image, labelElement, healthElement };
     }
 
     // static function that creates radius visuals and returns them
@@ -249,11 +257,11 @@ class Structure extends Phaser.GameObjects.GameObject {
         const { tileSize } = globalConfig.world;
         const half = tileSize / 2;
 
-        const { bgRect, labelElement, healthElement } = Structure.buildVisuals(scene, structureConfig);
+        const { bgRect, image, labelElement, healthElement } = Structure.buildVisuals(scene, structureConfig);
         const radiusGfx = Structure.buildRadiusVisuals(scene, structureConfig);
         radiusGfx.setVisible(true);
 
-        const container = scene.add.container(0, 0, [bgRect, labelElement, healthElement, radiusGfx])
+        const container = scene.add.container(0, 0, [bgRect, image, labelElement, healthElement, radiusGfx])
             .setDepth(globalStyles.depthMap.hoverGrid)
             .setAlpha(0.45);
 

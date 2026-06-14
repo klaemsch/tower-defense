@@ -4,7 +4,14 @@ class GameScene extends Phaser.Scene {
         super(globalConfig.sceneKeys.game);
     }
 
-    preload() { }
+    preload() {
+        // load all images from config
+        Object.entries(imageConfig).forEach((entry) => {
+            const iamgeKey = entry[0];
+            const imagePath = entry[1];
+            this.load.image(iamgeKey, imagePath);
+        })
+    }
 
     create() {
         // register event listeners

@@ -29,6 +29,11 @@ class Tower extends Structure {
             const target = this.#findClosestEnemyFunc();
             if (target) {
 
+                // calculate angle between this and target
+                const angle = Phaser.Math.Angle.Between(this.pixelX, this.pixelY, target.pixelX, target.pixelY);
+                // Sprite's "forward" is north (-90°), so offset by 90°
+                this.image.setRotation(angle + Math.PI / 2);
+
                 // create a bullet with target, speed, damage and onArrive
                 this.scene.add.bullet(
                     this, target,

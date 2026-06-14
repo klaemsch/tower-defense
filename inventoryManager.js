@@ -55,8 +55,9 @@ class InventoryManager {
     canUseItem(itemConfig) {
         //console.log('canUseItem')
         const item = this.getItem(itemConfig);
-        if (!item || item.quantity <= 0) {
-            console.log('cant use this item, it does not exist in the inventory ', itemConfig);
+        const currentResourceCount = this.#gameScene.registry.get(item.config.costResourceRegistryKey);
+        if (!item || item.quantity <= 0 || currentResourceCount < item.config.cost) {
+            console.log('cant use this item, it does not exist in the inventory or is too expensive', itemConfig);
             return false;
         }
         return true;
