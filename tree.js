@@ -27,12 +27,13 @@ class Tree extends Phaser.GameObjects.GameObject {
     }
 
     #draw() {
-        this.#gfx.clear();
+        const image = this.scene.add.image(this.pixelX, this.pixelY, 'tree');
+        //this.#gfx.clear();
 
         // Main filled triangle
-        var triangle = Phaser.Geom.Triangle.BuildEquilateral(this.pixelX, this.pixelY - this.size / 2 + 3, this.size);
-        this.#gfx.fillStyle(this.color, 1);
-        this.#gfx.fillTriangleShape(triangle);
+        //var triangle = Phaser.Geom.Triangle.BuildEquilateral(this.pixelX, this.pixelY - this.size / 2 + 3, this.size);
+        //this.#gfx.fillStyle(this.color, 1);
+        //this.#gfx.fillTriangleShape(triangle);
     }
 
     destroy(fromScene) {

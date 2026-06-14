@@ -15,6 +15,8 @@ const FlowType = {
 
 const imageConfig = {
     // key: path
+    tree: 'assets/asteroid_48x48.png',
+
     habitat: 'assets/habitat/habitat_top_48x48.png',
     hammer: 'assets/hammer/hammer_top_48x48.png',
     hq: 'assets/hq/hq_top_48x48.png',
