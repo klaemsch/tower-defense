@@ -199,8 +199,10 @@ class Structure extends Phaser.GameObjects.GameObject {
         const bgRectSize = structureConfig.sizeInTiles * globalConfig.world.tileSize;
 
         // background graphics
+        // TODO: maybe remove the config here and always set it to red as an alarm signal when hovering over
+        // tiles whrere the structure cant be placed
         const bgRect = scene.add.rectangle(0, 0, bgRectSize, bgRectSize, structureConfig.color);
-        bgRect.setVisible(false);  // TODO
+        bgRect.setAlpha(0);
 
         // if imageKey not given in config use temp
         const imageKey = structureConfig.imageKey ? structureConfig.imageKey : 'temp';
@@ -264,7 +266,7 @@ class Structure extends Phaser.GameObjects.GameObject {
         const radiusGfx = Structure.buildRadiusVisuals(scene, structureConfig);
         radiusGfx.setVisible(true);
 
-        const container = scene.add.container(0, 0, [bgRect, image, labelElement, healthElement, radiusGfx])
+        const container = scene.add.container(0, 0, [image, bgRect, labelElement, healthElement, radiusGfx])
             .setDepth(globalStyles.depthMap.hoverGrid)
             .setAlpha(0.45);
 
@@ -276,12 +278,14 @@ class Structure extends Phaser.GameObjects.GameObject {
 
         // set new color to the background rectangle
         const setTint = (color) => {
-            bgRect.setFillStyle(color);
+            //bgRect.setFillStyle(color);
+            bgRect.setAlpha(1);
         };
 
         // clear previously set color back to original color for the background rectangle
         const clearTint = () => {
-            bgRect.setFillStyle(structureConfig.color);
+            //bgRect.setFillStyle(structureConfig.color);
+            bgRect.setAlpha(0);
         };
 
         const destroy = () => container.destroy(true);

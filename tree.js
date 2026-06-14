@@ -1,3 +1,5 @@
+// TODO: put into structure subclass and rename into asteroid
+// move stuff into config
 class Tree extends Phaser.GameObjects.GameObject {
     #gfx;
 
