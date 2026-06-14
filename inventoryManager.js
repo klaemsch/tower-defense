@@ -9,6 +9,17 @@ class InventoryManager {
         )
     };
 
+    static #DEFAULT_DEBUG_STATE = {
+        items: new Map(
+            Object.values(globalConfig.items)
+            .filter((item) => item.internalType !== 'hq')
+            .map((item) => {
+                const config = globalConfig.items[item.internalType];
+                return [config.internalType, { config, quantity: config.initInventoryQuantity ?? 0 }];
+            })
+        )
+    };
+
     #gameScene;
     #state;
 
@@ -78,7 +89,12 @@ class InventoryManager {
     reset() {
         // TODO: structuredClone would be better, but does not work with functions
         //this.#state = structuredClone(InventoryManager.#DEFAULT_STATE);
-        this.#state = InventoryManager.#DEFAULT_STATE;
+        if (globalConfig.debug) {
+            this.#state = InventoryManager.#DEFAULT_DEBUG_STATE;
+        } else {
+            this.#state = InventoryManager.#DEFAULT_STATE;
+        }
+
         this.#commit();
         //console.log('state', this.#state);
     }

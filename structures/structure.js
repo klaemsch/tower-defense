@@ -206,6 +206,9 @@ class Structure extends Phaser.GameObjects.GameObject {
         const imageKey = structureConfig.imageKey ? structureConfig.imageKey : 'temp';
         const image = scene.add.image(0, 0, imageKey);
 
+        // scale image according to tileSize (image.height should be 48px)
+        image.scale = globalConfig.world.tileSize / image.height;
+
         // label
         const labelElement = scene.add.text(0, -10, structureConfig.label, {
             fontSize: globalStyles.text.sizes.small,

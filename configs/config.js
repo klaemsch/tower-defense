@@ -15,12 +15,14 @@ const FlowType = {
 
 const imageConfig = {
     // key: path
+    habitat: 'assets/habitat/habitat_top_48x48.png',
     hammer: 'assets/hammer/hammer_top_48x48.png',
     hq: 'assets/hq/hq_top_48x48.png',
     powerPlant: 'assets/powerplant/powerplant_top_48x48.png',
     sniper: 'assets/sniper/sniper_top_48x48.png',
     tower: 'assets/tower/tower_futuristic_top_48x48.png',
     temp: 'assets/temp.png',
+    woodShop: 'assets/woodshop/woodshop_top_48x48.png',
 }
 
 const globalConfig = {
@@ -86,6 +88,7 @@ const globalConfig = {
             itemType: ItemType.Structure,
             internalType: 'woodShop',
             health: 60,
+            imageKey: 'woodShop',
             color: '#1a1a2e',
             label: '🏪',
             sizeInTiles: 1,
@@ -93,7 +96,7 @@ const globalConfig = {
             cost: 5,
             inventoryIcon: '🏪',
             inventoryLabel: 'Wood Shop',
-            initInventoryQuantity: Infinity,
+            initInventoryQuantity: 1,
             moveable: true,
 
             radiusInTiles: 1,
@@ -115,7 +118,7 @@ const globalConfig = {
             cost: 10,
             inventoryIcon: '🗼',
             inventoryLabel: 'Tower',
-            initInventoryQuantity: Infinity,
+            initInventoryQuantity: 1,
             moveable: true,
 
             fireRateMs: 1000,
@@ -139,7 +142,7 @@ const globalConfig = {
             cost: 10,
             inventoryIcon: '🔨',
             inventoryLabel: 'Hammer',
-            initInventoryQuantity: Infinity,
+            initInventoryQuantity: 1,
             moveable: true,
 
             fireRateMs: 1000,
@@ -163,7 +166,7 @@ const globalConfig = {
             cost: 10,
             inventoryIcon: '🗼',
             inventoryLabel: 'Sniper',
-            initInventoryQuantity: Infinity,
+            initInventoryQuantity: 1,
             moveable: true,
 
             fireRateMs: 3000,
@@ -187,7 +190,7 @@ const globalConfig = {
             cost: 5,
             inventoryIcon: '🏭',
             inventoryLabel: 'Power Plant',
-            initInventoryQuantity: Infinity,
+            initInventoryQuantity: 1,
             moveable: true,
 
             productionRateMs: 1000,
@@ -203,6 +206,7 @@ const globalConfig = {
             itemType: ItemType.Structure,
             internalType: 'habitat',
             health: 60,
+            imageKey: 'habitat',
             color: '#1a1a2e',
             label: '🏠',
             sizeInTiles: 1,
@@ -210,7 +214,7 @@ const globalConfig = {
             cost: 5,
             inventoryIcon: '🏠',
             inventoryLabel: 'Habitat',
-            initInventoryQuantity: Infinity,
+            initInventoryQuantity: 1,
             moveable: true,
 
             productionRateMs: 1000,
@@ -231,7 +235,7 @@ const globalConfig = {
             inventoryLabel: 'Freeze',
             initInventoryQuantity: 1,
             effectTimeInMs: 1000,
-            effectChance: 1,
+            effectChance: 0.3,
             fxLabel: '🧊',
         },
     },
