@@ -69,9 +69,13 @@ class Card extends Phaser.GameObjects.Container {
         this.add(imgBgGfx);
 
         const iconSize = IS * 0.55;
-        const iconGfx = scene.add.graphics();
-        this._drawRoundedRect(iconGfx, -iconSize / 2, imgY - iconSize / 2, iconSize, iconSize, 6, data.color, 0.85, null, 0);
-        this.add(iconGfx);
+
+        const imageKey = data.itemConfig.imageKey ? data.itemConfig.imageKey : 'temp';
+        const image = scene.add.image(-IS / 2, imgY - IS / 2, imageKey);
+        image.setOrigin(-0.25)
+        //const iconGfx = scene.add.graphics();
+        //this._drawRoundedRect(iconGfx, -iconSize / 2, imgY - iconSize / 2, iconSize, iconSize, 6, data.color, 0.85, null, 0);
+        this.add(image);
 
         // ── Description ───────────────────────────────────────────────────────
         this.add(

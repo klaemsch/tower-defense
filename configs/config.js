@@ -23,6 +23,9 @@ const imageConfig = {
     tower: 'assets/tower/tower_futuristic_top_48x48.png',
     temp: 'assets/temp.png',
     woodShop: 'assets/woodshop/woodshop_top_48x48.png',
+
+    productionMultiplier: 'assets/upgrades/upgrade_production_48x48.png',
+    freeze: 'assets/upgrades/upgrade_freeze_48x48.png',
 }
 
 const globalConfig = {
@@ -225,6 +228,7 @@ const globalConfig = {
         productionMultiplier: {
             itemType: ItemType.Upgrade,
             internalType: 'productionMultiplier',
+            imageKey: 'productionMultiplier',
             multiplier: 2,
             inventoryLabel: 'Prod. Mult. x2',
             initInventoryQuantity: 2,
@@ -232,6 +236,7 @@ const globalConfig = {
         freeze: {
             itemType: ItemType.Upgrade,
             internalType: 'freeze',
+            imageKey: 'freeze',
             inventoryLabel: 'Freeze',
             initInventoryQuantity: 1,
             effectTimeInMs: 1000,
