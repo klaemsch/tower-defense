@@ -8,14 +8,9 @@ const enemyConfig = {
         color: 0xe63946,
         sizeRatio: 0.5,   // size relative to tileSize, evaluated at draw time
         health: 30,
+        radiusInTiles: 2,
+        radiusType: RadiusType.Circular,
         dropFxDuration: 2000,
-        /*draw: (gfx, px, py, eConfig, attacking) => {
-            const s = (globalConfig.world.tileSize * eConfig.sizeRatio) / 2;
-
-            gfx.fillStyle(attacking ? 0xff8800 : eConfig.color, 1);
-            gfx.fillTriangle(px, py - s, px - s, py, px + s, py); // top half
-            gfx.fillTriangle(px - s, py, px + s, py, px, py + s); // bottom half
-        },*/
         spawnChance: 0.9,
     },
     bigEnemy: {
@@ -27,21 +22,9 @@ const enemyConfig = {
         color: 0x0000FF,//0xe63946,
         sizeRatio: 0.9,   // size relative to tileSize, evaluated at draw time
         health: 120,
-        /*draw: (gfx, px, py, eConfig, attacking) => {
-            const s = (globalConfig.world.tileSize * eConfig.sizeRatio) / 2;
-
-            // outer square, rotated 45°
-            gfx.fillStyle(attacking ? 0xff8800 : eConfig.color, 1);
-            gfx.fillTriangle(px, py - s, px + s, py, px, py);
-            gfx.fillTriangle(px + s, py, px, py + s, px, py);
-            gfx.fillTriangle(px, py + s, px - s, py, px, py);
-            gfx.fillTriangle(px - s, py, px, py - s, px, py);
-
-            // inner square, axis-aligned
-            const inner = s * 0.45;
-            gfx.fillStyle(0xffffff, 0.2);
-            gfx.fillRect(px - inner, py - inner, inner * 2, inner * 2);
-        },*/
+        radiusInTiles: 1,
+        radiusType: RadiusType.Rectangular,
+        dropFxDuration: 2000,
         spawnChance: 0.1,
     },
     getRandom: () => {

@@ -29,3 +29,11 @@ helper.spawnRisingFxAtGrid = (scene, gridX, gridY, fxText, duration) => {
     const y = gridY * tileSize;
     return helper.spawnRisingFx(scene, x, y, fxText, duration);
 }
+
+// calculates distance in pixels between to objects
+// both have to have their coordinates in pixelX, pixelY
+helper.distanceInPixels = (fromObject, toObject) => {
+    const dx = fromObject.pixelX - toObject.pixelX;
+    const dy = fromObject.pixelY - toObject.pixelY;
+    return Math.sqrt(dx * dx + dy * dy);
+}

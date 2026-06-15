@@ -1,3 +1,8 @@
+function toggleDebug() {
+    globalConfig.debug = !globalConfig.debug;
+    return `debug mode ${globalConfig.debug}`;
+}
+
 function addWood(amount = 100) {
     window.__game.registry.inc(globalConfig.resources.wood.registryKey, amount);
     return `Added ${amount} wood to resources`;

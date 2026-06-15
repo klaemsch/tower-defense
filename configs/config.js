@@ -35,7 +35,7 @@ const imageConfig = {
 }
 
 const globalConfig = {
-    debug: true,
+    debug: String(location).includes('127.0.0.1'),
     world: {
         tileSize: 40,
         numCols: 30,  // 800 / 40

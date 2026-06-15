@@ -143,8 +143,9 @@ class Enemy extends Phaser.GameObjects.GameObject {
             return;
         }
 
-        // Path exhausted → reached attack position
-        if (this.#pathIdx >= this.#path.length) {
+        // Path exhausted or target in range → reached attack position
+        if (this.#pathIdx >= this.#path.length || this.#targetInRange()) {
+            //console.log(`target in range? ${this.#targetInRange()}`)
             this.#attacking = true;
             this.#attackTimer = 0;
             return;
@@ -187,11 +188,12 @@ class Enemy extends Phaser.GameObjects.GameObject {
         if (this.#attackTimer >= this.#config.attackRate) {
             this.#attackTimer -= this.#config.attackRate;
             // apply damage to target, if destroyed -> retarget
-            const destroyed = this.#target.doDamage(this.#config.damage);
+            /*const destroyed = this.#target.doDamage(this.#config.damage);
             if (destroyed) {
                 this.#attacking = false;
                 this.#retarget();
-            }
+            }*/
+            this.scene.add.bullet(this, this.#target, 400, this.#config.damage);
         }
     }
 
@@ -244,8 +246,14 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     // returns true if this.#target is in range
     #targetInRange() {
-        return helper.adjacentCells(this.gridX, this.gridY)
-            .some(cell => cell.col === this.#target.col && cell.row === this.#target.row);
+        if (this.#config.radiusType === RadiusType.Rectangular) {
+            const dx = Math.abs(this.gridX - this.#target.col);
+            const dy = Math.abs(this.gridY - this.#target.row);
+            return dx <= this.#config.radiusInTiles && dy <= this.#config.radiusInTiles;
+        } else if (this.#config.radiusType === RadiusType.Circular) {
+            const radiusInPixels = this.#config.radiusInTiles * globalConfig.world.tileSize;
+            return helper.distanceInPixels(this, this.#target) <= radiusInPixels;
+        }
     }
 
     // ── Drawing ───────────────────────────────────────────────────────────────
