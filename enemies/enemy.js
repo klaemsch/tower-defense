@@ -193,7 +193,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
                 this.#attacking = false;
                 this.#retarget();
             }*/
-            this.scene.add.bullet(this, this.#target, 400, this.#config.damage);
+            this.scene.add.bullet(this, this.#target, this.#config.bulletConfig);
         }
     }
 

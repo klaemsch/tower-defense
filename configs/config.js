@@ -34,6 +34,13 @@ const imageConfig = {
     hammerheadEnemy: 'assets/enemies/enemy_hammerhead_48x48.png',
 }
 
+const defaultBulletConfig = {
+    speed: 400,         // speed of the bullets
+    damage: 10,         // damage of the bullets
+    color: 0x0000ff,    // color of the bullets 
+    size: 2,            // size of the bullets
+}
+
 const globalConfig = {
     debug: String(location).includes('127.0.0.1'),
     world: {
@@ -83,6 +90,12 @@ const globalConfig = {
          * 
          * If the item produces resources, set this:
          * - productionRateMs: delay between resource production in ms
+         * 
+         * If the item fires bullets, set this:
+         * - fireRateMs         delay between bullet shots in ms
+         * - radiusInTiles      radius in which enemies will be attacked
+         * - radiusType         type of radius (circular or rectangular)
+         * - bulletConfig       configs of bullets (see default config above)
          */
         hq: {
             itemType: ItemType.Structure,
@@ -135,8 +148,7 @@ const globalConfig = {
             fireRateMs: 1000,
             radiusInTiles: 3,
             radiusType: RadiusType.Circular,
-            bulletSpeed: 400,
-            bulletDamage: 10,
+            bulletConfig: defaultBulletConfig,
 
             createPreview: (scene, cfg) => Tower.createPreview(scene, cfg),
             create: (scene, col, row) => scene.add.tower(col, row, globalConfig.items.tower),
@@ -160,8 +172,12 @@ const globalConfig = {
             fireRateMs: 1000,
             radiusInTiles: 1,
             radiusType: RadiusType.Rectangular,
-            bulletSpeed: 400,
-            bulletDamage: 20,
+            bulletConfig: {
+                speed: 400,
+                damage: 20,
+                color: 0x0000ff,
+                size: 2,
+            },
 
             createPreview: (scene, cfg) => Tower.createPreview(scene, cfg),
             create: (scene, col, row) => scene.add.tower(col, row, globalConfig.items.hammer),
@@ -185,8 +201,12 @@ const globalConfig = {
             fireRateMs: 3000,
             radiusInTiles: 6,
             radiusType: RadiusType.Circular,
-            bulletSpeed: 800,
-            bulletDamage: 20,
+            bulletConfig: {
+                speed: 800,
+                damage: 20,
+                color: 0x0000ff,
+                size: 2,
+            },
 
             createPreview: (scene, cfg) => Tower.createPreview(scene, cfg),
             create: (scene, col, row) => scene.add.tower(col, row, globalConfig.items.sniper),
@@ -255,10 +275,6 @@ const globalConfig = {
             effectChance: 0.3,
             fxLabel: '🧊',
         },
-    },
-    bullet: {
-        color: 0xf1faee,
-        size: 4,
     },
     resources: {
         token: {

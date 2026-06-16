@@ -37,8 +37,7 @@ class Tower extends Structure {
                 // create a bullet with target, speed, damage and onArrive
                 this.scene.add.bullet(
                     this, target,
-                    this.config.bulletSpeed,
-                    this.config.bulletDamage,
+                    this.config.bulletConfig,
                     this.#onBulletArriveFunc
                 );
             }
