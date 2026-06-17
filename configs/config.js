@@ -374,4 +374,7 @@ const phaserConfig = {
     width: globalConfig.world.numCols * globalConfig.world.tileSize,
     height: globalConfig.world.numRows * globalConfig.world.tileSize,
     backgroundColor: globalConfig.world.backgroundColor,
+    //renderer: Phaser.AUTO,
+    //antialias: true,
+    //multiTexture: true,
 }

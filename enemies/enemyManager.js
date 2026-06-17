@@ -69,31 +69,26 @@ class EnemyManager {
     // ── Spawn ─────────────────────────────────────────────────────────────────
 
     #spawn() {
-        console.log('SPAWN')
-        const candidates = structureStorage.getBorderCells();
-        Phaser.Utils.Array.Shuffle(candidates);
+        // TODO: work on this, its messy
+        //console.log('SPAWN')
+        const borderCell = structureStorage.getRandomBorderCell();
 
-        for (const { col, row } of candidates) {
-            if (structureStorage.isOccupied(col, row)) continue;
+        const { col, row } = borderCell;
 
-            const target = structureStorage.getNearestTarget(col, row);
-            if (!target) continue;
+        const target = structureStorage.getClosestTarget(col, row);
+        if (!target) return null;
 
-            const path = helper.findPath(col, row, target.col, target.row);
-            if (!path) continue;
+        const path = helper.findPath(col, row, target.col, target.row);
+        if (!path) return null;
 
-            // choose random enemy config
-            const eConfig = enemyConfig.getRandom();
+        // choose random enemy config
+        const eConfig = enemyConfig.getRandom();
 
-            // create enemy and add it to group
-            const enemy = this.#scene.add.enemy(col, row, path, target, eConfig);
-            this.enemies.add(enemy);
+        // create enemy and add it to group
+        const enemy = this.#scene.add.enemy(col, row, path, target, eConfig);
 
-            return enemy;
-        }
+        this.enemies.add(enemy);
 
-        console.log('No position for enemy spawn found');
-
-        return null;
+       return enemy;
     }
 }
