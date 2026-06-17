@@ -54,17 +54,22 @@ class Bullet extends Phaser.GameObjects.GameObject {
 
         const dx = targetX - this.x;
         const dy = targetY - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const squaredDist = dx * dx + dy * dy;
 
-        const dirX = dist > 0 ? dx / dist : 0;
-        const dirY = dist > 0 ? dy / dist : 0;
+        let dirX = 0, dirY = 0;
+        if (squaredDist > 0) {
+            const invDist = 1 / Math.sqrt(squaredDist);
+            dirX = dx * invDist;
+            dirY = dy * invDist;
+        }
 
         this.#angle = Math.atan2(dy, dx);
 
         const step = this.#speed * (delta / 1000);
+        const squaredStep = step * step;
 
-        // If remaining distance is less than one step, snap to arrival
-        if (dist <= step) {
+        // If remaining squared distance is less than squared step, snap to arrival
+        if (squaredDist <= squaredStep) {
             this.x = targetX;
             this.y = targetY;
             this.#arrive();
