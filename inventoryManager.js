@@ -68,7 +68,7 @@ class InventoryManager {
         const item = this.getItem(itemConfig);
         const currentResourceCount = this.#gameScene.registry.get(item.config.costResourceRegistryKey);
         if (!item || item.quantity <= 0 || currentResourceCount < item.config.cost) {
-            console.log('cant use this item, it does not exist in the inventory or is too expensive', itemConfig);
+            //console.log('cant use this item, it does not exist in the inventory or is too expensive', itemConfig);
             return false;
         }
         return true;
@@ -116,7 +116,7 @@ class InventoryManager {
         // on enemy destroy, choose a random drop from config and add it to resources
         this.#gameScene.game.events.on(globalConfig.eventKeys.enemyDestroyed, (drop) => {
             if (!drop) return;
-            console.log('enemyDestroyed event recieved drop', drop.amount, drop.resource.label);
+            //console.log('enemyDestroyed event recieved drop', drop.amount, drop.resource.label);
             this.#gameScene.registry.inc(drop.resource.registryKey, 1);
         });
     }

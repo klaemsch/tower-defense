@@ -23,7 +23,7 @@ class WoodShop extends Structure {
     // if no multiplier found, return 1
     #calculateUpgradeMultiplier() {
         let multiplier = 0;
-        console.log(this.upgrades)
+        //console.log(this.upgrades)
         this.upgrades.forEach((upgrade) => {
             if (upgrade.multiplier) {
                 multiplier += upgrade.multiplier;
@@ -35,12 +35,12 @@ class WoodShop extends Structure {
     #recalculateProductionAmount() {
         const treeCount = this.#countTreesInRadius();
         const multiplier = this.#calculateUpgradeMultiplier();
-        console.log('recalculateProductionAmount', treeCount, multiplier);
+        //console.log('recalculateProductionAmount', treeCount, multiplier);
         this.#productionAmount = treeCount * multiplier;
     }
 
     onUpgradeChange() {
-        console.log('onUpgradeChange')
+        //console.log('onUpgradeChange')
         this.#recalculateProductionAmount();
     }
 

@@ -58,7 +58,7 @@ class ShopScene extends Phaser.Scene {
         })
             .setDepth(globalStyles.depthMap.shopText)
             .on('pointerdown', () => {
-                console.log('reroll');
+                //console.log('reroll');
                 if (this.registry.get(globalConfig.shop.reroll.costResourceRegistryKey) >= globalConfig.shop.reroll.cost) {
                     this.registry.inc(globalConfig.shop.reroll.costResourceRegistryKey, -globalConfig.shop.reroll.cost);
                     this.#createCards();
@@ -137,7 +137,7 @@ class ShopScene extends Phaser.Scene {
             this.#cardMap.delete(cardConfig);
             return true;
         } else {
-            console.log('not enough funds to buy', cardConfig.title);
+            console.warn('not enough funds to buy', cardConfig.title);
             return false;
         }
 

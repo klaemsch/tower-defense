@@ -27,26 +27,26 @@ class GameFlowManager {
     // ── Public API ───────────────────────────────────────────────────────────
 
     startWave() {
-        console.log('startWave called');
+        //console.log('startWave called');
         this.#startNextStep();
     }
 
     pauseWave() {
-        console.log('pauseWave called');
+        //console.log('pauseWave called');
         this.#gameScene.scene.pause();
         this.#enemyManager.pauseSpawning();
         this.#gameScene.registry.set(globalConfig.registryKeys.pauseResumeState, true);
     }
 
     resumeWave() {
-        console.log('resumeWave called');
+        //console.log('resumeWave called');
         this.#gameScene.scene.resume();
         this.#enemyManager.resumeSpawning();
         this.#gameScene.registry.set(globalConfig.registryKeys.pauseResumeState, false);
     }
 
     togglePauseWave() {
-        console.log('togglePauseWave called');
+        //console.log('togglePauseWave called');
         if (this.#gameScene.scene.isPaused() != this.#gameScene.registry.get(globalConfig.registryKeys.pauseResumeState)) console.error('scene state and registry state mismatch!');
         if (this.#gameScene.scene.isPaused()) {
             this.resumeWave();
@@ -108,7 +108,7 @@ class GameFlowManager {
             const currentStep = this.getCurrentStep()
             this.#gameScene.registry.inc(globalConfig.resources.token.registryKey, currentStep.reward);
 
-            console.log(`wave completed, reward: ${currentStep.reward}`)
+            //console.log(`wave completed, reward: ${currentStep.reward}`)
 
             // mark current wave as done
             this.#flowData[this.#flowIndex].finished = true;
@@ -127,7 +127,7 @@ class GameFlowManager {
     #startNextStep() {
 
         if (this.hasWon()) {
-            console.log('last wave survived');
+            //console.log('last wave survived');
             this.#gameScene.game.events.emit(globalConfig.eventKeys.gameWon);
         }
 
@@ -140,7 +140,7 @@ class GameFlowManager {
             this.#flowIndex++;
             this.#startNextStep();
         } else {
-            console.log('start next steps', this.#flowData);
+            //console.log('start next steps', this.#flowData);
             // use this step
             currentStep.started = true;
 
@@ -152,7 +152,7 @@ class GameFlowManager {
                     break;
                 case 'peace':
                     // Start spawning enemies via EnemyManager
-                    console.log('GameFlowManager starts peace period timer');
+                    //console.log('GameFlowManager starts peace period timer');
                     this.#startPeacePeriodTimer(currentStep.lengthInSeconds * 1000);
                     break;
                 default:
@@ -171,7 +171,7 @@ class GameFlowManager {
     }
 
     #peacePeriodCallback() {
-        console.log('peace period ended, start next wave')
+        //console.log('peace period ended, start next wave')
         this.#startNextStep();
     }
 }

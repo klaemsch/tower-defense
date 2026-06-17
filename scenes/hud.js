@@ -46,7 +46,7 @@ class HudScene extends Phaser.Scene {
     }
 
     #registerEventListeners() {
-        console.log('hud register event listeners');
+        //console.log('hud register event listeners');
         this.game.events.on(globalConfig.eventKeys.gameOver, () => this.#showGameOver(globalConfig.texts.gameOverTitle, globalConfig.texts.gameOverSubtitle));
         this.game.events.on(globalConfig.eventKeys.gameWon, () => this.#showGameOver(globalConfig.texts.gameWonTitle, globalConfig.texts.gameWonSubtitle));
     }
@@ -110,7 +110,7 @@ class HudScene extends Phaser.Scene {
         const cx = (numCols * tileSize) / 2;
         const cy = (numRows * tileSize) / 2;
 
-        console.log('game over triggered');
+        //console.log('game over triggered');
 
         this.add.rectangle(cx, cy, numCols * tileSize, numRows * tileSize, 0x000000, 0.65).setDepth(globalStyles.depthMap.gameOverRect);
 
@@ -131,7 +131,7 @@ class HudScene extends Phaser.Scene {
         })
             .setDepth(globalStyles.depthMap.gameOverText)
             .on('pointerdown', () => {
-                console.log('restart button pressed');
+                //console.log('restart button pressed');
                 location.reload();
             })
 
@@ -144,7 +144,7 @@ class HudScene extends Phaser.Scene {
     }
 
     #setTimeScale(multiplier = 1) {
-        console.log('Set time scale to', multiplier);
+        //console.log('Set time scale to', multiplier);
         this.game.scene.scenes.forEach((scene) => {
             scene.time.timeScale = multiplier;
             scene.tweens.timeScale = 1 / multiplier;  // cancel out the time scale for tweens

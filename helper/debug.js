@@ -17,7 +17,7 @@ function getConfigFromItemName(itemName) {
     let config;
     // TODO: combining them here seems unnecessary, maybe combine them in config?
     Object.values(globalConfig.items).forEach((structureConfig) => {
-        console.log(structureConfig.internalType)
+        //console.log(structureConfig.internalType)
         if (structureConfig.internalType === itemName) {
             config = structureConfig;
             return;
@@ -56,9 +56,7 @@ function gameOver() {
     game.events.emit(globalConfig.eventKeys.gameOver);
 }
 
-// TODO: why does this sometmies not work for all enemies, but only for some?
 function kill() {
-    console.log('killing all enemies');
     const game = window.__game;
     const enemyManager = game.registry.get(globalConfig.registryKeys.enemyManager);
 
@@ -68,6 +66,7 @@ function kill() {
     // after resetting the enemy group, we need to send out the enemy destroyed event
     // resetting the group from outside messes with the normal check logic of "enemies remaining"
     game.events.emit(globalConfig.eventKeys.enemyDestroyed, null);
+    return 'killed all enemies';
 }
 
 startGame();

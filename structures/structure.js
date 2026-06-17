@@ -13,7 +13,7 @@ class Structure extends Phaser.GameObjects.GameObject {
     constructor(scene, col, row, structureConfig) {
         super(scene, structureConfig.internalType);
 
-        console.log('creating structure with', structureConfig)
+        //console.log('creating structure with', structureConfig)
         this.config = structureConfig;
 
         this.col = col;
@@ -185,7 +185,7 @@ class Structure extends Phaser.GameObjects.GameObject {
     }
 
     destroy(fromScene) {
-        console.log('structure of type', this.type, 'was destroyed')
+        //console.log('structure of type', this.type, 'was destroyed')
 
         structureStorage.remove(this.col, this.row);
 

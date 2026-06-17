@@ -1,7 +1,7 @@
 // TODO: put into structure subclass and rename into asteroid
 // move stuff into config
 class Tree extends Phaser.GameObjects.GameObject {
-    #gfx;
+    #image;
 
     constructor(scene, col, row) {
         super(scene, 'tree');   // type string used by Phaser internally
@@ -18,28 +18,15 @@ class Tree extends Phaser.GameObjects.GameObject {
 
         this.attackable = false;
 
-        // Internal Graphics object that does the actual drawing
-        this.#gfx = scene.add.graphics();
-
         // Draw once at spawn position
-        this.#draw();
+        this.#image = this.scene.add.image(this.pixelX, this.pixelY, 'tree');
 
         // Register in the shared structure map (pass `this` as the owner ref)
         structureStorage.place(col, row, this);
     }
 
-    #draw() {
-        const image = this.scene.add.image(this.pixelX, this.pixelY, 'tree');
-        //this.#gfx.clear();
-
-        // Main filled triangle
-        //var triangle = Phaser.Geom.Triangle.BuildEquilateral(this.pixelX, this.pixelY - this.size / 2 + 3, this.size);
-        //this.#gfx.fillStyle(this.color, 1);
-        //this.#gfx.fillTriangleShape(triangle);
-    }
-
     destroy(fromScene) {
-        this.#gfx.destroy();
+        this.#image.destroy();
         super.destroy(fromScene);
     }
 }
