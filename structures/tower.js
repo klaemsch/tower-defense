@@ -45,7 +45,7 @@ class Tower extends Structure {
     }
 
     onUpgradeChange() {
-        console.log('tower onUpgradeChange');
+        //console.log('tower onUpgradeChange');
 
         // check if there is a freeze upgrade
         const freezeUpgrade = [...this.upgrades].find(
@@ -64,35 +64,40 @@ class Tower extends Structure {
         }
     }
 
-    // TODO: move this to the enemy manager or use enemy manager
+    // uses enemy manager to find closest enemy
+    // checks if the enemy is in circular range/radius and returns it
+    // if not in range or no enemy found, returns null
     #findClosestEnemyInCircRadius() {
-        let closestEnemy = null, closestDistance = Infinity;
-        this.#enemyManager.enemies.getChildren().forEach((enemy) => {
-            if (enemy.type !== 'enemy') return;
-            const dx = enemy.pixelX - this.pixelX;
-            const dy = enemy.pixelY - this.pixelY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= this.config.radiusInTiles * globalConfig.world.tileSize && dist < closestDistance) {
-                closestDistance = dist;
-                closestEnemy = enemy;
-            }
-        });
-        return closestEnemy;
+        // get closest enemy and distance to it
+        const closest = this.#enemyManager.getClosestEnemy(this.pixelX, this.pixelY);
+
+        // calculate squared radius of tower
+        const radiusInPixel = this.config.radiusInTiles * globalConfig.world.tileSize;
+        const squaredRadiusInPixel = radiusInPixel ** 2;
+
+        // check if squared distance is in range
+        if (closest.enemy && closest.squaredDist <= squaredRadiusInPixel) {
+            return closest.enemy;
+        }
+        return null
     }
 
-    // TODO: move this to the enemy manager or use enemy manager
+    // uses enemy manager to find closest enemy
+    // checks if the enemy is in rectangular range/radius and returns it
+    // if not in range or no enemy found, returns null
     #findClosestEnemyInRectRadius() {
-        let closestEnemy = null, closestDistance = Infinity;
-        this.#enemyManager.enemies.getChildren().forEach((enemy) => {
-            const dx = Math.abs(enemy.gridX - this.col);
-            const dy = Math.abs(enemy.gridY - this.row);
-            const euclDist = Math.sqrt(dx * dx + dy * dy);
-            if (dx <= this.config.radiusInTiles && dy <= this.config.radiusInTiles && euclDist < closestDistance) {
-                closestDistance = euclDist;
-                closestEnemy = enemy;
-            }
-        });
-        return closestEnemy;
+        // get closest enemy and distance to it
+        const closest = this.#enemyManager.getClosestEnemy(this.pixelX, this.pixelY);
+        if (!closest.enemy) return null;
+        console.log('test')
+
+        const dx = Math.abs(closest.enemy.gridX - this.col);
+        const dy = Math.abs(closest.enemy.gridY - this.row);
+        if (dx <= this.config.radiusInTiles && dy <= this.config.radiusInTiles) {
+            return closest.enemy
+        }
+
+        return null;
     }
 
     destroy(fromScene) {

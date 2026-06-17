@@ -19,7 +19,7 @@ class EnemyManager {
         // so if we want the event to happen X times we need to set repeat to X-1
         repeat = Math.floor(repeat) - 1
 
-        console.log('start spawning', repeat, 'enemies with rate', rate);
+        //console.log('start spawning', repeat, 'enemies with rate', rate);
         this.enemies.clear(true, true);
         this.spawnTimer = this.#scene.time.addEvent({
             delay: rate,
@@ -44,23 +44,25 @@ class EnemyManager {
         this.enemies.clear(true, true);
     }
 
-    /** Returns the closest active enemy within maxRange pixels, or null. */
-    getClosestEnemy(fromPixelX, fromPixelY, maxRange) {
-        let closestEnemy = null, colestDistance = Infinity;
+    // returns the closest enemy and its squared distance to given coordinates (fromPixelX, fromPixelY)
+    getClosestEnemy(fromPixelX, fromPixelY) {
+        let closestEnemy = null, closestSquaredDistance = Infinity;
 
-        for (const enemy of this.enemies) {
-            //if (!enemy.active) continue;
+        for (const enemy of this.enemies.getChildren()) {
             const dx = enemy.pixelX - fromPixelX;
             const dy = enemy.pixelY - fromPixelY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= maxRange && dist <= colestDistance) { colestDistance = dist; closestEnemy = enemy; }
+            const squaredDist = dx ** 2 + dy ** 2;
+            if (squaredDist <= closestSquaredDistance) {
+                closestSquaredDistance = squaredDist;
+                closestEnemy = enemy;
+            }
         }
 
-        return closestEnemy;
+        return {enemy: closestEnemy, squaredDist: closestSquaredDistance};
     }
 
     isAllEnemiesDestroyed() {
-        console.log('ABC is this used TODO')
+        //console.log('ABC is this used TODO')
         return this.enemies.length === 0;
     }
 
