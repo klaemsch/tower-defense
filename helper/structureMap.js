@@ -1,6 +1,12 @@
 class StructureStorage {
     // Central lookup: "col,row" -> gameObject
     #structureMap = new Map();
+    #version = 0;
+    #borderCells;
+
+    constructor() {
+        this.#borderCells = this.getBorderCells();
+    }
 
     getByCell(col, row) {
         return this.#structureMap.get(this.#getKey(col, row));
@@ -17,6 +23,7 @@ class StructureStorage {
         }
 
         this.#structureMap.set(this.#getKey(col, row), gameObject);
+        this.#commit();
         return true;
     }
 
@@ -26,22 +33,30 @@ class StructureStorage {
         }
 
         this.#structureMap.delete(this.#getKey(col, row));
+        this.#commit();
         return true;
     }
 
     getNearestTarget(fromCol, fromRow) {
         let best = null;
-        let bestDist = Infinity;
+        let bestSquaredDist = Infinity;
 
         this.#structureMap.forEach((structure) => {
             if (structure.attackable === false) return;
-            const d = Math.sqrt((structure.col - fromCol) ** 2 + (structure.row - fromRow) ** 2);
-            if (d < bestDist) { bestDist = d; best = structure; }
+            const squaredDist = (structure.col - fromCol) ** 2 + (structure.row - fromRow) ** 2;
+            if (squaredDist < bestSquaredDist) { bestSquaredDist = squaredDist; best = structure; }
         });
         return best;
     }
 
+    // first call: gets all border cells and saves them
+    // every other call: just returns them
     getBorderCells() {
+        if (this.#borderCells) {
+            //console.log('border cells array was generated previously, just return them');
+            return this.#borderCells;
+        }
+        //console.log('generate border cells array');
         const { numCols, numRows } = globalConfig.world;
         const cells = [];
         for (let c = 0; c < numCols; c++) {
@@ -55,6 +70,15 @@ class StructureStorage {
         return cells;
     }
 
+    // returns a random UNOCCUPIED border cell, with .col, .row
+    getRandomBorderCell() {
+        const borderCells = structureStorage.getBorderCells();
+        const randomBorderCell = borderCells[Math.floor(Math.random() * borderCells.length)];
+        if (this.isOccupied(randomBorderCell.col, randomBorderCell.row)) return this.getRandomBorderCell();
+        return randomBorderCell;
+        // TODO: recursive can go wrong if every border cell is occupied, maybe forbid to build there?
+    }
+
     // TODO: maybe adapt so structures in range > 1 can be queried
     getStructuresInRange(fromCol, fromRow, radius = 1, filterFunc = () => true) {
         return helper.adjacentCells(fromCol, fromRow)
@@ -62,8 +86,16 @@ class StructureStorage {
             .filter(structure => structure && filterFunc(structure));
     }
 
+    hasNewerVersion(oldVersion) {
+        this.#version > oldVersion;
+    }
+
     #getKey(col, row) {
         return `${col},${row}`;
+    }
+
+    #commit() {
+        this.#version++;
     }
 }
 
