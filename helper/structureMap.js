@@ -91,7 +91,7 @@ class StructureStorage {
     }
 
     hasNewerVersion(oldVersion) {
-        console.log('hasNewerVersion call, this.#version', this.#version, 'oldVersion', oldVersion);
+        //console.log('hasNewerVersion call, this.#version', this.#version, 'oldVersion', oldVersion);
         this.#version > oldVersion;
     }
 

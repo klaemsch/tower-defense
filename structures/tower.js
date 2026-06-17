@@ -89,7 +89,6 @@ class Tower extends Structure {
         // get closest enemy and distance to it
         const closest = this.#enemyManager.getClosestEnemy(this.pixelX, this.pixelY);
         if (!closest.enemy) return null;
-        console.log('test')
 
         const dx = Math.abs(closest.enemy.gridX - this.col);
         const dy = Math.abs(closest.enemy.gridY - this.row);

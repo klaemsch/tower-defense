@@ -16,7 +16,7 @@ class Card extends Phaser.GameObjects.Container {
     constructor(scene, cx, cy, data) {
         super(scene, cx, cy);
 
-        this.#buttonCallback = data.buttonCallback ?? function () { console.log('default card button callback') };
+        this.#buttonCallback = data.buttonCallback ?? function () { console.warn('default card button callback') };
 
         const CW = globalConfig.shop.layout.cardWidth;
         const CH = globalConfig.shop.layout.cardHeight;

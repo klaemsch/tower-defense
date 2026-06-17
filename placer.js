@@ -110,7 +110,7 @@ class Placer {
         const canAddUpgrade = structure.addUpgrade(this.#selectedItemConfig);
 
         if (canAddUpgrade) this.#inventoryManager.useItem(this.#selectedItemConfig);
-        else console.log('cant use this upgrade');
+        else console.warn('cant use this upgrade');
     }
 
     // event fired everytime the pointer moves
