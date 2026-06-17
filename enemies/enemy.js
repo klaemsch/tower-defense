@@ -11,8 +11,9 @@ class Enemy extends Phaser.GameObjects.GameObject {
     #stunTimer = null;
 
     #image;
-    #gfx;
     #pathGfx;
+
+    #structureStorageVersion = structureStorage.getCurrentVersion();
 
     constructor(scene, col, row, path, target, eConfig = enemyConfig.baseEnemy) {
         super(scene, 'enemy');
@@ -35,12 +36,11 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#attackTimer = 0;
         this.#isStunned = false; // target can move and attack
 
-        this.#image = scene.add.image(0, 0, eConfig.imageKey);
+        this.#image = scene.add.image(this.pixelX, this.pixelY, eConfig.imageKey);
         // scale image according to tileSize (image.height should be 48px)
         this.#image.scale = globalConfig.world.tileSize / this.#image.height;
 
-        this.#gfx = scene.add.graphics();
-        this.#pathGfx = scene.add.graphics().setDepth(globalStyles.depthMap.enemyPath);
+        if (globalConfig.debug) this.#pathGfx = scene.add.graphics().setDepth(globalStyles.depthMap.enemyPath);
 
         scene.sys.updateList.add(this);
 
@@ -54,7 +54,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
             // get drop
             const drop = globalConfig.resources.getRandomDrop();
             if (drop) {
-                console.log('an enemy died and randomly dropped', drop.amount, drop.resource.label);
+                //console.log('an enemy died and randomly dropped', drop.amount, drop.resource.label);
 
                 // do FX
                 this.#spawnDropFx(drop.resource.label, drop.amount);
@@ -95,7 +95,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
             this.destroy();
             return true;
         }
-        console.log('did', amount, 'damage, new health', this.#config.health);
+        //console.log('did', amount, 'damage, new health', this.#config.health);
         return false;
     }
 
@@ -130,8 +130,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
     destroy(fromScene) {
         //console.log(this.scene)
         this.#image.destroy();
-        this.#pathGfx.destroy();
-        this.#gfx.destroy();
+        if (globalConfig.debug) this.#pathGfx.destroy();
         super.destroy(fromScene);
     }
 
@@ -178,7 +177,7 @@ class Enemy extends Phaser.GameObjects.GameObject {
 
     #tickAttack(delta) {
         if (!this.#targetIsAlive() || !this.#targetInRange()) {
-            console.log('target change (target dead or out of range)');
+            //console.log('target change (target dead or out of range)');
             this.#attacking = false;
             this.#retarget();
             return;
@@ -204,7 +203,9 @@ class Enemy extends Phaser.GameObjects.GameObject {
      * Called on every waypoint snap so enemies react to newly placed buildings.
      */
     #recalcPath() {
-        const best = structureStorage.getNearestTarget(Math.round(this.gridX), Math.round(this.gridY));
+        if (!structureStorage.hasNewerVersion(this.#structureStorageVersion)) return;
+
+        const best = structureStorage.getClosestTarget(Math.round(this.gridX), Math.round(this.gridY));
         if (best && best !== this.#target) this.#target = best;
 
         const newPath = helper.findPath(
@@ -216,11 +217,14 @@ class Enemy extends Phaser.GameObjects.GameObject {
             this.#pathIdx = 0;
             if (globalConfig.debug) this.#drawPath();
         }
+        this.#structureStorageVersion = structureStorage.getCurrentVersion();
     }
 
     /** Pick a new target and path from scratch. Destroys self if none found. */
     #retarget() {
-        const best = structureStorage.getNearestTarget(Math.round(this.gridX), Math.round(this.gridY));
+        if (!structureStorage.hasNewerVersion(this.#structureStorageVersion)) return;
+
+        const best = structureStorage.getClosestTarget(Math.round(this.gridX), Math.round(this.gridY));
         if (!best) { this.destroy(); return; }
 
         const newPath = helper.findPath(
@@ -235,6 +239,8 @@ class Enemy extends Phaser.GameObjects.GameObject {
         this.#attacking = false;
         this.#attackTimer = 0;
         if (globalConfig.debug) this.#drawPath();
+
+        this.#structureStorageVersion = structureStorage.getCurrentVersion();
     }
 
     // ── Target selection ──────────────────────────────────────────────────────
@@ -252,15 +258,14 @@ class Enemy extends Phaser.GameObjects.GameObject {
             return dx <= this.#config.radiusInTiles && dy <= this.#config.radiusInTiles;
         } else if (this.#config.radiusType === RadiusType.Circular) {
             const radiusInPixels = this.#config.radiusInTiles * globalConfig.world.tileSize;
-            return helper.distanceInPixels(this, this.#target) <= radiusInPixels;
+            const squaredRadiusInPixels = radiusInPixels * radiusInPixels;
+            return helper.squaredDistanceInPixels(this, this.#target) <= squaredRadiusInPixels;
         }
     }
 
     // ── Drawing ───────────────────────────────────────────────────────────────
 
     #draw() {
-        //this.#gfx.clear();
-        //this.#config.draw(this.#gfx, this.pixelX, this.pixelY, this.#config, this.#attacking);
         this.#image.x = this.pixelX;
         this.#image.y = this.pixelY;
 

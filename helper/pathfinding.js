@@ -9,6 +9,9 @@ helper.adjacentCells = (iCol, iRow) => {
 }
 
 helper.findPath = (startCol, startRow, goalCol, goalRow) => {
+    //return [{col: globalConfig.world.numCols/2, row: globalConfig.world.numRows/2}]
+
+    window.__findPathCallCounter++;
 
     // TODO: temp fix
     const gridKey = (col, row) => {
@@ -50,3 +53,5 @@ helper.findPath = (startCol, startRow, goalCol, goalRow) => {
     }
     return null;
 }
+
+window.__findPathCallCounter = 0;

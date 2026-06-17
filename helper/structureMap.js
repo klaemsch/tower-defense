@@ -37,7 +37,7 @@ class StructureStorage {
         return true;
     }
 
-    getNearestTarget(fromCol, fromRow) {
+    getClosestTarget(fromCol, fromRow) {
         let best = null;
         let bestSquaredDist = Infinity;
 
@@ -86,7 +86,12 @@ class StructureStorage {
             .filter(structure => structure && filterFunc(structure));
     }
 
+    getCurrentVersion() {
+        return this.#version;
+    }
+
     hasNewerVersion(oldVersion) {
+        console.log('hasNewerVersion call, this.#version', this.#version, 'oldVersion', oldVersion);
         this.#version > oldVersion;
     }
 

@@ -69,4 +69,8 @@ function kill() {
     return 'killed all enemies';
 }
 
+function getFindPathCallCounter() {
+    return window.__findPathCallCounter;
+}
+
 startGame();
